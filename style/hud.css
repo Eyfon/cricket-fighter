@@ -1,0 +1,85 @@
+/* HUD */
+#game-hud {
+	/* Anchor element */
+	position: absolute;
+	/* width: 100%; */
+	padding: calc(var(--12px) * var(--scale)) calc(var(--16px) * var(--scale));
+	top: 0;
+	left: 0;
+	right: 0;
+
+	z-index: 100;
+	pointer-events: none;
+	font-family: "Tiny 5", monospace, sans-serif;
+	color: var(--white);
+	display: flex;
+	justify-content: space-around;
+	text-shadow: calc(var(--2px) * var(--scale)) calc(var(--2px) * var(--scale)) 0
+		var(--black-0);
+	align-items: center;
+}
+
+#game-hud .timer {
+	text-align: center;
+	padding: 0 calc(2 * var(--10px) * var(--scale));
+}
+
+.timer .warning {
+	color: var(--accent) !important;
+}
+
+#hud-timer {
+	font-size: calc(3 * var(--16px) * var(--scale));
+	color: var(--white);
+	font-family: "Jersey 10", monospace;
+	background: var(--black-0);
+	padding: calc(var(--2px) * var(--scale)) calc(var(--10px) * var(--scale));
+	border: calc(var(--4px) * var(--scale)) solid var(--white);
+	text-align: center;
+	min-width: calc(5 * var(--10px) * var(--scale));
+}
+
+#game-hud .container {
+	width: 40%;
+	gap: unset;
+	display: flex;
+	flex-direction: column;
+}
+
+#game-hud .right {
+	text-align: right;
+}
+
+#game-hud .right .health-bar {
+	justify-content: flex-end;
+}
+
+#game-hud .container .name {
+	font-size: calc(2 * var(--12px) * var(--scale));
+	margin-bottom: calc(var(--4px) * var(--scale));
+}
+
+#game-hud .container .health-bar {
+	height: calc(2 * var(--10px) * var(--scale));
+	background: var(--black-50);
+	border: calc(var(--4px) * var(--scale)) solid var(--white);
+	overflow: hidden relative;
+	display: flex;
+}
+
+#game-hud .container .fights-won {
+	margin-top: calc(var(--4px) * var(--scale));
+	font-size: calc(var(--16px) * var(--scale));
+	color: var(--gray-0);
+}
+
+#game-hud .container .health-bar div {
+	height: 100%;
+	width: 100%;
+	background: var(--bar-color-regular);
+	transition: width 0.1s;
+}
+
+#game-hud .container .health-bar .low-health {
+	background: var(--bar-color-low) !important;
+}

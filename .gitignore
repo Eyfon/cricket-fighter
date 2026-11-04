@@ -1,0 +1,5 @@
+.vscode/
+# CNAME
+dist/
+artifacts/
+node_modules/

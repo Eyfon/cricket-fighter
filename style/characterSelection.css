@@ -1,0 +1,151 @@
+/* Character Selection Screen */
+.shared-grid {
+	display: flex;
+	justify-content: center;
+	gap: calc(2 * var(--10px) * var(--scale));
+	margin: calc(4 * var(--10px) * var(--scale)) 0;
+	flex-wrap: wrap;
+}
+
+.shared-card {
+	position: relative;
+	width: calc(8 * var(--10px) * var(--scale));
+	height: calc(10 * var(--10px) * var(--scale));
+	border: calc(var(--4px) * var(--scale)) solid var(--gray-2);
+	background: var(--gray-1);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: flex-end;
+	cursor: pointer;
+	transition: all 0.2s;
+}
+
+.char-box.p1 {
+	text-align: left;
+}
+
+.char-box.p2 {
+	text-align: right;
+}
+
+/* P1 / P2 Badges */
+.badge {
+	position: absolute;
+	top: calc(-1 * var(--12px) * var(--scale));
+	padding: calc(var(--4px) * var(--scale)) calc(var(--8px) * var(--scale));
+	font-size: calc(2 * var(--10px) * var(--scale));
+	font-weight: bold;
+	/* border-radius: calc(var(--4px) * var(--scale)); */
+	z-index: 10;
+	box-shadow: calc(var(--2px) * var(--scale)) calc(var(--4px) * var(--scale)) 0
+		var(--splash-shadow);
+	text-shadow: calc(var(--1px) * var(--scale)) calc(var(--2px) * var(--scale))
+		var(--text-shadow);
+}
+
+.badge.p1 {
+	left: calc(-1 * var(--10px) * var(--scale));
+	background: var(--color-p1); /* P1 Blue */
+	color: var(--badge-text-color);
+	display: none;
+}
+
+.badge.p2 {
+	right: calc(-1 * var(--10px) * var(--scale));
+	background: var(--color-p2); /* P2 Orange */
+	color: var(--badge-text-color);
+	display: none;
+}
+
+/* Active States */
+.shared-card.p1-active {
+	border-color: var(--color-p1);
+	box-shadow: 0 0 calc(var(--16px) * var(--scale)) var(--color-p1-active);
+}
+.shared-card.p1-active .badge.p1 {
+	display: block;
+}
+
+.shared-card.p2-active {
+	border-color: var(--color-p2);
+	box-shadow: 0 0 calc(var(--16px) * var(--scale)) var(--color-p2-active);
+}
+.shared-card.p2-active .badge.p2 {
+	display: block;
+}
+
+/* If BOTH select the same character */
+.shared-card.p1-active.p2-active {
+	border-color: var(--shared-card-active);
+	box-shadow: 0 0 calc(var(--16px) * var(--scale)) var(--shared-card-active);
+}
+
+/* Info Section at bottom */
+.match-settings {
+	display: flex;
+	align-items: center;
+	justify-content: space-around;
+	width: 100%;
+	gap: calc(2 * var(--10px) * var(--scale));
+	font-size: calc(2 * var(--16px) * var(--scale));
+	margin: calc(var(--16px));
+	/* padding-top: calc(2 * var(--10px) * var(--scale)); */
+}
+
+.match-settings h2 {
+	margin: calc(var(--8px) * var(--scale)) 0;
+}
+
+.vs {
+	color: var(--text);
+	font-size: calc(3 * var(--16px) * var(--scale));
+	align-self: center;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.vs img {
+	width: calc(8 * var(--10px) * var(--scale));
+	height: auto;
+}
+
+.oponent-type {
+	/* margin-top: calc(var(--16px) * var(--scale)); */
+	text-align: center;
+}
+
+.oponent-type .content {
+	font-size: calc(var(--10px) * var(--scale));
+	margin-bottom: calc(var(--4px) * var(--scale));
+	color: var(--gray-0);
+}
+
+.oponent-type button {
+	padding: calc(var(--8px) * var(--scale));
+	color: var(--text);
+	border: none;
+	font-size: calc(2 * var(--10px) * var(--scale));
+	font-family: "Tiny 5", monospace;
+	text-transform: uppercase;
+	cursor: pointer;
+	transition: background 0.2s;
+	background: var(--gray-2);
+	box-shadow: calc(var(--2px) * var(--scale)) calc(var(--4px) * var(--scale)) 0
+		var(--splash-shadow);
+}
+
+.oponent-type .ai {
+	background: var(--accent);
+}
+
+.shared-card .item {
+	font-family: "Jersey 15", monospace, sans-serif;
+	font-size: calc(3 * var(--16px) * var(--scale));
+}
+
+.shared-card .item-name {
+	font-size: calc(2 * var(--10px) * var(--scale));
+	margin-bottom: calc(var(--4px) * var(--scale));
+}

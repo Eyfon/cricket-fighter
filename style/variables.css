@@ -1,0 +1,119 @@
+:root {
+	/* Scale and Sizing */
+	--scale: 1;
+	--width: 800px;
+	--height: 600px;
+	--unit: 1rem;
+
+	--1px: 0.0625rem;
+	--2px: 0.125rem;
+	--4px: 0.25rem;
+	--8px: 0.5rem;
+	--10px: 0.625rem;
+	--12px: 0.75rem;
+	--16px: 1rem;
+
+	/* General UI Colors */
+	--bg: rgb(6, 11, 22);
+	--ui: rgb(19, 21, 42);
+	--accent: rgb(255, 34, 85);
+
+	--body: rgb(17, 17, 17);
+	--body-bg: rgba(18, 16, 16, 0.1);
+
+	--title-gradient-start: rgb(92, 146, 237);
+	--title-gradient-end: rgb(238, 255, 238);
+	--title-border: rgb(9, 10, 46);
+	--title-shadow: rgb(34, 38, 255);
+
+	--text: rgb(238, 255, 238);
+	--text-gradient-start: rgb(235, 183, 6);
+	--text-gradient-end: rgb(246, 93, 0);
+	--text-border: rgb(9, 10, 46);
+	--text-shadow: rgb(12, 14, 148);
+
+	--splash-gradient-start: rgb(235, 183, 6);
+	--splash-gradient-end: rgb(246, 93, 0);
+	--splash-border: rgb(9, 10, 46);
+	--splash-shadow: rgb(12, 14, 148);
+
+	/* HUD */
+	--bar-bg: rgba(51, 51, 51, 0.667);
+	--bar-p1: rgb(74, 208, 74);
+	--bar-p2: rgb(74, 208, 74);
+	--bar-color-regular: rgb(255, 204, 0);
+	--bar-color-low: var(--accent);
+
+	/* Basic colors */
+	--white: rgb(255, 255, 255);
+	--white-10: rgba(255, 255, 255, 0.1);
+	--white-20: rgba(255, 255, 255, 0.2);
+	--white-80: rgba(255, 255, 255, 0.8);
+	--white-90: rgba(255, 255, 255, 0.9);
+
+	--gray-0: rgb(170, 170, 170);
+	--gray-1: rgb(34, 34, 34);
+	--gray-2: rgb(68, 68, 68);
+
+	--black-0: rgb(0, 0, 0);
+	--black-00: rgba(0, 0, 0, 0);
+	--black-20: rgba(0, 0, 0, 0.2);
+	--black-25: rgba(0, 0, 0, 0.25);
+	--black-40: rgba(0, 0, 0, 0.4);
+	--black-50: rgba(0, 0, 0, 0.5);
+	--black-60: rgba(0, 0, 0, 0.6);
+	--black-80: rgba(0, 0, 0, 0.8);
+
+	/* Players */
+	--color-p1: #6ad;
+	--color-p1-active: rgba(102, 170, 221, 0.267);
+
+	--color-p2: #da8;
+	--color-p2-active: rgba(221, 170, 136, 0.267);
+
+	--shared-card-active: var(--white);
+	--badge-text-color: var(--white);
+
+	/* Console shell */
+	--mobile-console-gradient-start: #b2afb0;
+	--mobile-console-gradient-middle: #eae8e4;
+	--mobile-console-gradient-end: #c0bcb4;
+
+	--mobile-console-logo-color: #f7f5f1;
+	--mobile-console-logo-background: #eae8e4;
+
+	/* Buttons */
+	--screen-gradient-start: #bebbbc;
+	--screen-gradient-middle: #bebdb9;
+	--screen-gradient-end: #979b99;
+
+	/* Buttons */
+	--button-valley-gradient-start: #bebbbc;
+	--button-valley-gradient-middle: #eae8e4;
+	--button-valley-gradient-end: #fffdf8;
+
+	--pill-btn-label: #422a97;
+	--pill-btn-gradient-start: #c0bcd7;
+	--pill-btn-gradient-end: #727075;
+
+	--start-select-gradient-start: #9b9899;
+	--start-select-gradient-middle: #eae8e4;
+	--start-select-gradient-end: #fffdf8;
+
+	/* SNES color scheme*/
+	--button-a-b-color-start: #4e0fb3;
+	--button-a-b-color-end: #340164;
+	--button-a-b-color-spark: #834fd7;
+
+	--button-x-y-color-start: #9180cc;
+	--button-x-y-color-end: #422a97;
+	--button-x-y-color-spark: #aa9cdc;
+
+	/* GameBoy color scheme*/
+	/* --button-a-b-color-start: #b30f42;
+	--button-a-b-color-end: #640116;
+	--button-a-b-color-spark: #d74f73; */
+
+	--button-label-a-b: #422a97;
+	--button-label-x-y: var(--white);
+}

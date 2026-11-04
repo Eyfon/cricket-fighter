@@ -1,0 +1,352 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover"
+    />
+    <title>蛐蛐格斗 · FIGHT NIGHT</title>
+    <meta
+      name="description"
+      content="像素街机格斗：选角色、选地图，立即开战。"
+    />
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="./style/arena.css" />
+  </head>
+  <body data-screen="home">
+    <main class="app">
+      <header class="app-header">
+        <button class="brand" id="home-link" aria-label="返回主界面">
+          蛐蛐<span>格斗</span><small>FIGHT NIGHT</small>
+        </button>
+        <nav id="steps" aria-label="对战流程">
+          <span data-step="mode">01 模式</span
+          ><span data-step="characters">02 角色</span
+          ><span data-step="setup">03 地图与规则</span>
+        </nav>
+        <span class="free-play">LOCAL ARCADE / FREE PLAY</span>
+      </header>
+      <section data-screen="home" class="screen home-screen">
+        <div class="home-art">
+          <canvas id="home-left" width="360" height="400"></canvas
+          ><canvas id="home-right" width="360" height="400"></canvas
+          ><span class="art-caption">VOL.01 / STREET FIGHTERS</span>
+        </div>
+        <div class="home-copy">
+          <p class="eyebrow">THE NEXT ROUND IS YOURS</p>
+          <h1>让他们<br /><em>打个痛快。</em></h1>
+          <p class="home-sub">
+            像素擂台，自由开战。亲自上场，或者坐看一场电子斗蛐蛐。
+          </p>
+          <div class="home-menu">
+            <button id="play" class="primary">
+              开始对战 <span>01 ↗</span></button
+            ><button id="training">练习模式 <span>02 →</span></button
+            ><button data-go="gallery">角色图鉴 <span>03 →</span></button
+            ><button data-go="options">游戏选项 <span>04 →</span></button>
+          </div>
+          <small class="home-foot">无需登录 · 无需下载 · 支持电脑与手机</small>
+        </div>
+      </section>
+      <section data-screen="mode" class="screen" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">01 / CHOOSE YOUR MODE</p>
+            <h1>以什么方式开战？</h1>
+          </div>
+          <button data-go="home" class="back">← 返回</button>
+        </div>
+        <input type="hidden" id="mode" value="watch" />
+        <div class="mode-grid">
+          <button class="mode-card" data-mode="watch">
+            <span class="mode-number">01</span><strong>电子斗蛐蛐</strong
+            ><small>AI vs AI</small>
+            <p>双方交给 AI 操作，选好角色，享受对战。</p></button
+          ><button class="mode-card" data-mode="cpu">
+            <span class="mode-number">02</span><strong>单人挑战</strong
+            ><small>PLAYER vs CPU</small>
+            <p>你控制左方角色，与电脑切磋。</p></button
+          ><button class="mode-card" data-mode="local">
+            <span class="mode-number">03</span><strong>本地双人</strong
+            ><small>PLAYER vs PLAYER</small>
+            <p>共用一副键盘，用两组键位决胜负。</p>
+          </button>
+        </div>
+      </section>
+      <section data-screen="characters" class="screen" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">02 / SELECT YOUR FIGHTERS</p>
+            <h1>谁来上场？</h1>
+          </div>
+          <button id="characters-back" class="back">← 返回</button>
+        </div>
+        <div class="character-grid">
+          <article class="fighter-card blue-card">
+            <div class="fighter-card-top">
+              <span>1P / 左方</span><button data-random="p1">随机 ↻</button>
+            </div>
+            <canvas id="preview-p1" width="360" height="300"></canvas
+            ><label>选择角色<select id="p1"></select></label>
+          </article>
+          <div class="large-vs">VS</div>
+          <article class="fighter-card red-card">
+            <div class="fighter-card-top">
+              <span>2P / 右方</span><button data-random="p2">随机 ↻</button>
+            </div>
+            <canvas id="preview-p2" width="360" height="300"></canvas
+            ><label>选择角色<select id="p2"></select></label>
+          </article>
+        </div>
+        <div class="page-bottom">
+          <span id="mode-summary"></span
+          ><button id="characters-next" class="primary">
+            确认角色 · 选择地图 →
+          </button>
+        </div>
+      </section>
+      <section data-screen="setup" class="screen" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">03 / STAGE & MATCH RULES</p>
+            <h1>选好擂台，定下规则。</h1>
+          </div>
+          <button data-go="characters" class="back">← 重新选人</button>
+        </div>
+        <div class="setup-grid">
+          <article class="stage-panel">
+            <div class="map-preview" id="map-preview">
+              <div>
+                <small>SELECTED STAGE</small>
+                <h2 id="map-name"></h2>
+                <p id="map-subtitle"></p>
+              </div>
+            </div>
+            <div class="map-list" id="map-list"></div>
+            <button id="random-map" class="text-button">随机地图 ↻</button>
+          </article>
+          <article class="rule-panel">
+            <p class="eyebrow">MATCH RULES</p>
+            <h2>对战设置</h2>
+            <label
+              >回合时间<select id="round-time">
+                <option value="30">30 秒</option>
+                <option value="60" selected>60 秒</option>
+                <option value="90">90 秒</option>
+                <option value="0">无限时间</option>
+              </select></label
+            ><label
+              >获胜所需回合<select id="wins-required">
+                <option value="1">1 胜</option>
+                <option value="2" selected>2 胜</option>
+                <option value="3">3 胜</option>
+              </select></label
+            ><label
+              >双方血量倍率<select id="health-multiplier">
+                <option value="1">1 倍 · 默认</option>
+                <option value="2">2 倍</option>
+                <option value="3">3 倍</option>
+                <option value="5">5 倍</option>
+              </select></label
+            >
+            <p class="field-note">统一作用于双方。战斗中仅显示血条。</p>
+            <label
+              >AI 难度<select id="difficulty">
+                <option value="easy">休闲</option>
+                <option value="normal" selected>标准</option>
+                <option value="hard">困难</option>
+              </select></label
+            >
+            <div id="training-settings" hidden>
+              <label
+                >练习对手<select id="dummy">
+                  <option value="idle">原地待机</option>
+                  <option value="guard">持续防御</option>
+                </select></label
+              ><label class="check"
+                ><input id="training-energy" type="checkbox" checked />
+                练习时无限能量点</label
+              ><small>练习不计比赛胜负，击败木桩后自动重置。</small>
+            </div>
+            <button id="reset-rules" class="text-button">恢复默认规则</button>
+          </article>
+        </div>
+        <div class="page-bottom">
+          <span id="match-summary"></span
+          ><button id="start" class="primary">开始对战 ▶</button>
+        </div>
+      </section>
+      <section data-screen="battle" class="screen battle-screen" hidden>
+        <div class="cabinet">
+          <canvas
+            id="arena"
+            width="960"
+            height="540"
+            tabindex="0"
+            aria-label="格斗擂台"
+          ></canvas>
+          <div class="scanlines"></div>
+          <div class="battle-overlay" id="pause-panel" hidden>
+            <div class="dialog">
+              <p class="eyebrow">TIME OUT</p>
+              <h2>稍作休息</h2>
+              <button id="resume" class="primary">继续战斗</button
+              ><button id="restart">重新开战</button
+              ><button id="battle-return">返回选人</button>
+            </div>
+          </div>
+          <div
+            class="battle-overlay"
+            id="result-panel"
+            hidden
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="result-title"
+          >
+            <div class="dialog result-dialog">
+              <p class="eyebrow">MATCH COMPLETE</p>
+              <h2 id="result-title"></h2>
+              <p id="result-score"></p>
+              <div class="result-actions">
+                <button id="result-return">返回</button
+                ><button id="result-rematch" class="primary">重新开战 ↻</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <nav class="toolbar" aria-hidden="true" hidden>
+          <span id="status" role="status"></span
+          ><button id="pause" tabindex="-1">暂停 / Esc</button>
+        </nav>
+        <section class="touch" aria-label="手机控制">
+          <div>
+            <button data-key="a">←</button><button data-key="w">↑</button
+            ><button data-key="d">→</button>
+          </div>
+          <div>
+            <button data-key="s">↓</button
+            ><button data-key="j">拳 J</button><button data-key="k">脚 K</button
+            ><button data-key="l">闪避 L</button
+            ><button data-key="u">技能1 U</button
+            ><button data-key="i">技能2 I</button
+            ><button data-key="o">大招 O</button>
+          </div>
+        </section>
+        <details class="battle-controls">
+          <summary>查看操作</summary>
+          <p>
+            1P：WASD 方向 · J/K 拳脚 · 前或下＋J/K 方向攻击 · L 闪避 ·
+            U/I 技能 · O 大招
+          </p>
+          <p>
+            2P：方向键 · 小键盘 1/2 拳脚 · 前或下＋1/2 方向攻击 · 3 闪避 · 4/5 技能 · 6 大招
+          </p>
+          <p>
+            小技能消耗 1 点，大招消耗 3 点；蓄能条满获得 1 点，最多存 3 点。
+          </p>
+        </details>
+      </section>
+      <section data-screen="gallery" class="screen" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">FIGHTER ARCHIVE</p>
+            <h1>每个人都有一套打法。</h1>
+          </div>
+          <button data-go="home" class="back">← 返回主界面</button>
+        </div>
+        <div id="gallery" class="gallery-grid"></div>
+      </section>
+      <section data-screen="character-detail" class="screen" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">FIGHTER DETAILS</p>
+            <h1 id="detail-name"></h1>
+          </div>
+          <button data-go="gallery" class="back">← 返回角色图鉴</button>
+        </div>
+        <div class="detail-grid">
+          <div class="detail-art">
+            <canvas id="detail-portrait" width="420" height="420"></canvas>
+            <p id="detail-description"></p>
+          </div>
+          <article class="rule-panel">
+            <h2>技能介绍</h2>
+            <dl id="detail-moves"></dl>
+          </article>
+        </div>
+      </section>
+      <section data-screen="options" class="screen" hidden>
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">GAME OPTIONS</p>
+            <h1>把擂台调成你的样子。</h1>
+          </div>
+          <button data-go="home" class="back">← 返回主界面</button>
+        </div>
+        <div class="options-grid">
+          <article class="rule-panel">
+            <h2>声音与画面</h2>
+            <label class="check"
+              ><input id="muted" type="checkbox" />
+              全部静音（音乐／音效／播报）</label
+            ><label
+              >总音量<input
+                id="volume"
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value="0.5" /></label
+            ><label class="check"
+              ><input id="shake" type="checkbox" checked /> 命中震屏</label
+            ><label class="check"
+              ><input id="scanlines" type="checkbox" checked />
+              街机扫描线</label
+            ><label
+              >手机虚拟按键<select id="touch-option">
+                <option value="auto">自动显示</option>
+                <option value="always">始终显示</option>
+                <option value="never">隐藏</option>
+              </select></label
+            ><button id="fullscreen">切换全屏</button
+            ><button id="reset-options" class="text-button">恢复默认选项</button
+            ><small id="option-status" role="status"
+              >设置会保存在当前浏览器。</small
+            >
+          </article>
+          <article class="rule-panel">
+            <h2>操作说明</h2>
+            <p>
+              1P：WASD 方向；J 拳，K 脚，L 闪避，U / I 技能，O 大招。
+            </p>
+            <p>2P：方向键；小键盘 1 拳、2 脚、3 闪避、4 / 5 技能、6 大招。</p>
+            <p>
+              前或下加拳脚触发方向攻击；后方向防御，下后蹲防。单按闪避原地闪避，方向加闪避定向翻滚。
+            </p>
+            <p>
+              基础生命 100，招式伤害直接按较低数值设计。双方默认 1
+              倍血量，可在地图与规则页统一调整。普通防御承受约 25% 的伤害。
+            </p>
+            <p>
+              能量条每蓄满一次加 1 点，最多 3 点。两种技能各消耗 1 点，大招消耗 3
+              点，两者无时间冷却；特殊招式也不设额外时间冷却。
+            </p>
+            <label class="check"
+              ><input id="boxes" type="checkbox" />
+              显示判定框（练习辅助）</label
+            >
+          </article>
+        </div>
+      </section>
+      <footer>
+        <span>FIGHT NIGHT / VOL.01</span
+        ><span>LOCAL PLAY · NO LOGIN REQUIRED</span>
+      </footer>
+    </main>
+    <!-- MODULE_VERSIONS_START -->
+    <script type="importmap">{"imports":{"./js/animation-data.js":"./js/animation-data.js?v=e1cb509505a7","./js/animation.js":"./js/animation.js?v=e1cb509505a7","./js/arena.js":"./js/arena.js?v=e1cb509505a7","./js/audio.js":"./js/audio.js?v=e1cb509505a7","./js/character-schema.js":"./js/character-schema.js?v=e1cb509505a7","./js/combat-world.js":"./js/combat-world.js?v=e1cb509505a7","./js/combat.js":"./js/combat.js?v=e1cb509505a7","./js/energy-effects.js":"./js/energy-effects.js?v=e1cb509505a7","./js/input.js":"./js/input.js?v=e1cb509505a7","./js/language.js":"./js/language.js?v=e1cb509505a7","./js/maps.js":"./js/maps.js?v=e1cb509505a7","./js/menu.js":"./js/menu.js?v=e1cb509505a7","./js/presentation.js":"./js/presentation.js?v=e1cb509505a7","./js/roster.js":"./js/roster.js?v=e1cb509505a7","./js/round-ending.js":"./js/round-ending.js?v=e1cb509505a7","./js/settings.js":"./js/settings.js?v=e1cb509505a7","./js/stages.js":"./js/stages.js?v=e1cb509505a7","./js/super-flash.js":"./js/super-flash.js?v=e1cb509505a7"}}</script>
+    <!-- MODULE_VERSIONS_END -->
+    <script type="module" src="./js/arena.js?v=e1cb509505a7"></script>
+  </body>
+</html>

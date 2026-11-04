@@ -1,0 +1,140 @@
+@import "variables.css";
+@import "fonts.css";
+@import "animations.css";
+@import "characterSelection.css";
+@import "hud.css";
+@import "splash.css";
+@import "stageSelection.css";
+@import "crt.css";
+@import "mobile.css";
+
+html,
+body {
+	margin: 0;
+	overflow: hidden;
+	font-family: "Tiny 5", monospace, sans-serif;
+	text-transform: uppercase;
+	color: var(--text);
+}
+
+body {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	height: 100vh;
+	background-color: var(--body);
+}
+
+canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+a {
+	text-decoration: none;
+	color: var(--accent);
+}
+
+/* Deals with mobile screen positioning*/
+@media (max-width: 800px), (hover: none) {
+	body {
+		justify-content: flex-start;
+	}
+}
+
+/* Overlay */
+.overlay {
+	background: var(--bg);
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	font-family: "Tiny 5", monospace, sans-serif;
+	z-index: 50;
+}
+
+.panel {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-between;
+}
+
+/* Stylized content
+https://codepen.io/fogolin/pen/GgZdOJr
+.pixelated-element {
+	filter: url(#pixelate);
+}
+*/
+
+/* General utilities */
+.hidden {
+	display: none;
+}
+
+.grid {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: calc(2 * var(--10px) * var(--scale));
+}
+
+/* Title screen */
+#game-container .logo {
+	width: calc(36 * var(--10px) * var(--scale));
+	margin: calc(var(--16px) * var(--scale)) 0;
+}
+
+.title {
+	background: var(--title-gradient-start);
+	background: linear-gradient(
+		to bottom,
+		var(--title-gradient-start) 0%,
+		var(--title-gradient-end) 100%
+	);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	-webkit-text-stroke: calc(var(--1px) * var(--scale)) var(--title-border);
+	filter: drop-shadow(0 calc(var(--4px) * var(--scale)) var(--title-shadow));
+
+	font-size: calc(4 * var(--16px) * var(--scale));
+	font-weight: 400;
+	font-family: "Jersey 15", monospace, sans-serif;
+
+	margin: calc(2 * var(--10px) * var(--scale));
+}
+
+.splash-default {
+	font-size: calc(2 * var(--12px) * var(--scale));
+
+	background: var(--text-gradient-start);
+	background: linear-gradient(
+		to bottom,
+		var(--text-gradient-start) 0%,
+		var(--text-gradient-end) 100%
+	);
+	background-clip: text;
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	filter: drop-shadow(
+		calc(var(--2px) * var(--scale)) calc(var(--4px) * var(--scale))
+			var(--text-shadow)
+	);
+}
+
+.container {
+	display: flex;
+	justify-content: center;
+	gap: calc(4 * var(--10px) * var(--scale));
+	margin-bottom: calc(var(--10px) * var(--scale));
+	text-align: left;
+}
+
+/* .insertCoin {
+	font-size: 2.5em;
+} */
+
+/* .footer {
+	font-size: 1.5em;
+} */

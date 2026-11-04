@@ -1,0 +1,66 @@
+import test from "node:test";
+import assert from "node:assert/strict";
+import { Fighter } from "../js/combat.js";
+import { roster } from "../js/roster.js";
+test("default health is 100 and charge converts with remainder", () => {
+  const f = new Fighter(roster[0], 400, 1);
+  assert.equal(f.hp, 100);
+  assert.equal(f.maxHp, 100);
+  f.gainEnergy(95);
+  assert.equal(f.energyPoints, 0);
+  f.gainEnergy(15);
+  assert.equal(f.energyPoints, 1);
+  assert.equal(f.meter, 10);
+  f.gainEnergy(105);
+  assert.equal(f.energyPoints, 2);
+  assert.equal(f.meter, 15);
+});
+test("three-point cap discards overfill rather than banking a fourth point", () => {
+  const f = new Fighter(roster[0], 400, 1);
+  f.gainEnergy(450);
+  assert.equal(f.energyPoints, 3);
+  assert.equal(f.meter, 0);
+  f.gainEnergy(80);
+  assert.equal(f.meter, 0);
+  assert.equal(f.tryMove("skill"), true);
+  assert.equal(f.energyPoints, 2);
+  assert.equal(f.meter, 0);
+});
+test("skills consume points, not partial charge; insufficient points consume nothing", () => {
+  const f = new Fighter(roster[0], 400, 1);
+  f.gainEnergy(80);
+  assert.equal(f.tryMove("skill"), false);
+  assert.equal(f.meter, 80);
+  assert.equal(f.cooldowns.skill, undefined);
+  f.gainEnergy(60);
+  assert.equal(f.energyPoints, 1);
+  assert.equal(f.meter, 40);
+  assert.equal(f.tryMove("skill"), true);
+  assert.equal(f.energyPoints, 0);
+  assert.equal(f.meter, 40);
+});
+test("super requires three points and never spends the charge gauge", () => {
+  const f = new Fighter(roster[0], 400, 1);
+  f.gainEnergy(250);
+  assert.equal(f.tryMove("super"), false);
+  assert.equal(f.energyPoints, 2);
+  assert.equal(f.meter, 50);
+  f.gainEnergy(50);
+  assert.equal(f.tryMove("super"), true);
+  assert.equal(f.energyPoints, 0);
+  assert.equal(f.meter, 0);
+});
+test("rejected actions never charge twice; recovery allows the next point-powered skill", () => {
+  const f = new Fighter(roster[0], 400, 1);
+  f.gainEnergy(300);
+  f.tryMove("skill");
+  assert.equal(f.tryMove("skill"), false);
+  assert.equal(f.energyPoints, 2);
+  f.attack = null;
+  assert.equal(f.tryMove("skill"), true);
+  assert.equal(f.energyPoints, 1);
+  f.reset(400, 1);
+  assert.equal(f.energyPoints, 0);
+  assert.equal(f.meter, 0);
+  assert.equal(f.hp, 100);
+});

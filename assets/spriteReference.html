@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Retro Punch - Sprite Reference</title>
+    <style>
+        body {
+            background-color: #222;
+            color: #fff;
+            font-family: 'Courier New', monospace;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+
+        h1 {
+            margin-bottom: 10px;
+            color: #ffcc00;
+            text-shadow: 2px 2px #d00;
+        }
+
+        p {
+            color: #aaa;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            background-color: #111;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            border-radius: 4px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Retro Punch • Sprite Sheet</h1>
+    <p>Live rendering of procedural character assets. Use PrtScn to capture for design reference.</p>
+    <canvas id="sheet"></canvas>
+
+    <script>
+        // --- COPIED CONFIG FROM GAME.JS ---
+
+        // Character definitions with animation styles
+        const characters = {
+            alex: {
+                name: "Alex", w: 48, h: 64, scale: 1.7,
+                anim: {
+                    idle: { style: "body", color: "#6ad", accent: "#cfe" },
+                    walk: { style: "bodyStride", color: "#6ad", accent: "#cfe" },
+                    jump: { style: "bodyJump", color: "#6ad", accent: "#cfe" },
+                    punch: { style: "bodyPunch", color: "#6ad", accent: "#f25" },
+                    kick: { style: "bodyKick", color: "#6ad", accent: "#f25" },
+                    hurt: { style: "bodyHurt", color: "#6ad", accent: "#f8a" },
+                    special: { style: "bodyUpper", color: "#6ad", accent: "#ffd26a" }
+                }
+            },
+            beth: {
+                name: "Beth", w: 46, h: 62, scale: 1.8,
+                anim: {
+                    idle: { style: "body", color: "#da8", accent: "#fff" },
+                    walk: { style: "bodyStride", color: "#da8", accent: "#fff" },
+                    jump: { style: "bodyJump", color: "#da8", accent: "#fff" },
+                    punch: { style: "bodyPunch", color: "#da8", accent: "#f25" },
+                    kick: { style: "bodyKick", color: "#da8", accent: "#f25" },
+                    hurt: { style: "bodyHurt", color: "#da8", accent: "#f8a" },
+                    special: { style: "bodyBurst", color: "#da8", accent: "#ffd26a" }
+                }
+            }
+        };
+
+        // Render States to Display
+        const poses = [
+            { label: "IDLE", key: "idle" },
+            { label: "WALK", key: "walk" },
+            { label: "JUMP", key: "jump" },
+            { label: "PUNCH", key: "punch" }, // Mapped from 'attack' in game logic, but defined in anim block
+            { label: "KICK", key: "kick" },
+            { label: "SPECIAL", key: "special" },
+            { label: "HURT", key: "hurt" }
+        ];
+
+        // --- DRAWING ENGINE (Copied from game.js) ---
+
+        function drawBodySprite(ctx, w, h, v) {
+            ctx.fillStyle = v.color;
+            const t = performance.now() / 1000;
+
+            switch (v.style) {
+                case 'body':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    ctx.fillStyle = v.accent;
+                    ctx.fillRect(w * 0.2, h * 0.2, w * 0.6, h * 0.1);
+                    break;
+                case 'bodyStride':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    ctx.fillStyle = v.accent;
+                    // Bobbing visor
+                    ctx.fillRect(w * 0.2 + Math.sin(t * 15) * 2, h * 0.25, w * 0.6, h * 0.1);
+                    break;
+                case 'bodyJump':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    ctx.fillStyle = v.accent;
+                    ctx.fillRect(w * 0.25, h * 0.15, w * 0.5, h * 0.08);
+                    // Leg tucked visual
+                    ctx.fillStyle = "rgba(0,0,0,0.2)";
+                    ctx.fillRect(w * 0.2, h * 0.8, w * 0.6, h * 0.15);
+                    break;
+                case 'bodyPunch':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    ctx.fillStyle = v.accent;
+                    // Fist extended
+                    ctx.fillRect(w * 0.6, h * 0.3, w * 0.5, h * 0.15);
+                    break;
+                case 'bodyKick':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    ctx.fillStyle = v.accent;
+                    // Leg extended
+                    ctx.fillRect(w * 0.5, h * 0.75, w * 0.6, h * 0.15);
+                    break;
+                case 'bodyUpper':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    glowCircle(ctx, w * 0.5, h * 0.2, Math.sin(t * 10) * 8 + 20, v.accent);
+                    break;
+                case 'bodyBurst':
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    glowRect(ctx, -10, h * 0.25, w + 20, h * 0.2, v.accent);
+                    break;
+                case 'bodyHurt':
+                    ctx.globalAlpha = 0.7;
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    ctx.globalAlpha = 1.0;
+                    ctx.strokeStyle = v.accent;
+                    ctx.lineWidth = 3;
+                    ctx.strokeRect(0, 0, w, h);
+                    break;
+                default:
+                    roundedRect(ctx, 0, 0, w, h, 8); ctx.fill();
+                    break;
+            }
+        }
+
+        function roundedRect(ctx, x, y, w, h, r) {
+            ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+        }
+
+        function glowCircle(ctx, x, y, r, color) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 16;
+            ctx.beginPath();
+            ctx.arc(x, y, r, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+        }
+
+        function glowRect(ctx, x, y, w, h, color) {
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.shadowColor = color;
+            ctx.shadowBlur = 12;
+            ctx.fillRect(x, y, w, h);
+            ctx.restore();
+        }
+
+        // --- VIEWER LOOP ---
+
+        const canvas = document.getElementById('sheet');
+        const ctx = canvas.getContext('2d');
+
+        // Layout Config
+        const CELL_W = 150;
+        const CELL_H = 150;
+        const PADDING_TOP = 40;
+        const PADDING_LEFT = 100;
+
+        // Resize Canvas
+        const keys = Object.keys(characters);
+        canvas.width = PADDING_LEFT + (poses.length * CELL_W);
+        canvas.height = PADDING_TOP + (keys.length * CELL_H);
+
+        function loop() {
+            // Background
+            ctx.fillStyle = "#111";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Grid Lines & Labels
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "#333";
+            ctx.font = "bold 16px monospace";
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+
+            // Draw Column Headers (Poses)
+            poses.forEach((pose, i) => {
+                const x = PADDING_LEFT + i * CELL_W + CELL_W / 2;
+                ctx.fillStyle = "#888";
+                ctx.fillText(pose.label, x, PADDING_TOP / 2);
+
+                // Vertical Line
+                ctx.beginPath();
+                ctx.moveTo(PADDING_LEFT + i * CELL_W, 0);
+                ctx.lineTo(PADDING_LEFT + i * CELL_W, canvas.height);
+                ctx.stroke();
+            });
+
+            // Draw Rows (Characters)
+            keys.forEach((charKey, row) => {
+                const def = characters[charKey];
+                const yBase = PADDING_TOP + row * CELL_H;
+
+                // Row Label
+                ctx.fillStyle = "#fff";
+                ctx.textAlign = "right";
+                ctx.font = "bold 20px monospace";
+                ctx.fillText(def.name.toUpperCase(), PADDING_LEFT - 20, yBase + CELL_H / 2);
+
+                // Horizontal Line
+                ctx.beginPath();
+                ctx.moveTo(0, yBase);
+                ctx.lineTo(canvas.width, yBase);
+                ctx.stroke();
+
+                // Draw Sprites
+                poses.forEach((pose, col) => {
+                    const animDef = def.anim[pose.key];
+                    if (!animDef) return;
+
+                    const cx = PADDING_LEFT + col * CELL_W + CELL_W / 2;
+                    const cy = yBase + CELL_H - 20; // Bottom aligned with padding
+
+                    // Dimensions
+                    const w = def.w * def.scale;
+                    const h = def.h * def.scale;
+                    const x = cx - w / 2;
+                    const y = cy - h;
+
+                    ctx.save();
+                    ctx.translate(x, y);
+                    drawBodySprite(ctx, w, h, animDef);
+                    ctx.restore();
+
+                    // Draw Hitbox/Bounds reference (Optional: faint box)
+                    ctx.strokeStyle = "#444";
+                    ctx.lineWidth = 1;
+                    ctx.strokeRect(x, y, w, h);
+                });
+            });
+
+            requestAnimationFrame(loop);
+        }
+
+        loop();
+
+    </script>
+</body>
+
+</html>
