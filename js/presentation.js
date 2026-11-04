@@ -1,11 +1,12 @@
 import { maps } from "./maps.js";
+import { assetUrl } from "./asset-url.js";
 let currentMap = maps[0];
 export function setStage(id) {
   currentMap = maps.find((map) => map.id === id) || maps[0];
 }
 // Visual presentation is separate from combat, so art can change without balance changes.
 const stage = new Image();
-stage.src = "./assets/arena/rooftop-sunset.png";
+stage.src = assetUrl("./assets/arena/rooftop-sunset.png");
 export const stageReady = () => stage.complete && stage.naturalWidth > 0;
 
 export function drawStage(ctx) {

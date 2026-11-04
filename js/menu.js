@@ -1,4 +1,5 @@
 import { maps } from "./maps.js";
+import { assetUrl } from "./asset-url.js";
 import {
   DEFAULT_RULES,
   DEFAULT_OPTIONS,
@@ -66,7 +67,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     $("map-preview").style.setProperty(
       "--map-image",
       map.image
-        ? `url("${new URL(map.image, document.baseURI).href}")`
+        ? `url("${new URL(assetUrl(map.image), document.baseURI).href}")`
         : "none",
     );
     $("map-preview").style.setProperty("--map-filter", map.filter);

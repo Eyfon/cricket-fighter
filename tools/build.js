@@ -2,12 +2,15 @@ import { mkdir, copyFile, cp, access } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { versionModules } from './version-modules.js';
+import { verifyAssets } from './verify-assets.js';
+await verifyAssets();
 await versionModules();
 const root = fileURLToPath(new URL("../", import.meta.url));
 // Only package the new game. Original upstream code/assets stay in the checkout.
 for (const file of [
   "index.html",
   "js/arena.js",
+  "js/asset-url.js",
   "js/audio.js",
   "js/round-ending.js",
   "js/super-flash.js",

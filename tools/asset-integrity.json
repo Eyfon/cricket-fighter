@@ -1,0 +1,373 @@
+{
+  "version": 1,
+  "files": {
+    "assets/arena/rooftop-sunset.png": {
+      "bytes": 2902542,
+      "sha256": "faf1a88d019fd6c982abc32a4a8da483a6583af18ec59fc1d118183e4b82c53e"
+    },
+    "assets/audio/announcer/draw.wav": {
+      "bytes": 22054,
+      "sha256": "614c56c9bbab3ee77550aee86e66533173648b04cf5cbba2b23318c5f153a229"
+    },
+    "assets/audio/announcer/fight.wav": {
+      "bytes": 11398,
+      "sha256": "939e7bf38d9376549e59545d15a096b196003d61c11a98ed9b08e39c7995963b"
+    },
+    "assets/audio/announcer/ko.wav": {
+      "bytes": 14392,
+      "sha256": "5acba92edc2ee701065d0bae2debdde54c544936c6f4ea6b8e145c319dde1e61"
+    },
+    "assets/audio/announcer/loser.wav": {
+      "bytes": 23424,
+      "sha256": "ba9e1d905ab0824bbb1e91a6ec3e4b079385aeb0b19dcc844401ad6434686d2d"
+    },
+    "assets/audio/announcer/one.wav": {
+      "bytes": 13808,
+      "sha256": "0fdb3f731b19b6d69679c51b812f5cba1d3ef72e6b9241783c38abf187641a13"
+    },
+    "assets/audio/announcer/p1win.wav": {
+      "bytes": 38492,
+      "sha256": "f084d44418ac71fe107205c4c4f661624a264b223bd813419892512e90cc9a22"
+    },
+    "assets/audio/announcer/p2win.wav": {
+      "bytes": 38888,
+      "sha256": "dab66f522f7481563e1289f53649718951def9f8b61e6da5ee386d7627fe688c"
+    },
+    "assets/audio/announcer/ready.wav": {
+      "bytes": 21966,
+      "sha256": "3b050642ebb42a7cd1edbd3c40197c1d035cc815d733ced6ba104a4abcac80dc"
+    },
+    "assets/audio/announcer/round.wav": {
+      "bytes": 16640,
+      "sha256": "91e738f9ec96dbafb83a03163e77fa50c0880eea44c6d32de756ef3e20704654"
+    },
+    "assets/audio/announcer/super.wav": {
+      "bytes": 38630,
+      "sha256": "6e14c7e0b3f7de7e8bf23463cf17050ad5c8a229e310975d89a0b3deed9d5c8c"
+    },
+    "assets/audio/announcer/three.wav": {
+      "bytes": 13760,
+      "sha256": "8721eace207de6b4edde08c02601dbfa5c8b676f51316aeb0c2f9913b2d34d01"
+    },
+    "assets/audio/announcer/time.wav": {
+      "bytes": 24544,
+      "sha256": "13942ae0d137c6820da3f315b9903a066af63cffa0b49070ac6c7c9eca3c2250"
+    },
+    "assets/audio/announcer/two.wav": {
+      "bytes": 10868,
+      "sha256": "6339eda800474553ad7365743d0e73503a7401cbe995910d754e4558e52a2ae9"
+    },
+    "assets/audio/announcer/winner.wav": {
+      "bytes": 17058,
+      "sha256": "4277451fd3065213bdc4bbe6e668a8c013a8e5fffacf3c52c937ff16c313c804"
+    },
+    "assets/audio/combat/energy-hit-0.wav": {
+      "bytes": 13716,
+      "sha256": "56ad5cc2795348c7c9788fb1a532990006b3c362aeb733b8e9712a23f88f5e9c"
+    },
+    "assets/audio/combat/energy-hit-1.wav": {
+      "bytes": 13716,
+      "sha256": "7f185c18fe3dc7d7ed70f617136b5aa955277774801472c44ef50d1142958816"
+    },
+    "assets/audio/combat/energy-hit-2.wav": {
+      "bytes": 13716,
+      "sha256": "2caafb04a2ff5abc5abe0c0909eafc0ef86977ed1064c149092f1001309332be"
+    },
+    "assets/audio/combat/guard-hit-0.wav": {
+      "bytes": 7100,
+      "sha256": "785c87a721aeb84e8ecf953f59ce119f77f758754eb2578f69064d366653d413"
+    },
+    "assets/audio/combat/guard-hit-1.wav": {
+      "bytes": 7100,
+      "sha256": "fd7e099d04f14bca41f4ccc3db9db70f961e69030e0936c3e072494848c1ab90"
+    },
+    "assets/audio/combat/guard-hit-2.wav": {
+      "bytes": 7100,
+      "sha256": "655b05d789cbef4953e289549f468955ab883230af528929dda6ac50b113d339"
+    },
+    "assets/audio/combat/heavy-hit-0.wav": {
+      "bytes": 15920,
+      "sha256": "f73143fb8a59a1ec3804d9e0a49ac54e587b555864afe2d6235dc4be6c0bf5a9"
+    },
+    "assets/audio/combat/heavy-hit-1.wav": {
+      "bytes": 15920,
+      "sha256": "009894e69b45746e65ac79f721884db405ea5e462a33567f01b5c767496061d5"
+    },
+    "assets/audio/combat/heavy-hit-2.wav": {
+      "bytes": 15920,
+      "sha256": "cffc9cba924d51c5bbb92323351ca6fe5a6e8a1b0a7d0496ce2b083d29d0c2aa"
+    },
+    "assets/audio/combat/kick-air-0.wav": {
+      "bytes": 8424,
+      "sha256": "d5c78370e721cf1573740393d643089612f8f3433168795c097d33b5a8e2f82e"
+    },
+    "assets/audio/combat/kick-air-1.wav": {
+      "bytes": 8424,
+      "sha256": "b70f46442b55b23884e46bbb85d839806e6082081a0ed1cdee9346a34bc4cbed"
+    },
+    "assets/audio/combat/kick-air-2.wav": {
+      "bytes": 8424,
+      "sha256": "50de97ec29e9fe49b264e7157c27615ab5f3d7033186357979280af2308bb07f"
+    },
+    "assets/audio/combat/kick-hit-0.wav": {
+      "bytes": 12394,
+      "sha256": "6d0966f2a257e7f51fb23e869e7057f773cc7b938f4ec6815a3e3bfe1403e6e8"
+    },
+    "assets/audio/combat/kick-hit-1.wav": {
+      "bytes": 12394,
+      "sha256": "bd9762166ff9fd2ec39a70dba6e6ba7f738896b0857f00048d2c7b010fdbadf2"
+    },
+    "assets/audio/combat/kick-hit-2.wav": {
+      "bytes": 12394,
+      "sha256": "1d2ac148bb5b17fc5c7e48122dc392040361edf4e32d66f9972d04a9186fb30b"
+    },
+    "assets/audio/combat/punch-air-0.wav": {
+      "bytes": 5336,
+      "sha256": "c62ca50036c343bebb2349ec98afa9f1dd280d7c0baf43b6b7ac711ac2dfe07d"
+    },
+    "assets/audio/combat/punch-air-1.wav": {
+      "bytes": 5336,
+      "sha256": "35e6bd9ce6b6af97405dd35f1f2a672fddc1499a65eb035ccfd839bb19df5579"
+    },
+    "assets/audio/combat/punch-air-2.wav": {
+      "bytes": 5336,
+      "sha256": "e4f46e63d21ca0abbba5795ef1bd7c2d2a59315c008c27f4faeda1bb9853a5e8"
+    },
+    "assets/audio/combat/punch-hit-0.wav": {
+      "bytes": 9746,
+      "sha256": "a02944f349d300e3debf2069454baa11e52a3855c1a70971facfb7a0fc8abb25"
+    },
+    "assets/audio/combat/punch-hit-1.wav": {
+      "bytes": 9746,
+      "sha256": "cbd889fcdee3e04b542e1c146c97caa77edf4dc0dea097597d589c4d35ee448d"
+    },
+    "assets/audio/combat/punch-hit-2.wav": {
+      "bytes": 9746,
+      "sha256": "a081bd2f3914e63fad3ec7c908b4318ad0a857bd2a9d9b4fb968afd2961e6050"
+    },
+    "assets/audio/combat/slam-hit-0.wav": {
+      "bytes": 16802,
+      "sha256": "608f3c8a1ab8fd21bcb016c5e872b494df03be1f03f6068b8a486a8dafc04eac"
+    },
+    "assets/audio/combat/slam-hit-1.wav": {
+      "bytes": 16802,
+      "sha256": "2224f14928d7fb21cb28214561c17009540c66525b988b64a7ef859327bd1da1"
+    },
+    "assets/audio/combat/slam-hit-2.wav": {
+      "bytes": 16802,
+      "sha256": "daa5a8bd1dcf070cd82788eb5859e31f7913b0c81e27f05fe217df49482a1fab"
+    },
+    "assets/audio/combat/slash-air-0.wav": {
+      "bytes": 6660,
+      "sha256": "b2bd6418fa5d408b60a481ab83d0c470e18c780a09bbdaf0e87e1a3fd3d3cb55"
+    },
+    "assets/audio/combat/slash-air-1.wav": {
+      "bytes": 6660,
+      "sha256": "73227ea530e33218e68f0ced12b1c94799734d9bea5be12e56b5f63968040138"
+    },
+    "assets/audio/combat/slash-air-2.wav": {
+      "bytes": 6660,
+      "sha256": "b69be04ee766af74a0b4c46cdbdc82225e3e20a7a7ac3ab06c3e0821a9f5013f"
+    },
+    "assets/characters/arcade-fighters.png": {
+      "bytes": 1463450,
+      "sha256": "b875daae030306f0ad3a5dbc07184f4017512386d11b1fbb84bf01f71ee494c8"
+    },
+    "assets/characters/canglan-actions-v2.png": {
+      "bytes": 1905365,
+      "sha256": "42987ac4a4356c09c6031c8eb0593f573bd9c1b3afb9f94676bed861435c5142"
+    },
+    "assets/characters/canglan-skill-mid-v5.png": {
+      "bytes": 1119979,
+      "sha256": "d1dc32211c39e979f20587df97e581c3c3191a102fcf92266a832c599a2fa401"
+    },
+    "assets/characters/canglan-skill-v5.png": {
+      "bytes": 1834832,
+      "sha256": "6e074037df586a07c0b8ec5fdd71e6c666c6011427eabab245454b51f00354de"
+    },
+    "assets/characters/canglan-super-v5.png": {
+      "bytes": 1983506,
+      "sha256": "757ea3a08081928da38723203035ba27284ccc309fca9296c3f636c8f1682873"
+    },
+    "assets/characters/canglan/common/crouch-guard.png": {
+      "bytes": 500991,
+      "sha256": "29cb926ccc4fcb00b01c5bd5083f530c1bb57b99659a2a7877714714cb0b4253"
+    },
+    "assets/characters/canglan/common/dodge.png": {
+      "bytes": 90882,
+      "sha256": "db0c8f139bb5585656490e8d5a2bf13e5625f4e73883d35f535b1a2e2b70d102"
+    },
+    "assets/characters/canglan/common/down-kick.png": {
+      "bytes": 543546,
+      "sha256": "57ae44a8f580a2160ee7bb1387ed28b2133b59c2976ee9a306c9439c1d981209"
+    },
+    "assets/characters/canglan/common/down-punch.png": {
+      "bytes": 263051,
+      "sha256": "3ce0af943c15a78caa193f62164ed0e928340ea137acf48a641d7bda463a8c2e"
+    },
+    "assets/characters/canglan/common/forward-kick.png": {
+      "bytes": 263425,
+      "sha256": "50316367be60cdd801d87bef388ef04fca4bfafee263db7b484869a933e0fa1b"
+    },
+    "assets/characters/canglan/common/forward-punch.png": {
+      "bytes": 253847,
+      "sha256": "156842b39c90c382678cb205ad187b5d56f6ef32ceeb976a32c4029a00ed364e"
+    },
+    "assets/characters/canglan/common/guard.png": {
+      "bytes": 90882,
+      "sha256": "db0c8f139bb5585656490e8d5a2bf13e5625f4e73883d35f535b1a2e2b70d102"
+    },
+    "assets/characters/canglan/common/hurt.png": {
+      "bytes": 96187,
+      "sha256": "e3b2cc079e12ee5b6a91245a1be193d8667d6e1d6501bc06b645eb90520342a4"
+    },
+    "assets/characters/canglan/common/idle.png": {
+      "bytes": 97237,
+      "sha256": "886f97bd91a60c10f83a43b9be1b566086845042b23d19423cd7887f8273b25a"
+    },
+    "assets/characters/canglan/common/jump.png": {
+      "bytes": 79953,
+      "sha256": "299f4732b3ac8267ac067c971517f1f5c4c37302541c1092b1e20581f02341a5"
+    },
+    "assets/characters/canglan/common/kick.png": {
+      "bytes": 100494,
+      "sha256": "d502293f5b7fd8fafd4c40224c0596a677c29f2eff6023b406c57db4d6c9d2d6"
+    },
+    "assets/characters/canglan/common/knockdown.png": {
+      "bytes": 408658,
+      "sha256": "25020c758e5ea6c6f3ea574063cde65ac0fd2033d297870621bf2a79b6587f6d"
+    },
+    "assets/characters/canglan/common/ko.png": {
+      "bytes": 57033,
+      "sha256": "7663361468fb1a2fdff650549fbba31dbb3b5932d1af3a4cd290e8f4cac565d9"
+    },
+    "assets/characters/canglan/common/punch.png": {
+      "bytes": 98769,
+      "sha256": "c3a62f71ac1f0e6c2fb5f4f712d008bef9accff34b48dfc0729c9097e6a1e1da"
+    },
+    "assets/characters/canglan/common/special-punch.png": {
+      "bytes": 98956,
+      "sha256": "1e855ba437f93bedfde9fc34964aad0827a8fc0284b472f6f3150062b594a4a4"
+    },
+    "assets/characters/canglan/common/walk.png": {
+      "bytes": 343820,
+      "sha256": "d86661d5d411bdaf10d42003f4ee4d1ea69774620b80f18346b5b09887113bd8"
+    },
+    "assets/characters/canglan/skill1/atlas.png": {
+      "bytes": 1015946,
+      "sha256": "361cef2b66e6ef3ee5d9340a1833627bfd4b640abc877d0d4edacd1833221ec6"
+    },
+    "assets/characters/canglan/skill2/atlas.png": {
+      "bytes": 449965,
+      "sha256": "33f3f00408f03473ff2e31d9c126f2d5e409febfd145e124ccedf568bdae443f"
+    },
+    "assets/characters/canglan/super/atlas.png": {
+      "bytes": 1226831,
+      "sha256": "c057c403933dbcd340e2f2b439be05fc2b3eac2d855cf8006908a72330f2eec8"
+    },
+    "assets/characters/chifeng-actions-v2.png": {
+      "bytes": 1782083,
+      "sha256": "02c524e358338205e4ccb0f9afe42e1b9b147b7304b9ada9689e838edf470095"
+    },
+    "assets/characters/chifeng-skill-v5.png": {
+      "bytes": 1750746,
+      "sha256": "beb5ca105fcc95e3929942bb19dcdc2a0c6958598e5a4c3615147139bc9c499d"
+    },
+    "assets/characters/chifeng-super-v5.png": {
+      "bytes": 1801806,
+      "sha256": "9c491eb2d3340958dad10922dd9da25fb9effd5f3d8523f4031096757a19081c"
+    },
+    "assets/characters/chifeng/common/crouch-guard.png": {
+      "bytes": 469475,
+      "sha256": "6905b5ff10d97003a10470a842bff73b8ce8b49d3e836fb53e214e19a35fc0de"
+    },
+    "assets/characters/chifeng/common/dodge.png": {
+      "bytes": 87407,
+      "sha256": "743af3eb464c33691107dad926c91bcf463fe554adddae3fddb2f580a33c4516"
+    },
+    "assets/characters/chifeng/common/down-kick.png": {
+      "bytes": 502911,
+      "sha256": "f576b502a245cf0760bcdfeb14461e383042ee192aa03e9868a06c7e459e9598"
+    },
+    "assets/characters/chifeng/common/down-punch.png": {
+      "bytes": 245885,
+      "sha256": "b7368b9323cc99079d1719579155ff51ec1003c9d59d62976e10bb0f636b1f8c"
+    },
+    "assets/characters/chifeng/common/forward-kick.png": {
+      "bytes": 224171,
+      "sha256": "55b9cd8e26f81ced726f7cb9c4e777ed714498e0dfc841672bfeedf762b8e486"
+    },
+    "assets/characters/chifeng/common/forward-punch.png": {
+      "bytes": 261137,
+      "sha256": "fbdb49319383c3f70b3f21502954e724680d894a844e50b8133792031caaa4db"
+    },
+    "assets/characters/chifeng/common/guard.png": {
+      "bytes": 87407,
+      "sha256": "743af3eb464c33691107dad926c91bcf463fe554adddae3fddb2f580a33c4516"
+    },
+    "assets/characters/chifeng/common/hurt.png": {
+      "bytes": 89193,
+      "sha256": "e218d0c6f70f28966e3ee954967b17cb21b7e75e8ab7bf9d6a4e8603f5576d79"
+    },
+    "assets/characters/chifeng/common/idle.png": {
+      "bytes": 98368,
+      "sha256": "ad101ca25e02490e97f3d4834fd2e640b997dc749186f34f3cdfc5eb927c5d46"
+    },
+    "assets/characters/chifeng/common/jump.png": {
+      "bytes": 79172,
+      "sha256": "f67655ca41569f4852dac9434015d484dbe0c06f859069c3080fed0cbc863f26"
+    },
+    "assets/characters/chifeng/common/kick.png": {
+      "bytes": 94617,
+      "sha256": "9b73e572464f325de72e933c7424e5f9d2c2dcd5d9c2d5bc7149a6c172f30b25"
+    },
+    "assets/characters/chifeng/common/knockdown.png": {
+      "bytes": 368686,
+      "sha256": "ae07d348369bdcedd2bdd9e9515d64706aa79f56856a6a7fd6a131b6b3ff8ac0"
+    },
+    "assets/characters/chifeng/common/ko.png": {
+      "bytes": 55145,
+      "sha256": "ac87929ab586ed1285137908ba56ce5a008c568e1e588bc6335a0a3121a822fa"
+    },
+    "assets/characters/chifeng/common/punch.png": {
+      "bytes": 94775,
+      "sha256": "599d6f5c6c989ea034c2b1a8f74422df868c8af8489276dbfbd99f90baa08631"
+    },
+    "assets/characters/chifeng/common/special-punch.png": {
+      "bytes": 96177,
+      "sha256": "15dc5748184a88f2a13a6d1f35f5e031c5e1044021a2608e72ab37cb6eb018d0"
+    },
+    "assets/characters/chifeng/common/walk.png": {
+      "bytes": 352023,
+      "sha256": "c6569b44152ccf35ff3121b9c1f76b7095b83da9f853a43db8aa4510baa1d213"
+    },
+    "assets/characters/chifeng/skill1/atlas.png": {
+      "bytes": 932734,
+      "sha256": "a17c7ae1bd8990163329a27e6e3f71c1dd31add8534a75badc2359c97f59f201"
+    },
+    "assets/characters/chifeng/skill2/atlas.png": {
+      "bytes": 343310,
+      "sha256": "326599a1d843b83f63bb7a9ab27f6ff536f7564438ec9ad5ed5c883f34bc9cb4"
+    },
+    "assets/characters/chifeng/super/atlas.png": {
+      "bytes": 975295,
+      "sha256": "b434dd15b3c556ae011bdb13b51dd77af8f21a50d6651075c56a62f0cc895d2c"
+    },
+    "assets/characters/crouch-guard-v1.png": {
+      "bytes": 934511,
+      "sha256": "c4c281c971427dcdd589c59239c69ab4a6346190fa900d451774835f6fa03638"
+    },
+    "assets/characters/direction-attacks-v4.png": {
+      "bytes": 1447254,
+      "sha256": "036bccc412713b756c88f9c7ce10740b8463180413d1ce725b45a568084e5084"
+    },
+    "assets/characters/skill-knockdown-v3.png": {
+      "bytes": 2330991,
+      "sha256": "2a60cd323408efa636dbffadfdcdb1f3e015b80941174399f9e30b55c50897d3"
+    },
+    "assets/characters/sweeps-v4.png": {
+      "bytes": 1044420,
+      "sha256": "8c398b69624e934353b537770e6c2fab34e6822bd8abe2933fa274dfc0b8fb11"
+    }
+  }
+}
