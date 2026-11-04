@@ -10,6 +10,7 @@ export async function versionModules() {
   const root = fileURLToPath(new URL('../', import.meta.url));
   const names = (await readdir(path.join(root, 'js'))).filter(n => n.endsWith('.js') && !['game.js'].includes(n)).sort();
   const hash = createHash('sha256');
+  hash.update(await readFile(path.join(root, 'tools/asset-integrity.json')));
   for (const name of names) hash.update(name).update(await readFile(path.join(root, 'js', name)));
   const revision = hash.digest('hex').slice(0, 12);
   const imports = Object.fromEntries(names.map(n => [`./js/${n}`, `./js/${n}?v=${revision}`]));

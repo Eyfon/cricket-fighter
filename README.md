@@ -151,6 +151,8 @@ npm test
 npm run build
 ```
 
+测试和构建都会按 `tools/asset-integrity.json` 核对全部角色贴图、场景和音效的字节数与 SHA-256，残缺资源会阻止发布。有意替换或新增素材后，先检查本地原文件，再运行 `node tools/verify-assets.js --write` 更新清单并一起提交。线上贴图请求使用与模块一致的资源版本号，避免继续命中旧的损坏缓存。
+
 角色贴图目录和裁切规则见 [贴图目录说明](docs/SPRITE-DIRECTORY.md)。重新整理现有图集可运行 `python tools/organize_sprites.py`；它会生成两个人物的独立动作图集和 `manifest.json`。
 
 生成的 `dist/` 只有新入口、13 个 JS 模块、1 个 CSS、`assets/arena/` 背景及 `assets/characters/` 角色，不会带入原作者素材或域名。所有运行资源使用相对路径，可部署到 GitHub Pages 的仓库子路径。

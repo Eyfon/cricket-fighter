@@ -1,4 +1,5 @@
 import { superFrame, drawSuperFlash } from "./super-flash.js";
+import { assetUrl } from "./asset-url.js";
 import { ArcadeAudio, musicForScreen } from "./audio.js";
 import { END_DURATION, endingFrame, roundOutcome } from "./round-ending.js";
 import { createMenu } from "./menu.js";
@@ -68,7 +69,7 @@ for (const def of roster)
       if (spriteImages.has(src)) continue;
       const image = new Image();
       spriteImages.set(src, image);
-      image.src = src;
+      image.src = assetUrl(src);
     }
 const menu = createMenu({
   roster,
