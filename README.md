@@ -141,7 +141,7 @@ assets/characters/      按人物 / common / skill1 / skill2 / super 分类的�
 tests/combat.test.js    核心战斗测试
 tools/build.js          静态打包
 tools/browser-smoke.mjs 可选浏览器验证（需要自行安装 Playwright）
-.github/workflows/      手动触发的 GitHub Pages 部署
+.github/workflows/      main 推送自动部署，也支持手动触发
 upstream.html           原项目入口
 UPSTREAM-README.md      原项目说明
 UPSTREAM-CNAME.txt      原作者域名的记录，不参与部署
@@ -158,18 +158,17 @@ npm run build
 
 角色贴图目录和裁切规则见 [贴图目录说明](docs/SPRITE-DIRECTORY.md)。重新整理现有图集可运行 `python tools/organize_sprites.py`；它会生成两个人物的独立动作图集和 `manifest.json`。
 
-生成的 `dist/` 只有新入口、13 个 JS 模块、1 个 CSS、`assets/arena/` 背景及 `assets/characters/` 角色，不会带入原作者素材或域名。所有运行资源使用相对路径，可部署到 GitHub Pages 的仓库子路径。
+生成的 `dist/` 包含新入口、战斗与 AI／手机控制模块、界面样式，以及打包清单中的角色、场景和音频资源，不会带入原作者素材或域名。所有运行资源使用相对路径，可部署到 GitHub Pages 的仓库子路径。
 
 可选浏览器 QA：安装 Playwright 与 Chromium 后运行 `node tools/browser-smoke.mjs`，默认访问本地 5173。可设置 `PLAYWRIGHT_MODULE`、`CHROMIUM_PATH`、`GAME_URL`。检查完整 AI 比赛、暂停、本地按键、人机、触屏和窄屏布局，截图输出至 `artifacts/`。
 
 ## 放到 GitHub Pages
 
-1. 在你自己的 GitHub 下创建 public 仓库，将本地项目推送到该仓库。当前 clone 的 origin 仍指向原项目，不要向原作者仓库推送。
-2. 在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**。
-3. 推送到 `main` 后，`Deploy game to GitHub Pages` 会自动测试、构建并部署；也可以在 Actions 页面手动运行。
-4. 成功后，从 workflow 的 deployment 链接打开游戏，默认地址为 `https://<用户名>.github.io/<仓库名>/`。
+项目仓库：[Eyfon/cricket-fighter](https://github.com/Eyfon/cricket-fighter)。游戏地址：[蛐蛐格斗](https://eyfon.github.io/cricket-fighter/)。网站展示最近一次成功部署的版本。
 
-也可把 `dist/` 内容交给任意静态托管。当前尚未上传或发布到你的 GitHub。
+仓库使用 GitHub Actions 部署：推送到 `main` 后，`Deploy game to GitHub Pages` 工作流会测试、构建并发布；也可以在 [Actions 页面](https://github.com/Eyfon/cricket-fighter/actions/workflows/pages.yml) 手动运行。确认对应提交的工作流成功后，再检查线上更新。
+
+如需部署到自己的仓库，在 **Settings → Pages → Source** 选择 **GitHub Actions**，并保留此工作流。也可把 `dist/` 内容交给任意静态托管。
 
 ## 原项目来源
 
