@@ -5,9 +5,12 @@ import { END_DURATION, endingFrame, roundOutcome } from "./round-ending.js";
 import { createMenu } from "./menu.js";
 import { normalizeRules } from "./settings.js";
 import { CombatWorld } from "./combat-world.js";
+import { newBattleSeed, prepareBattleFrame, separateFighters } from "./battle-frame.js";
+import { captureAiProjectiles, aiSnapshot } from "./ai.js";
 import { drawAnimatedFighter } from "./animation.js";
 import { drawProjectiles, drawMoveAura } from "./energy-effects.js";
 import { bindings, HumanInput, eventCode } from "./input.js";
+import { createMobileControls } from "./mobile-controls.js";
 import {
   drawStage,
   drawHUD,
@@ -47,12 +50,12 @@ let fighters = [],
   mode = "watch",
   difficulty = "normal";
 const humanInputs = bindings.map((binding) => new HumanInput(binding));
+let mobileControls;
 function clearInputs() {
   keys.clear();
   humanInputs.forEach((input) => input.reset());
-  document
-    .querySelectorAll(".touch .held")
-    .forEach((button) => button.classList.remove("held"));
+  mobileControls?.clear();
+  mobileControls?.refresh();
 }
 for (const id of ["p1", "p2"])
   for (const c of roster) {
@@ -87,6 +90,11 @@ const menu = createMenu({
     audio.configure(options);
   },
 });
+mobileControls = createMobileControls({
+  canInput: () => menu.screen === "battle" && running && !paused && !matchOver &&
+    !finale && mode !== "watch",
+  onPause: togglePause,
+});
 function unlockAudio() {
   audio.unlock();
 }
@@ -119,10 +127,13 @@ function resetRound() {
   hitstop = 0;
   particles = [];
   shake = 0;
+  mobileControls?.refresh();
 }
 function start(config) {
-  activeConfig = { ...config, ...normalizeRules(config) };
+  activeConfig = { ...config, ...normalizeRules(config), seed: newBattleSeed() };
+  world.setSeed(activeConfig.seed);
   mode = activeConfig.mode;
+  document.body.dataset.mode = mode;
   difficulty = activeConfig.difficulty;
   setStage(activeConfig.stage);
   fighters = [activeConfig.p1, activeConfig.p2].map(
@@ -193,19 +204,6 @@ document.addEventListener("visibilitychange", () => {
   clearInputs();
   if (document.hidden && running && !paused && !matchOver) togglePause();
 });
-for (const b of document.querySelectorAll("[data-key]")) {
-  b.addEventListener("pointerdown", (e) => {
-    e.preventDefault();
-    b.setPointerCapture(e.pointerId);
-    keys.add(eventCode({ key: b.dataset.key }));
-    b.classList.add("held");
-  });
-  for (const event of ["pointerup", "pointercancel", "lostpointercapture"])
-    b.addEventListener(event, () => {
-      keys.delete(eventCode({ key: b.dataset.key }));
-      b.classList.remove("held");
-    });
-}
 function finishRound() {
   if (finale) return;
   const [a, b] = fighters;
@@ -331,7 +329,8 @@ function tick(dt) {
   }
   timer = Math.max(0, timer - dt);
   const startedSupers = [];
-  fighters.forEach((f, i) => {
+  const frame = prepareBattleFrame(fighters, (f, i) => {
+    f.aiProjectiles = captureAiProjectiles(f, world.projectiles);
     f.projectileThreat = world.projectiles.some(
       (p) =>
         p.owner !== f &&
@@ -344,19 +343,21 @@ function tick(dt) {
       f.energyPoints = 3;
       f.meter = 0;
     }
-    const input =
-      mode === "training" && i === 1
+    return mode === "training" && i === 1
         ? activeConfig.dummy === 'crouchGuard'
           ? defenseInput(f, fighters[1-i], true)
           : activeConfig.dummy === 'guard'
             ? defenseInput(f, fighters[1-i], !!fighters[1-i].attack?.move.low)
             : {}
         : ai
-          ? cpuInput(f, fighters[1 - i], dt, difficulty)
-          : humanInputs[i].read(keys, dt);
+          ? cpuInput(f, fighters[1 - i], dt, i === 0 ? activeConfig.p1Difficulty : activeConfig.p2Difficulty, world.aiRandom[i])
+          : humanInputs[i].read(i === 0
+              ? new Set([...keys, ...mobileControls.sample()]) : keys, dt);
+  });
+  frame.forEach(({ fighter: f, input, opponent }) => {
     const previousAttack = f.attack,
       previousDodge = f.dodgeTimer;
-    f.step(input, fighters[1 - i], dt);
+    f.step(input, opponent, dt);
     if (f.attack && f.attack !== previousAttack) {
       audio.playMove(f.attack.key, f.attack.move);
       if (f.attack.key === "super") startedSupers.push(f);
@@ -370,24 +371,8 @@ function tick(dt) {
     audio.superStart();
     return;
   }
-  const [a, b] = fighters,
-    min = (a.def.width + b.def.width) / 2;
-  if (
-    a.ground &&
-    b.ground &&
-    !a.dodgeTimer &&
-    !a.capturedBy &&
-    !a.grabbing &&
-    !b.dodgeTimer &&
-    !b.capturedBy &&
-    !b.grabbing &&
-    Math.abs(a.x - b.x) < min
-  ) {
-    const dir = a.x <= b.x ? 1 : -1,
-      overlap = min - Math.abs(a.x - b.x);
-    a.x = Math.max(38, Math.min(922, a.x - (dir * overlap) / 2));
-    b.x = Math.max(38, Math.min(922, b.x + (dir * overlap) / 2));
-  }
+  const [a, b] = fighters;
+  separateFighters(fighters);
   for (const event of world.step(fighters, dt)) {
     hitstop = event.blocked
       ? 0.025
@@ -805,6 +790,7 @@ export function snapshot() {
       captured: !!f.capturedBy,
       grabbing: !!f.grabbing,
       walkDistance: f.walkDistance,
+      ai: aiSnapshot(f),
     })),
   };
 }

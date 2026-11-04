@@ -44,10 +44,13 @@ npm run dev
 
 尚未实现方向搓招、通用投技、3v3、网络联机和完整角色动画编辑器。游戏已有蹲防、角色专属抓取技能及高低段防御判定。手机触屏控制 1P；本地双人需要键盘。
 
+手机采用横屏界面：首次点击开始时尝试全屏并锁定横屏，不支持原生全屏的浏览器使用页面旋转。左下八方向摇杆，右下六键（上排技能一／技能二／大招，下排拳／脚／闪避），支持多指与方向组合。操作层悬浮在画面上，观战时隐藏；电脑键位不变。手机浏览器回归可运行 `node tools/browser-mobile-smoke.mjs`，使用 `GAME_URL` 指定本地服务地址。
+
 ## 设计与规则文档
 
 - [设计总规范](docs/DESIGN-SPEC.md)：玩法目标、通用机制、数值边界、角色制作流程与验收标准；新增机制和角色以此为总约定。
 - [战斗规则与玩法总览](docs/BATTLE-RULES.md)：当前实际操作、招式数值、能量、状态、打断和角色技能。
+- [三级 AI 规范](docs/AI-SPEC.md) 与 [实测对比](docs/AI-COMPARISON.md)：已接入延迟感知、战术评分和有限记忆；观战双方可单独选择难度，人机只设置对手难度。复测运行 `npm run ai:benchmark -- --seeds 1000 --publish-report`。
 - [角色设计与接入规范](docs/CHARACTER-SPEC.md)：角色槽位、输入约定、配置字段和角色专属技能要求。
 - [角色设计稿模板](docs/templates/CHARACTER-BRIEF.md) 与 [角色配置模板](docs/templates/character.template.json)：新角色从设计到数据接入的起点。
 - [地图设计与接入规范](docs/MAP-SPEC.md) 与 [地图设计稿模板](docs/templates/MAP-BRIEF.md)：新地图的主题、边界、资源、BGM、配置和验收标准。

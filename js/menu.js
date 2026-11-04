@@ -1,4 +1,5 @@
 import { maps } from "./maps.js";
+import { AI_PROFILES } from "./ai-profiles.js";
 import { assetUrl } from "./asset-url.js";
 import {
   DEFAULT_RULES,
@@ -47,6 +48,8 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       wins: $("wins-required").value,
       healthMultiplier: $("health-multiplier").value,
       difficulty: $("difficulty").value,
+      p1Difficulty: $("p1-difficulty").value,
+      p2Difficulty: $("difficulty").value,
       stage: rules.stage,
     });
   }
@@ -54,12 +57,21 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     $("round-time").value = $("mode").value === "training" ? 0 : rules.time;
     $("wins-required").value = rules.wins;
     $("health-multiplier").value = rules.healthMultiplier;
-    $("difficulty").value = rules.difficulty;
+    $("difficulty").value = rules.p2Difficulty;
+    $("p1-difficulty").value = rules.p1Difficulty;
     const training = $("mode").value === "training";
     $("training-settings").hidden = !training;
     $("round-time").disabled = training;
     $("wins-required").disabled = training;
     $("difficulty").disabled = ["local", "training"].includes($("mode").value);
+    $("p1-ai-field").hidden = $("mode").value !== "watch";
+    $("p1-difficulty").disabled = $("mode").value !== "watch";
+    $("p2-ai-field").hidden = ["local", "training"].includes($("mode").value);
+    $("ai-description").hidden = $("p2-ai-field").hidden;
+    $("difficulty-label").textContent = $("mode").value === "watch" ? "2P AI 难度" : "对手 AI 难度";
+    $("ai-description").textContent = $("mode").value === "watch"
+      ? '1P ' + AI_PROFILES[rules.p1Difficulty].name + ' / 2P ' + AI_PROFILES[rules.p2Difficulty].name + '。难度影响判断与打法，不改变伤害、血量和能量规则。'
+      : AI_PROFILES[rules.p2Difficulty].description + ' 伤害、血量和能量规则相同。';
     const map = maps.find((map) => map.id === rules.stage);
     $("map-name").textContent = map.name;
     $("map-subtitle").textContent = map.subtitle;
@@ -157,6 +169,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     "wins-required",
     "health-multiplier",
     "difficulty",
+    "p1-difficulty",
   ])
     $(id).onchange = () => {
       readRules();

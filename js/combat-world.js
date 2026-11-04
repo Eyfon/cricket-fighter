@@ -1,8 +1,18 @@
 import { FLOOR, WIDTH, intersects, applyDamage, resolveHit } from "./combat.js";
+import { newBattleSeed, seededRandom } from "./battle-frame.js";
 export class CombatWorld {
-  constructor() {
+  constructor(seed = newBattleSeed()) {
     this.projectiles = [];
     this.grabs = [];
+    this.setSeed(seed);
+  }
+  setSeed(seed) {
+    if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff)
+      throw new RangeError("Battle seed must be an unsigned 32-bit integer");
+    this.seed = seed;
+    this.tieRandom = seededRandom(seed);
+    // Separate player streams keep AI draws from consuming collision tie rolls.
+    this.aiRandom = [seededRandom(seed ^ 0x9e3779b9), seededRandom(seed ^ 0x243f6a88)];
   }
   reset() {
     for (const g of this.grabs) this.release(g, false);
@@ -109,29 +119,36 @@ export class CombatWorld {
         }
       }
     }
-    // Sample both contacts, then resolve a single deterministic first hit.
-    // The more advanced active frame wins; ties favor the first fighter. Once
-    // that hit gives the other fighter stun or clears its attack, the stale
-    // reciprocal contact is discarded instead of producing a trade animation.
+    // Sample both contacts before applying damage. Earlier active attacks win;
+    // exact ties use one seeded 50/50 roll, never the player's array position.
+    // An interrupted reciprocal attack is still discarded to prevent normal trades.
     const contacts = fighters.map((f, i) =>
       f.active() &&
       !f.capturedBy &&
       !f.grabbing &&
+      fighters[1 - i].hp > 0 &&
+      fighters[1 - i].stun <= 0 &&
+      fighters[1 - i].dodgeTimer <= 0.06 &&
       intersects(f.hitbox(), fighters[1 - i].hurtbox())
         ? {
             f,
             target: fighters[1 - i],
             attack: f.attack,
             targetAttack: fighters[1 - i].attack,
-            index: i,
           }
         : null,
     )
       .filter(Boolean)
       .sort((a, b) => {
         const progress = (c) => c.attack.frame - c.attack.move.startup;
-        return progress(b) - progress(a) || a.index - b.index;
+        return progress(b) - progress(a);
       });
+    if (contacts.length === 2) {
+      const [a, b] = contacts;
+      const progress = (c) => c.attack.frame - c.attack.move.startup;
+      if (progress(a) === progress(b) && this.tieRandom() < 0.5)
+        contacts.reverse();
+    }
     for (const c of contacts) {
       if (
         c.f.capturedBy ||

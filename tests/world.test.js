@@ -354,9 +354,11 @@ test("simultaneous normal attacks resolve as one first hit, not a trade", () => 
   b.attack.frame = b.attack.move.startup;
   const events = world.step([a, b], dt);
   assert.equal(events.length, 1);
-  assert.equal(a.hp, 100);
-  assert.ok(b.hp < 100);
-  assert.equal(b.attack, null);
+  const winner = a.hp === 100 ? a : b;
+  const loser = winner === a ? b : a;
+  assert.equal(winner.hp, 100);
+  assert.ok(loser.hp < 100);
+  assert.equal(loser.attack, null);
 });
 test("walk animation uses distinct foot frames and attacks switch from charge to release", () => {
   const a = new Fighter(roster[0], 400, 1);

@@ -13,9 +13,15 @@
     />
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./style/arena.css" />
+    <link rel="stylesheet" href="./style/mobile-arena.css" />
   </head>
   <body data-screen="home">
     <main class="app">
+      <nav class="mobile-tools" aria-label="手机画面控制">
+        <button id="mobile-fullscreen" aria-label="横屏全屏" title="横屏全屏">⛶</button>
+        <button id="mobile-pause" aria-label="暂停" title="暂停" hidden>Ⅱ</button>
+      </nav>
+      <p id="mobile-notice" role="status" hidden></p>
       <header class="app-header">
         <button class="brand" id="home-link" aria-label="返回主界面">
           蛐蛐<span>格斗</span><small>FIGHT NIGHT</small>
@@ -151,13 +157,21 @@
               </select></label
             >
             <p class="field-note">统一作用于双方。战斗中仅显示血条。</p>
-            <label
-              >AI 难度<select id="difficulty">
-                <option value="easy">休闲</option>
-                <option value="normal" selected>标准</option>
+            <label id="p1-ai-field"
+              >1P AI 难度<select id="p1-difficulty">
+                <option value="easy">简单</option>
+                <option value="normal" selected>正常</option>
                 <option value="hard">困难</option>
               </select></label
             >
+            <label id="p2-ai-field"
+              ><span id="difficulty-label">2P AI 难度</span><select id="difficulty">
+                <option value="easy">简单</option>
+                <option value="normal" selected>正常</option>
+                <option value="hard">困难</option>
+              </select></label
+            >
+            <p id="ai-description" class="field-note">难度影响判断与打法，伤害、血量和能量规则相同。</p>
             <div id="training-settings" hidden>
               <label
                 >练习对手<select id="dummy">
@@ -219,18 +233,19 @@
           <span id="status" role="status"></span
           ><button id="pause" tabindex="-1">暂停 / Esc</button>
         </nav>
-        <section class="touch" aria-label="手机控制">
-          <div>
-            <button data-key="a">←</button><button data-key="w">↑</button
-            ><button data-key="d">→</button>
+        <section class="touch" aria-label="1P 手机控制" hidden>
+          <div id="touch-joystick" role="group" aria-label="八方向摇杆：上跳，下防御，下后蹲防">
+            <span class="stick-direction up">▲</span><span class="stick-direction right">▶</span>
+            <span class="stick-direction down">▼</span><span class="stick-direction left">◀</span>
+            <span class="stick-knob"></span>
           </div>
-          <div>
-            <button data-key="s">↓</button
-            ><button data-key="j">拳 J</button><button data-key="k">脚 K</button
-            ><button data-key="l">闪避 L</button
-            ><button data-key="u">技能1 U</button
-            ><button data-key="i">技能2 I</button
-            ><button data-key="o">大招 O</button>
+          <div class="touch-actions" role="group" aria-label="六个攻击与闪避按键">
+            <button data-action="skill" class="touch-skill" aria-label="技能一，消耗1点能量">技能一<small>1 点</small></button>
+            <button data-action="skill2" class="touch-skill" aria-label="技能二，消耗1点能量">技能二<small>1 点</small></button>
+            <button data-action="super" class="touch-super" aria-label="大招，消耗3点能量">大招<small>3 点</small></button>
+            <button data-action="punch">拳</button>
+            <button data-action="kick">脚</button>
+            <button data-action="dodge">闪避</button>
           </div>
         </section>
         <details class="battle-controls">
@@ -321,6 +336,7 @@
               1P：WASD 方向；J 拳，K 脚，L 闪避，U / I 技能，O 大招。
             </p>
             <p>2P：方向键；小键盘 1 拳、2 脚、3 闪避、4 / 5 技能、6 大招。</p>
+            <p>手机：左摇杆控制八方向，右侧六键操作 1P；上推跳跃，下推防御，下后蹲防，前或下加拳脚触发方向招式。手机横屏布局，点击开始尝试进入全屏；右上角可切换全屏，战斗中可触屏暂停。本地双人的 2P 使用外接键盘。</p>
             <p>
               前或下加拳脚触发方向攻击；后方向防御，下后蹲防。单按闪避原地闪避，方向加闪避定向翻滚。
             </p>
@@ -345,8 +361,8 @@
       </footer>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/animation-data.js":"./js/animation-data.js?v=9bf2c737d6e2","./js/animation.js":"./js/animation.js?v=9bf2c737d6e2","./js/arena.js":"./js/arena.js?v=9bf2c737d6e2","./js/asset-url.js":"./js/asset-url.js?v=9bf2c737d6e2","./js/audio.js":"./js/audio.js?v=9bf2c737d6e2","./js/character-schema.js":"./js/character-schema.js?v=9bf2c737d6e2","./js/combat-world.js":"./js/combat-world.js?v=9bf2c737d6e2","./js/combat.js":"./js/combat.js?v=9bf2c737d6e2","./js/energy-effects.js":"./js/energy-effects.js?v=9bf2c737d6e2","./js/input.js":"./js/input.js?v=9bf2c737d6e2","./js/language.js":"./js/language.js?v=9bf2c737d6e2","./js/maps.js":"./js/maps.js?v=9bf2c737d6e2","./js/menu.js":"./js/menu.js?v=9bf2c737d6e2","./js/presentation.js":"./js/presentation.js?v=9bf2c737d6e2","./js/roster.js":"./js/roster.js?v=9bf2c737d6e2","./js/round-ending.js":"./js/round-ending.js?v=9bf2c737d6e2","./js/settings.js":"./js/settings.js?v=9bf2c737d6e2","./js/stages.js":"./js/stages.js?v=9bf2c737d6e2","./js/super-flash.js":"./js/super-flash.js?v=9bf2c737d6e2"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=37b9560a7b8e","./js/ai.js":"./js/ai.js?v=37b9560a7b8e","./js/animation-data.js":"./js/animation-data.js?v=37b9560a7b8e","./js/animation.js":"./js/animation.js?v=37b9560a7b8e","./js/arena.js":"./js/arena.js?v=37b9560a7b8e","./js/asset-url.js":"./js/asset-url.js?v=37b9560a7b8e","./js/audio.js":"./js/audio.js?v=37b9560a7b8e","./js/battle-frame.js":"./js/battle-frame.js?v=37b9560a7b8e","./js/character-schema.js":"./js/character-schema.js?v=37b9560a7b8e","./js/combat-world.js":"./js/combat-world.js?v=37b9560a7b8e","./js/combat.js":"./js/combat.js?v=37b9560a7b8e","./js/energy-effects.js":"./js/energy-effects.js?v=37b9560a7b8e","./js/input.js":"./js/input.js?v=37b9560a7b8e","./js/language.js":"./js/language.js?v=37b9560a7b8e","./js/maps.js":"./js/maps.js?v=37b9560a7b8e","./js/menu.js":"./js/menu.js?v=37b9560a7b8e","./js/mobile-controls.js":"./js/mobile-controls.js?v=37b9560a7b8e","./js/presentation.js":"./js/presentation.js?v=37b9560a7b8e","./js/roster.js":"./js/roster.js?v=37b9560a7b8e","./js/round-ending.js":"./js/round-ending.js?v=37b9560a7b8e","./js/settings.js":"./js/settings.js?v=37b9560a7b8e","./js/stages.js":"./js/stages.js?v=37b9560a7b8e","./js/super-flash.js":"./js/super-flash.js?v=37b9560a7b8e"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=9bf2c737d6e2"></script>
+    <script type="module" src="./js/arena.js?v=37b9560a7b8e"></script>
   </body>
 </html>

@@ -1,3 +1,4 @@
+import { decideCpuInput } from './ai.js';
 export const DEFAULT_CHIP_RATIO = 0.25;
 export const KNOCKDOWN_DURATION = 0.72;
 const ATTACK_KEYS = [
@@ -66,6 +67,9 @@ export class Fighter {
       comboTime: 0,
       aiTime: 0,
       aiInput: {},
+      aiBrain: null,
+      aiProjectiles: [],
+      projectileThreat: false,
       state: "idle",
       animTime: 0,
     });
@@ -533,89 +537,8 @@ export function defenseInput(self, other, crouch = false) {
   const back = other.x >= self.x ? -1 : 1;
   return {guard: true, down: crouch, left: crouch && back === -1, right: crouch && back === 1};
 }
-export function cpuInput(self, other, dt, difficulty = "normal") {
-  self.aiTime -= dt;
-  if (self.aiTime > 0)
-    return {
-      left: self.aiInput.left,
-      right: self.aiInput.right,
-      guard: self.aiInput.guard,
-      down: self.aiInput.down,
-    };
-  self.aiTime = { easy: 0.27, normal: 0.16, hard: 0.09 }[difficulty] || 0.16;
-  const dist = Math.abs(other.x - self.x),
-    dir = other.x > self.x ? 1 : -1,
-    desired = self.def.ai?.preferredRange || 95,
-    input = {};
-  if (dist > desired) {
-    input.left = dir < 0;
-    input.right = dir > 0;
-  }
-  if (
-    ((other.attack && dist < 155) || self.projectileThreat) &&
-    Math.random() < 0.65
-  ) {
-    if (self.dodgeCooldown <= 0 && Math.random() < 0.3) input.dodge = true;
-    else input.guard = true;
-  }
-  if (self.def.ai.retreatBelow && dist < self.def.ai.retreatBelow) {
-    input.left = dir > 0;
-    input.right = dir < 0;
-  }
-  if (input.guard)
-    Object.assign(input, defenseInput(self, other,
-      !!other.attack?.move.low || (dist < 155 && Math.random() < 0.25)));
-  if (dist > 180 && Math.random() < 0.12) input.jump = true;
-  const options = Object.entries(self.def.moves).filter(
-    ([key, move]) =>
-      dist < move.range &&
-      (!move.minRange || dist >= move.minRange) &&
-      (move.effect !== "grab" || other.ground) &&
-      self.canUseMove(key) &&
-      !(
-        key === "super" &&
-        (other.dodgeTimer > 0 ||
-          self.projectileThreat ||
-          (dist < 180 &&
-            other.attack &&
-            other.attack.frame <
-              other.attack.move.startup + other.attack.move.active))
-      ) &&
-      !(
-        (key === "skill" || key === "skill2") &&
-        self.energyPoints < 3 &&
-        self.hp > self.maxHp * 0.35 &&
-        self.def.ai.saveForSuper !== false
-      ),
-  );
-  if (options.length && !input.guard && !input.dodge && Math.random() > 0.18) {
-    const superMove = options.find(([key]) => key === "super");
-    let pick = superMove;
-    if (!pick) {
-      const weighted = options.map((entry) => {
-        const role = entry[1].ai?.role;
-        let weight = entry[1].ai?.weight || 1;
-        if (role === "antiAir") weight *= other.ground ? 0.2 : 5;
-        if (role === "approach")
-          weight *= dist > self.def.ai.preferredRange ? 3 : 0.4;
-        if (role === "poke") weight *= other.ground ? 2 : 0.5;
-        if (role === "ranged") weight *= dist > 180 ? 4 : 0.3;
-        if (role === "grapple") weight *= other.ground && dist < 150 ? 4 : 0.15;
-        return { entry, weight };
-      });
-      let roll =
-        Math.random() * weighted.reduce((sum, item) => sum + item.weight, 0);
-      pick = weighted[weighted.length - 1].entry;
-      for (const item of weighted) {
-        roll -= item.weight;
-        if (roll <= 0) {
-          pick = item.entry;
-          break;
-        }
-      }
-    }
-    input[pick[0]] = true;
-  }
+export function cpuInput(self, other, dt, difficulty = "normal", random = Math.random) {
+  const input = decideCpuInput(self, other, dt, difficulty, random);
   self.aiInput = input;
   return input;
 }

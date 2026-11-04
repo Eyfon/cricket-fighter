@@ -367,27 +367,27 @@ try {
   await togglePause();
   await click("battle-return");
   await click("home-link");
-  await page.setViewportSize({ width: 390, height: 844 });
-  await advance(1);
-  await page.screenshot({ path: "artifacts/mobile-menu.png", fullPage: true });
-  await launch();
-  assert.equal(await page.locator(".touch").isVisible(), true);
-  await page.evaluate(() =>
-    document.querySelector(".touch").scrollIntoView({ block: "center" }),
-  );
   const cdp = await context.newCDPSession(page);
   await cdp.send("Emulation.setTouchEmulationEnabled", {
     enabled: true,
     maxTouchPoints: 2,
   });
-  const points = await page.evaluate(() =>
-    ["s", "j"].map((key, id) => {
-      const r = document
-        .querySelector(`[data-key="${key}"]`)
-        .getBoundingClientRect();
-      return { x: r.x + r.width / 2, y: r.y + r.height / 2, id };
-    }),
-  );
+  await page.setViewportSize({ width: 390, height: 844 });
+  await advance(1);
+  await page.screenshot({ path: "artifacts/mobile-menu.png", fullPage: true });
+  await launch();
+  assert.equal(await page.locator(".touch").isVisible(), true);
+  const points = await page.evaluate(() => {
+    const s = document.getElementById("touch-joystick").getBoundingClientRect();
+    const b = document.querySelector('[data-action="punch"]').getBoundingClientRect();
+    const radius = Math.min(s.width, s.height) / 2;
+    const rotated = document.body.classList.contains("mobile-portrait");
+    return [
+      { id: 1, x: s.x + s.width / 2 - (rotated ? radius * .7 : 0),
+        y: s.y + s.height / 2 + (rotated ? 0 : radius * .7) },
+      { id: 2, x: b.x + b.width / 2, y: b.y + b.height / 2 },
+    ];
+  });
   await cdp.send("Input.dispatchTouchEvent", {
     type: "touchStart",
     touchPoints: points,
@@ -398,6 +398,7 @@ try {
     type: "touchEnd",
     touchPoints: [],
   });
+  await cdp.send("Emulation.setTouchEmulationEnabled", { enabled: false });
   await cdp.detach();
   assert.equal(
     await page.evaluate(

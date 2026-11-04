@@ -3,6 +3,8 @@ export const DEFAULT_RULES = {
   wins: 2,
   healthMultiplier: 1,
   difficulty: "normal",
+  p1Difficulty: "normal",
+  p2Difficulty: "normal",
   stage: "sunset",
 };
 export const DEFAULT_OPTIONS = {
@@ -16,11 +18,14 @@ const choose = (value, values, fallback) =>
   values.includes(value) ? value : fallback;
 export function normalizeRules(value = {}) {
   value = value && typeof value === "object" ? value : {};
+  const difficulty = choose(value.difficulty, ["easy", "normal", "hard"], "normal");
   return {
     time: choose(Number(value.time), [0, 30, 60, 90], 60),
     wins: choose(Number(value.wins), [1, 2, 3], 2),
     healthMultiplier: choose(Number(value.healthMultiplier), [1, 2, 3, 5], 1),
-    difficulty: choose(value.difficulty, ["easy", "normal", "hard"], "normal"),
+    difficulty,
+    p1Difficulty: choose(value.p1Difficulty, ["easy", "normal", "hard"], difficulty),
+    p2Difficulty: choose(value.p2Difficulty, ["easy", "normal", "hard"], difficulty),
     stage: choose(value.stage, ["sunset", "midnight", "training"], "sunset"),
   };
 }
