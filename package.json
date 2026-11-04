@@ -1,0 +1,11 @@
+{
+  "name": "cricket-fighter",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/version-modules.js && python tools/dev-server.py",
+    "test": "node --test --experimental-test-isolation=none tests/*.test.js",
+    "build": "node tools/build.js"
+  }
+}

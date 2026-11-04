@@ -1,0 +1,438 @@
+{
+  "character": "chifeng",
+  "actions": {
+    "idle": {
+      "src": "./chifeng/common/idle.png",
+      "frames": [
+        [
+          8,
+          8,
+          256,
+          285
+        ]
+      ]
+    },
+    "guard": {
+      "src": "./chifeng/common/guard.png",
+      "frames": [
+        [
+          8,
+          8,
+          219,
+          282
+        ]
+      ]
+    },
+    "punch": {
+      "src": "./chifeng/common/punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          289,
+          282
+        ]
+      ]
+    },
+    "kick": {
+      "src": "./chifeng/common/kick.png",
+      "frames": [
+        [
+          8,
+          8,
+          298,
+          291
+        ]
+      ]
+    },
+    "special-punch": {
+      "src": "./chifeng/common/special-punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          318,
+          260
+        ]
+      ]
+    },
+    "hurt": {
+      "src": "./chifeng/common/hurt.png",
+      "frames": [
+        [
+          8,
+          8,
+          231,
+          268
+        ]
+      ]
+    },
+    "jump": {
+      "src": "./chifeng/common/jump.png",
+      "frames": [
+        [
+          8,
+          8,
+          200,
+          248
+        ]
+      ]
+    },
+    "ko": {
+      "src": "./chifeng/common/ko.png",
+      "frames": [
+        [
+          8,
+          8,
+          323,
+          93
+        ]
+      ]
+    },
+    "walk": {
+      "src": "./chifeng/common/walk.png",
+      "frames": [
+        [
+          8,
+          8,
+          247,
+          305
+        ],
+        [
+          263,
+          8,
+          200,
+          306
+        ],
+        [
+          471,
+          8,
+          265,
+          298
+        ],
+        [
+          744,
+          8,
+          173,
+          307
+        ]
+      ]
+    },
+    "skill1": {
+      "src": "./chifeng/skill1/atlas.png",
+      "frames": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          512,
+          512
+        ],
+        [
+          1024,
+          0,
+          512,
+          512
+        ],
+        [
+          1536,
+          0,
+          512,
+          512
+        ],
+        [
+          2048,
+          0,
+          512,
+          512
+        ],
+        [
+          2560,
+          0,
+          512,
+          512
+        ]
+      ],
+      "frameWidth": 512,
+      "frameHeight": 512
+    },
+    "super": {
+      "src": "./chifeng/super/atlas.png",
+      "frames": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          512,
+          512
+        ],
+        [
+          1024,
+          0,
+          512,
+          512
+        ],
+        [
+          1536,
+          0,
+          512,
+          512
+        ],
+        [
+          2048,
+          0,
+          512,
+          512
+        ],
+        [
+          2560,
+          0,
+          512,
+          512
+        ]
+      ],
+      "frameWidth": 512,
+      "frameHeight": 512
+    },
+    "skill2": {
+      "src": "./chifeng/skill2/atlas.png",
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "frameWidth": 256,
+      "frameHeight": 256
+    },
+    "knockdown": {
+      "src": "./chifeng/common/knockdown.png",
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "frameWidth": 256,
+      "frameHeight": 256
+    },
+    "forward-punch": {
+      "src": "./chifeng/common/forward-punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          272,
+          280
+        ],
+        [
+          288,
+          8,
+          272,
+          280
+        ],
+        [
+          568,
+          8,
+          304,
+          280
+        ],
+        [
+          880,
+          8,
+          238,
+          280
+        ]
+      ]
+    },
+    "forward-kick": {
+      "src": "./chifeng/common/forward-kick.png",
+      "frames": [
+        [
+          8,
+          8,
+          272,
+          280
+        ],
+        [
+          288,
+          8,
+          272,
+          280
+        ],
+        [
+          568,
+          8,
+          304,
+          280
+        ],
+        [
+          880,
+          8,
+          238,
+          280
+        ]
+      ]
+    },
+    "down-punch": {
+      "src": "./chifeng/common/down-punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          272,
+          280
+        ],
+        [
+          288,
+          8,
+          272,
+          280
+        ],
+        [
+          568,
+          8,
+          304,
+          280
+        ],
+        [
+          880,
+          8,
+          238,
+          280
+        ]
+      ]
+    },
+    "down-kick": {
+      "src": "./chifeng/common/down-kick.png",
+      "frames": [
+        [
+          8,
+          8,
+          380,
+          280
+        ],
+        [
+          396,
+          8,
+          510,
+          280
+        ],
+        [
+          914,
+          8,
+          510,
+          280
+        ],
+        [
+          1432,
+          8,
+          344,
+          280
+        ]
+      ]
+    },
+    "crouch-guard": {
+      "src": "./chifeng/common/crouch-guard.png",
+      "frames": [
+        [
+          8,
+          8,
+          627,
+          627
+        ],
+        [
+          643,
+          8,
+          627,
+          627
+        ]
+      ]
+    },
+    "dodge": {
+      "src": "./chifeng/common/dodge.png",
+      "frames": [
+        [
+          8,
+          8,
+          219,
+          282
+        ]
+      ]
+    }
+  }
+}

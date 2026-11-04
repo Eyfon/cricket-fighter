@@ -1,0 +1,438 @@
+{
+  "character": "canglan",
+  "actions": {
+    "idle": {
+      "src": "./canglan/common/idle.png",
+      "frames": [
+        [
+          8,
+          8,
+          225,
+          286
+        ]
+      ]
+    },
+    "guard": {
+      "src": "./canglan/common/guard.png",
+      "frames": [
+        [
+          8,
+          8,
+          216,
+          280
+        ]
+      ]
+    },
+    "punch": {
+      "src": "./canglan/common/punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          290,
+          277
+        ]
+      ]
+    },
+    "kick": {
+      "src": "./canglan/common/kick.png",
+      "frames": [
+        [
+          8,
+          8,
+          297,
+          291
+        ]
+      ]
+    },
+    "special-punch": {
+      "src": "./canglan/common/special-punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          228,
+          324
+        ]
+      ]
+    },
+    "hurt": {
+      "src": "./canglan/common/hurt.png",
+      "frames": [
+        [
+          8,
+          8,
+          251,
+          251
+        ]
+      ]
+    },
+    "jump": {
+      "src": "./canglan/common/jump.png",
+      "frames": [
+        [
+          8,
+          8,
+          189,
+          247
+        ]
+      ]
+    },
+    "ko": {
+      "src": "./canglan/common/ko.png",
+      "frames": [
+        [
+          8,
+          8,
+          317,
+          88
+        ]
+      ]
+    },
+    "walk": {
+      "src": "./canglan/common/walk.png",
+      "frames": [
+        [
+          8,
+          8,
+          229,
+          293
+        ],
+        [
+          245,
+          8,
+          172,
+          292
+        ],
+        [
+          425,
+          8,
+          255,
+          292
+        ],
+        [
+          688,
+          8,
+          163,
+          292
+        ]
+      ]
+    },
+    "skill1": {
+      "src": "./canglan/skill1/atlas.png",
+      "frames": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          512,
+          512
+        ],
+        [
+          1024,
+          0,
+          512,
+          512
+        ],
+        [
+          1536,
+          0,
+          512,
+          512
+        ],
+        [
+          2048,
+          0,
+          512,
+          512
+        ],
+        [
+          2560,
+          0,
+          512,
+          512
+        ]
+      ],
+      "frameWidth": 512,
+      "frameHeight": 512
+    },
+    "super": {
+      "src": "./canglan/super/atlas.png",
+      "frames": [
+        [
+          0,
+          0,
+          512,
+          512
+        ],
+        [
+          512,
+          0,
+          512,
+          512
+        ],
+        [
+          1024,
+          0,
+          512,
+          512
+        ],
+        [
+          1536,
+          0,
+          512,
+          512
+        ],
+        [
+          2048,
+          0,
+          512,
+          512
+        ],
+        [
+          2560,
+          0,
+          512,
+          512
+        ]
+      ],
+      "frameWidth": 512,
+      "frameHeight": 512
+    },
+    "skill2": {
+      "src": "./canglan/skill2/atlas.png",
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "frameWidth": 256,
+      "frameHeight": 256
+    },
+    "knockdown": {
+      "src": "./canglan/common/knockdown.png",
+      "frames": [
+        [
+          0,
+          0,
+          256,
+          256
+        ],
+        [
+          256,
+          0,
+          256,
+          256
+        ],
+        [
+          512,
+          0,
+          256,
+          256
+        ],
+        [
+          768,
+          0,
+          256,
+          256
+        ],
+        [
+          1024,
+          0,
+          256,
+          256
+        ],
+        [
+          1280,
+          0,
+          256,
+          256
+        ]
+      ],
+      "frameWidth": 256,
+      "frameHeight": 256
+    },
+    "forward-punch": {
+      "src": "./canglan/common/forward-punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          272,
+          280
+        ],
+        [
+          288,
+          8,
+          272,
+          280
+        ],
+        [
+          568,
+          8,
+          304,
+          280
+        ],
+        [
+          880,
+          8,
+          238,
+          280
+        ]
+      ]
+    },
+    "forward-kick": {
+      "src": "./canglan/common/forward-kick.png",
+      "frames": [
+        [
+          8,
+          8,
+          272,
+          280
+        ],
+        [
+          288,
+          8,
+          272,
+          280
+        ],
+        [
+          568,
+          8,
+          304,
+          280
+        ],
+        [
+          880,
+          8,
+          238,
+          280
+        ]
+      ]
+    },
+    "down-punch": {
+      "src": "./canglan/common/down-punch.png",
+      "frames": [
+        [
+          8,
+          8,
+          272,
+          280
+        ],
+        [
+          288,
+          8,
+          272,
+          280
+        ],
+        [
+          568,
+          8,
+          304,
+          280
+        ],
+        [
+          880,
+          8,
+          238,
+          280
+        ]
+      ]
+    },
+    "down-kick": {
+      "src": "./canglan/common/down-kick.png",
+      "frames": [
+        [
+          8,
+          8,
+          380,
+          280
+        ],
+        [
+          396,
+          8,
+          510,
+          280
+        ],
+        [
+          914,
+          8,
+          510,
+          280
+        ],
+        [
+          1432,
+          8,
+          344,
+          280
+        ]
+      ]
+    },
+    "crouch-guard": {
+      "src": "./canglan/common/crouch-guard.png",
+      "frames": [
+        [
+          8,
+          8,
+          627,
+          627
+        ],
+        [
+          643,
+          8,
+          627,
+          627
+        ]
+      ]
+    },
+    "dodge": {
+      "src": "./canglan/common/dodge.png",
+      "frames": [
+        [
+          8,
+          8,
+          216,
+          280
+        ]
+      ]
+    }
+  }
+}
