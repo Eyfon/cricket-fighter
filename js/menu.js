@@ -172,53 +172,68 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       stage: rules.stage,
     });
   }
-  // Retain the existing select values as the configuration source, but expose
-  // bounded buttons instead of opening native option sheets during setup.
+  // Keep configuration inputs as the data source; expose accessible arrow buttons.
   const ruleSteppers = [];
-  for (const select of document.querySelectorAll(".setup-screen select")) {
-    const label = select.closest("label");
+  for (const source of document.querySelectorAll(
+    '.setup-screen select, .options-grid select, .options-grid input',
+  )) {
+    const label = source.closest("label");
     const field = document.createElement("div");
     field.className = "rule-field";
     if (label.id) field.id = label.id;
     const title = document.createElement("span");
     title.className = "rule-label";
-    title.id = select.id + "-label";
-    for (const node of [...label.childNodes]) if (node !== select) title.append(node);
+    title.id = source.id + "-label";
+    for (const node of [...label.childNodes]) if (node !== source) title.append(node);
     const stepper = document.createElement("div");
     stepper.className = "rule-stepper";
     stepper.setAttribute("role", "group");
     stepper.setAttribute("aria-labelledby", title.id);
     const output = document.createElement("output");
-    output.id = select.id + "-value";
+    output.id = source.id + "-value";
     output.setAttribute("aria-live", "polite");
+    const isSelect = source.tagName === "SELECT";
+    const isToggle = source.type === "checkbox";
+    const bounds = () => isSelect ? [0, source.options.length - 1]
+      : isToggle ? [0, 1] : [Number(source.min), Number(source.max)];
+    const position = () => isSelect ? source.selectedIndex
+      : isToggle ? Number(source.checked) : Number(source.value);
     const buttons = [-1, 1].map((delta) => {
       const button = document.createElement("button");
       button.type = "button";
-      button.textContent = delta < 0 ? "−" : "+";
-      button.dataset.rule = select.id;
+      button.textContent = delta < 0 ? "<" : ">";
+      button.dataset.rule = source.id;
       button.dataset.ruleStep = delta;
+      button.setAttribute("aria-label", `${delta < 0 ? "上一项" : "下一项"}${title.textContent.trim()}`);
       button.onclick = () => {
         if (button.disabled) return;
-        select.selectedIndex += delta;
-        select.dispatchEvent(new Event("change", { bubbles: true }));
+        const [min, max] = bounds();
+        const step = isSelect || isToggle ? 1 : Number(source.step);
+        const next = Math.max(min, Math.min(max, Number((position() + delta * step).toFixed(4))));
+        if (isSelect) source.selectedIndex = next;
+        else if (isToggle) source.checked = Boolean(next);
+        else source.value = next;
+        source.dispatchEvent(new Event("input", { bubbles: true }));
+        source.dispatchEvent(new Event("change", { bubbles: true }));
         syncRuleSteppers();
       };
       return button;
     });
     stepper.append(buttons[0], output, buttons[1]);
-    select.hidden = true;
-    field.append(title, select, stepper);
+    source.hidden = true;
+    field.append(title, source, stepper);
     label.replaceWith(field);
-    ruleSteppers.push({ select, title, output, buttons });
-    select.addEventListener("change", syncRuleSteppers);
+    ruleSteppers.push({ source, output, buttons, bounds, position, isSelect, isToggle });
+    source.addEventListener("input", syncRuleSteppers);
+    source.addEventListener("change", syncRuleSteppers);
   }
   function syncRuleSteppers() {
-    for (const { select, title, output, buttons } of ruleSteppers) {
-      output.value = select.selectedOptions[0]?.textContent.replace(" · 默认", "") || "";
-      for (const [index, button] of buttons.entries()) {
-        button.disabled = select.disabled || (index === 0 ? select.selectedIndex <= 0 : select.selectedIndex >= select.options.length - 1);
-        button.setAttribute("aria-label", `${index === 0 ? "减少" : "增加"}${title.textContent.trim()}`);
-      }
+    for (const { source, output, buttons, bounds, position, isSelect, isToggle } of ruleSteppers) {
+      output.value = isSelect ? source.selectedOptions[0]?.textContent.replace(" · 默认", "").replace("（默认）", "").trim() || ""
+        : isToggle ? (source.checked ? "开启" : "关闭") : `${Math.round(Number(source.value) * 100)}%`;
+      const [min, max] = bounds();
+      buttons[0].disabled = source.disabled || position() <= min;
+      buttons[1].disabled = source.disabled || position() >= max;
     }
   }
   function renderRules() {
@@ -457,6 +472,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     document.body.classList.toggle("no-scanlines", !options.scanlines);
     document.body.dataset.touch = options.touch;
     document.body.dataset.directionControl = options.directionControl;
+    syncRuleSteppers();
     onOptions({ ...options });
   }
   for (const id of ["muted", "volume", "shake", "scanlines", "touch-option", "direction-control"])

@@ -102,6 +102,22 @@ try {
   })()`);
   assert.deepEqual(await nativeActions('[data-mode="cpu"] strong'), { contextmenu: true, selectstart: true, dragstart: true });
   await screenshot("mobile-mode-two-options");
+  // Simulate the delayed resize around fullscreen and orientation changes.
+  // Native fullscreen remains explicitly unsupported in this test.
+  await metrics(844, 390);
+  await run(() => { dispatchEvent(new Event('orientationchange')); document.dispatchEvent(new Event('fullscreenchange')); });
+  await new Promise(r => setTimeout(r, 600));
+  const landscapeCardHeight = await run(() => document.querySelector('.mode-grid').offsetHeight);
+  view = await layout();
+  assert.equal(view.rotated, false);
+  assert.ok(Math.abs(view.app.width - 844) < 1 && Math.abs(view.app.height - 390) < 1);
+  await metrics(390, 844);
+  await run(() => dispatchEvent(new Event('orientationchange')));
+  await new Promise(r => setTimeout(r, 600));
+  view = await layout();
+  assert.equal(view.rotated, true);
+  assert.ok(Math.abs(view.app.width - 390) < 1 && Math.abs(view.app.height - 844) < 1);
+  assert.equal(await run(() => document.querySelector('.mode-grid').offsetHeight), landscapeCardHeight, 'mode cards use logical landscape height in either orientation');
   // Draft alternates through the shared pool, keeps locked picks and permits mirrors.
   await run(() => document.getElementById("training").click());
   assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "p1");

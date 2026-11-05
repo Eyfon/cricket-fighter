@@ -63,6 +63,7 @@ export function createMobileControls({ canInput, onPause }) {
   const state = new PointerKeys(), binding = bindings[0];
   const padDirections = new Map();
   let stickId = null, rotated = false, noticeTimer, fullscreenRequest = null, directionControl;
+  let viewportRefreshTimers = [];
   const mobile = () => coarse.matches && navigator.maxTouchPoints > 0;
   const enabled = () => canInput() && !panel.hidden && body.dataset.touch !== "never";
   // Cancel native long-press actions without cancelling menu taps, scrolling,
@@ -105,6 +106,7 @@ export function createMobileControls({ canInput, onPause }) {
     const h = isMobile ? Math.min(width, height) : height;
     app.style.setProperty("--game-width", `${w}px`);
     app.style.setProperty("--game-height", `${h}px`);
+    app.style.setProperty("--shell-height", `${h}px`);
     app.style.setProperty("--view-width", `${width}px`);
     app.style.setProperty("--view-height", `${height}px`);
     app.style.setProperty("--view-left", `${window.visualViewport?.offsetLeft || 0}px`);
@@ -127,10 +129,15 @@ export function createMobileControls({ canInput, onPause }) {
         }
       } catch { /* CSS rotation still provides the landscape layout. */ }
       try { await screen.orientation?.lock?.("landscape"); } catch { /* Safari / windowed tabs. */ }
-      refresh();
+      refreshAfterViewportChange();
       return !!document.fullscreenElement;
     })();
     try { return await fullscreenRequest; } finally { fullscreenRequest = null; }
+  }
+  function refreshAfterViewportChange() {
+    refresh();
+    for (const timer of viewportRefreshTimers) clearTimeout(timer);
+    viewportRefreshTimers = [80, 240, 520].map((delay) => setTimeout(refresh, delay));
   }
   fullscreen.onclick = async () => {
     if (document.fullscreenElement) {
@@ -214,11 +221,13 @@ export function createMobileControls({ canInput, onPause }) {
     }
     element.addEventListener("contextmenu", (event) => event.preventDefault());
   }
-  window.addEventListener("resize", refresh);
-  window.visualViewport?.addEventListener("resize", refresh);
-  window.visualViewport?.addEventListener("scroll", refresh);
+  window.addEventListener("resize", refreshAfterViewportChange);
+  window.addEventListener("orientationchange", refreshAfterViewportChange);
+  screen.orientation?.addEventListener?.("change", refreshAfterViewportChange);
+  window.visualViewport?.addEventListener("resize", refreshAfterViewportChange);
+  window.visualViewport?.addEventListener("scroll", refreshAfterViewportChange);
   coarse.addEventListener("change", refresh);
-  document.addEventListener("fullscreenchange", () => { clear(); refresh(); });
+  document.addEventListener("fullscreenchange", () => { clear(); refreshAfterViewportChange(); });
   new MutationObserver(refresh).observe(body, {
     attributes: true, attributeFilter: ["data-screen", "data-mode", "data-touch", "data-direction-control"],
   });

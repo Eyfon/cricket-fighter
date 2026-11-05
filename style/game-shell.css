@@ -297,9 +297,11 @@ body:not([data-screen="battle"]) .archive-card h2 { margin: 12px 0; color: #e8ee
 body:not([data-screen="battle"]) .options-grid { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 20px; }
 body:not([data-screen="battle"]) .options-grid .rule-panel { padding: 20px 26px; overflow: auto; }
 body:not([data-screen="battle"]) .options-grid .rule-panel > h2 { font-size: 18px; margin: 0 0 16px; padding-bottom: 12px; border-bottom: 2px solid var(--ui-accent); }
+body:not([data-screen="battle"]) .options-grid .rule-field { display: grid; grid-template-columns: minmax(0, 1fr) minmax(160px, 48%); align-items: center; gap: 12px; padding-block: 7px; border-bottom: 1px solid var(--ui-line); }
 body:not([data-screen="battle"]) .options-grid label:not(.check) { display: grid; grid-template-columns: 1fr minmax(100px, 50%); align-items: center; gap: 15px; border-bottom: 1px solid #8da3b518; padding-bottom: 8px; }
 body:not([data-screen="battle"]) .options-grid .check { min-height: 36px; }
 body:not([data-screen="battle"]) .options-grid button { background: #1b2b3a; border-color: #7793a744; color: #ccdbe1; }
+body:not([data-screen="battle"]) .options-grid .rule-stepper button { margin: 0; }
 body:not([data-screen="battle"]) .detail-grid { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 24px; }
 body:not([data-screen="battle"]) .detail-art { min-height: 0; display: flex; flex-direction: column; }
 body:not([data-screen="battle"]) .detail-art canvas { min-height: 0; width: 100%; flex: 1; object-fit: contain; }
@@ -310,7 +312,7 @@ body:not([data-screen="battle"]) #detail-moves dd { color: #a2b6c6; }
 
 /* Logical landscape dimensions also cover portrait-rotated phone browsers. */
 body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
-body.mobile-device:not([data-screen="battle"]) .app { --shell-height: var(--game-height); width: var(--game-width); height: var(--game-height); position: fixed; padding: 0 max(20px, env(safe-area-inset-left), env(safe-area-inset-right)); }
+body.mobile-device:not([data-screen="battle"]) .app { --shell-height: var(--game-height); width: var(--game-width); height: var(--game-height); position: fixed; padding: 0 max(20px, calc(var(--game-width) * .025), env(safe-area-inset-left), env(safe-area-inset-right)); }
 body.mobile-device:not([data-screen="battle"]) .app-header { height: var(--shell-header); padding-right: 48px; }
 body.mobile-device:not([data-screen="battle"]) .brand { font-size: 17px; }
 body.mobile-device:not([data-screen="battle"]) .brand small { display: none; }
@@ -334,16 +336,28 @@ body.mobile-device:not([data-screen="battle"]) .home-menu button { min-height: 3
 body.mobile-device:not([data-screen="battle"]) .home-menu .menu-label { font-size: 14px; gap: 12px; }
 body.mobile-device .menu-label small { font-size: 7px; letter-spacing: 1px; }
 body.mobile-device:not([data-screen="battle"]) .home-art { right: -20px; width: 64%; }
-body.mobile-device:not([data-screen="battle"]) .home-art canvas { width: 68%; max-height: 100%; }
+body.mobile-device:not([data-screen="battle"]) .home-art canvas { width: min(68%, calc(var(--game-height) * .86)); height: auto; max-height: 88%; }
 body.mobile-device:not([data-screen="battle"]) .art-caption { bottom: 4%; font-size: 9px; letter-spacing: 4px; }
 body.mobile-device .art-caption b { font-size: 17px; padding: 0 4px; }
 body.mobile-device .home-backdrop-word { font-size: calc(var(--game-width) * .23); top: 2%; }
 body.mobile-device .home-corner { display: none; }
-body.mobile-device:not([data-screen="battle"]) .mode-grid { margin: 0 0 4px; gap: 12px; }
-body.mobile-device:not([data-screen="battle"]) .mode-card { min-height: 0; padding: 16px 22px; }
+body.mobile-device:not([data-screen="battle"]) .mode-grid {
+  flex: none;
+  width: min(94%, calc(var(--game-height) * 1.85));
+  height: min(calc(var(--game-height) * .61), 260px);
+  min-height: 176px;
+  margin: auto;
+  gap: 14px;
+  grid-template-rows: minmax(0, 1fr);
+}
+body.mobile-device:not([data-screen="battle"]) .mode-card {
+  min-height: 0;
+  padding: 15px 20px;
+  background-image: linear-gradient(0deg, #0e1723 8%, #192a38aa 76%), url("../assets/arena/rooftop-sunset.png");
+}
 body.mobile-device:not([data-screen="battle"]) .mode-number { top: 12px; left: 16px; font-size: 12px; }
-body.mobile-device .mode-emblem { font-size: 38px; }
-body.mobile-device:not([data-screen="battle"]) .mode-card strong { font-size: 22px; }
+body.mobile-device .mode-emblem { flex: 1; font-size: 34px; }
+body.mobile-device:not([data-screen="battle"]) .mode-card strong { font-size: 20px; }
 body.mobile-device:not([data-screen="battle"]) .mode-card small { font-size: 8px; margin: 5px 0; }
 body.mobile-device:not([data-screen="battle"]) .mode-card p { font-size: 10px; margin: 2px 0 8px; }
 body.mobile-device .mode-enter { padding-top: 8px; font-size: 7px; }
@@ -365,9 +379,12 @@ body.mobile-device:not([data-screen="battle"]) .setup-screen .map-preview h2 { f
 body.mobile-device:not([data-screen="battle"]) .rules-heading { margin-bottom: 8px; padding-bottom: 5px; }
 body.mobile-device:not([data-screen="battle"]) .rules-heading h2 { font-size: 17px; }
 body.mobile-device:not([data-screen="battle"]) :is(.options-grid, .gallery-grid, .detail-grid) { gap: 12px; }
+body.mobile-device:not([data-screen="battle"]) .options-grid { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); }
 body.mobile-device:not([data-screen="battle"]) .options-grid .rule-panel { padding: 12px 16px; }
 body.mobile-device:not([data-screen="battle"]) .options-grid .rule-panel > h2 { font-size: 15px; padding-bottom: 8px; margin-bottom: 10px; }
 body.mobile-device:not([data-screen="battle"]) .options-grid label { font-size: 10px; margin: 9px 0; }
+body.mobile-device:not([data-screen="battle"]) .options-grid .rule-field { grid-template-columns: minmax(0, 1fr) minmax(136px, 48%); gap: 8px; padding-block: 5px; }
+body.mobile-device:not([data-screen="battle"]) .options-grid .rule-stepper { grid-template-columns: 36px minmax(0, 1fr) 36px; }
 body.mobile-device:not([data-screen="battle"]) .options-grid .rule-panel p { font-size: 10px; line-height: 1.8; }
 body.mobile-device:not([data-screen="battle"]) .options-grid select { font-size: 11px; padding: 7px; }
 body.mobile-device:not([data-screen="battle"]) .archive-card h2 { margin: 7px 0; font-size: 22px; }
@@ -387,9 +404,10 @@ body.mobile-device:not([data-screen="battle"]) #detail-moves dd { font-size: 10p
   body.mobile-device:not([data-screen="battle"]) .home-menu { width: 44%; }
   body.mobile-device:not([data-screen="battle"]) .home-menu button { min-height: 34px; padding-block: 6px; }
   body.mobile-device:not([data-screen="battle"]) .home-menu .menu-label { font-size: 13px; }
-  body.mobile-device .mode-emblem { font-size: 30px; }
-  body.mobile-device:not([data-screen="battle"]) .mode-card { padding: 12px 16px; }
-  body.mobile-device:not([data-screen="battle"]) .mode-card strong { font-size: 19px; }
+  body.mobile-device:not([data-screen="battle"]) .mode-grid { height: min(calc(var(--game-height) * .62), 204px); min-height: 158px; gap: 10px; }
+  body.mobile-device .mode-emblem { font-size: 28px; }
+  body.mobile-device:not([data-screen="battle"]) .mode-card { padding: 11px 13px; }
+  body.mobile-device:not([data-screen="battle"]) .mode-card strong { font-size: 17px; }
   body.mobile-device .mode-enter { display: none; }
   body.mobile-device:not([data-screen="battle"]) .draft-player { padding: 4px 6px; }
   body.mobile-device:not([data-screen="battle"]) .player-tag { font-size: 16px; }

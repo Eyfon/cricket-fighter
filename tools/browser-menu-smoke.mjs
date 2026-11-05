@@ -42,8 +42,9 @@ try {
   const settle = () => new Promise((r) => setTimeout(r, 230));
   const click = async (selector) => { await evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); await settle(); };
   const key = async (name) => {
-    await send("Input.dispatchKeyEvent", { type: "keyDown", key: name, code: name });
-    await send("Input.dispatchKeyEvent", { type: "keyUp", key: name, code: name });
+    const windowsVirtualKeyCode = { Enter: 13, Escape: 27, ArrowLeft: 37, ArrowUp: 38, ArrowRight: 39, ArrowDown: 40 }[name];
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: name, code: name, windowsVirtualKeyCode, ...(name === 'Enter' ? { text: '\r', unmodifiedText: '\r' } : {}) });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: name, code: name, windowsVirtualKeyCode });
     await settle();
   };
   const screenshot = async (name) => {
@@ -89,8 +90,20 @@ try {
   await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "mode");
   await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "home");
   await click('[data-go="options"]'); await fits("#reset-options"); await screenshot("game-menu-desktop-options");
-  // Native select key presses must not navigate or leave the menu.
-  await run(() => document.getElementById("direction-control").focus()); await key("ArrowDown");
+  // Options use the same arrow buttons as match rules, with native values retained internally.
+  assert.ok(await run(() => [...document.querySelectorAll('.options-grid select, .options-grid input')].every(el => !el.getClientRects().length)));
+  await click('[data-rule="direction-control"][data-rule-step="1"]');
+  assert.equal(await run(() => document.body.dataset.directionControl), "dpad");
+  assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.directionControl), "dpad");
+  await run(() => document.querySelector('[data-rule="direction-control"][data-rule-step="-1"]').focus()); await key("Enter");
+  assert.equal(await run(() => document.body.dataset.directionControl), "joystick");
+  await click('[data-rule="volume"][data-rule-step="1"]');
+  assert.equal(await run(() => document.getElementById("volume-value").value), "55%");
+  await click('[data-rule="muted"][data-rule-step="1"]');
+  assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.muted), true);
+  await click('#reset-options');
+  assert.equal(await run(() => document.getElementById("volume-value").value), "50%");
+  assert.equal(await run(() => document.getElementById("muted-value").value), "关闭");
   assert.equal(await run(() => document.body.dataset.screen), "options");
   await run(() => document.activeElement.blur()); await key("Escape");
   await click('[data-go="gallery"]'); await screenshot("game-menu-desktop-gallery");
@@ -98,10 +111,12 @@ try {
   await fits(".detail-grid"); await screenshot("game-menu-desktop-details");
   await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "gallery");
 
-  for (const [width, height] of [[844, 390], [568, 320]]) {
+  for (const [width, height] of [[844, 390], [932, 430], [960, 432], [568, 320]]) {
     await metrics(width, height, true);
     await click("#home-link"); await fits("#play"); await screenshot(`game-menu-${width}-home`);
     await click("#play"); await fits('[data-mode="cpu"]'); await screenshot(`game-menu-${width}-modes`);
+    const cards = await run(() => ({ height: document.querySelector('.mode-grid').offsetHeight, gameHeight: document.querySelector('.app').clientHeight }));
+    assert.ok(cards.height <= cards.gameHeight * .67, JSON.stringify(cards));
     assert.equal(await run(() => document.querySelector('[data-mode="local"]').getClientRects().length), 0);
     await click('[data-mode="watch"]');
     await fits("#characters-next"); await screenshot(`game-menu-${width}-draft`);
@@ -133,6 +148,7 @@ try {
     await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
     assert.ok(await run(() => document.getElementById("map-list").scrollTop > 10), "map rail supports landscape touch dragging");
     await click('[data-rule="health-multiplier"][data-rule-step="1"]');
+    assert.deepEqual(await run(() => [...document.querySelectorAll('[data-rule="health-multiplier"]')].map(el => el.textContent)), ['<', '>']);
     assert.equal(await run(() => document.getElementById("health-multiplier-value").value), "2 倍");
     assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).rules.healthMultiplier), 2);
     await click('[data-rule="health-multiplier"][data-rule-step="-1"]');
@@ -151,10 +167,13 @@ try {
     await run(() => document.getElementById("map-list").scrollTop = 0);
     await fits("#start"); await screenshot(`game-menu-${width}-stage`);
     await click("#home-link"); await click('[data-go="options"]');
+    await click('[data-rule="direction-control"][data-rule-step="1"]');
+    assert.equal(await run(() => document.body.dataset.directionControl), "dpad");
+    await click('#reset-options');
     await fits(".options-grid"); await screenshot(`game-menu-${width}-options`);
     await click("#home-link"); await click('[data-go="gallery"]');
     await fits(".gallery-grid"); await screenshot(`game-menu-${width}-gallery`);
   }
   assert.deepEqual(errors, []);
-  console.log("Game menu QA passed: keyboard selection/confirm/back, native settings controls, archive details, full viewport menus at desktop and two phone sizes; no runtime/resource errors.");
+  console.log("Game menu QA passed: keyboard menus, arrow settings with persistence/reset, archive details, full viewport menus at desktop and four phone sizes including 19.5:9 and 20:9; no runtime/resource errors.");
 } finally { socket?.close(); chrome.kill(); }
