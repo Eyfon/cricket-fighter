@@ -1,7 +1,29 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { joystickVector, PointerKeys } from "../js/mobile-controls.js";
+import { joystickVector, dpadVector, PointerKeys } from "../js/mobile-controls.js";
 import { HumanInput, bindings } from "../js/input.js";
+
+test("dpad cells support all eight directions, neutral center and rotated touches", () => {
+  for (const x of [-40, 0, 40]) for (const y of [-40, 0, 40]) {
+    const expected = [...(x < 0 ? ["left"] : x > 0 ? ["right"] : []),
+      ...(y < 0 ? ["up"] : y > 0 ? ["guard"] : [])];
+    assert.deepEqual(dpadVector(x, y, 66), expected);
+    assert.deepEqual(dpadVector(-y, x, 66, true), expected);
+  }
+  assert.deepEqual(dpadVector(200, 300, 66), ["right", "guard"]);
+});
+
+test("separate dpad fingers and sliding do not leave stale directions", () => {
+  const touch = new PointerKeys();
+  touch.set(1, ["KeyA"], false); touch.set(2, ["KeyS"], false);
+  assert.deepEqual([...touch.sample()].sort(), ["KeyA", "KeyS"]);
+  touch.release(1);
+  assert.deepEqual([...touch.sample()], ["KeyS"]);
+  touch.set(2, ["KeyD"], false);
+  assert.deepEqual([...touch.sample()], ["KeyD"]);
+  touch.release(2);
+  assert.equal(touch.sample().size, 0);
+});
 
 test("joystick has a dead zone and eight directions including crouch guard", () => {
   assert.deepEqual(joystickVector(5, 4, 60).actions, []);

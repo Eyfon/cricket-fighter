@@ -53,7 +53,9 @@ try {
   await send("Runtime.enable"); await send("Page.enable"); await send("Network.enable");
   await metrics(390, 844);
   await send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
-  await send("Page.addScriptToEvaluateOnNewDocument", { source: `(${(() => {
+  let initScript;
+  initScript = await send("Page.addScriptToEvaluateOnNewDocument", { source: `(${(() => {
+    localStorage.clear();
     let callback, now = 1000;
     requestAnimationFrame = (fn) => { callback = fn; return 1; };
     window.advanceFrames = (count) => {
@@ -78,6 +80,8 @@ try {
       app: rect(".app"), arena: rect("#arena"), touch: getComputedStyle(document.querySelector(".touch")).display,
       buttonCount: document.querySelectorAll(".touch [data-action]").length,
       toolbar: getComputedStyle(document.querySelector(".toolbar")).display,
+      control: document.body.dataset.directionControl,
+      backing: { width: document.getElementById("arena").width, height: document.getElementById("arena").height },
       fullscreenCalls, lockCalls };
   });
   let view = await layout();
@@ -96,9 +100,11 @@ try {
   view = await layout();
   assert.equal(view.touch, "block"); assert.equal(view.toolbar, "none");
   assert.equal(view.arena.width, 390); assert.equal(view.arena.height, 844);
+  assert.equal(view.control, "joystick", "fresh mobile settings default to joystick");
+  assert.ok(Math.abs(view.backing.width / view.backing.height - 844 / 390) < .006, "actual drawing fills canvas without letterboxing");
   assert.ok(view.fullscreenCalls > 0 && view.lockCalls.includes("landscape"));
   const points = (dx = 0, dy = 0, action = null) => evaluate(`(${((dx, dy, action) => {
-    const r = document.getElementById("touch-joystick").getBoundingClientRect();
+    const r = document.querySelector('#touch-dpad:not([hidden]), #touch-joystick:not([hidden])').getBoundingClientRect();
     const rotated = document.body.classList.contains("mobile-portrait");
     const radius = Math.min(r.width, r.height) / 2;
     const points = [{ id: 1, x: r.x + r.width / 2 + (rotated ? -dy : dx) * radius,
@@ -109,6 +115,11 @@ try {
     }
     return points;
   }).toString()})(${dx},${dy},${JSON.stringify(action)})`);
+  const setControl = (value) => evaluate(`(${((value) => {
+    const select = document.getElementById("direction-control");
+    select.value = value; select.dispatchEvent(new Event("input"));
+  }).toString()})(${JSON.stringify(value)})`);
+  await setControl("dpad");
   let touchActive = false;
   const startTouch = async (dx, dy, action) => {
     await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: await points(dx, dy, action) });
@@ -127,7 +138,7 @@ try {
   await endTouch(); await frames(2);
   assert.equal((await state()).fighters[0].guard, false);
   await startTouch(-0.8, 0); await frames(10);
-  assert.ok((await state()).fighters[0].x < 250, "joystick retreats");
+  assert.ok((await state()).fighters[0].x < 250, "dpad retreats");
   await restart();
   for (const [dx, dy, action, expected] of [
     [0, 0, "punch", "punch"], [0, 0, "kick", "kick"],
@@ -173,10 +184,37 @@ try {
   await frames(1);
   assert.equal((await state()).fighters[0].attack, null, "cancelled touch has no ghost attack");
 
+  // Slide between pad cells while captured, and combine separate direction fingers.
+  await restart();
+  await startTouch(-.7, 0); await frames(2);
+  await send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: await points(-.7, .7) });
+  await frames(2); assert.equal((await state()).fighters[0].crouchGuard, true);
+  await endTouch();
+  const leftFinger = (await points(-.7, 0))[0];
+  const downFinger = { ...(await points(0, .7))[0], id: 3 };
+  await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [leftFinger, downFinger] });
+  touchActive = true;
+  await frames(2); assert.equal((await state()).fighters[0].crouchGuard, true);
+  await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [downFinger] });
+  await frames(2); assert.equal((await state()).fighters[0].crouchGuard, false);
+  await endTouch();
+
+  await restart(); await startTouch(-.7, .7); await frames(2);
+  await setControl("joystick"); await frames(2);
+  assert.equal((await state()).fighters[0].guard, false, "switching clears held directions");
+  await endTouch();
+  assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.directionControl), "joystick");
+  await startTouch(-.7, .7); await frames(2);
+  assert.equal((await state()).fighters[0].crouchGuard, true, "optional joystick works");
+  await endTouch(); await restart();
+  await startTouch(.8, 0, "punch"); await frames(1);
+  assert.equal((await state()).fighters[0].attack, "forwardPunch");
+  await endTouch(); await setControl("dpad"); await restart();
+
   // Smaller phones retain touch targets and reachable menu navigation.
   for (const [width, height] of [[667, 375], [568, 320], [915, 412]]) {
     await metrics(width, height); await new Promise((r) => setTimeout(r, 100));
-    const bounds = await run(() => [...document.querySelectorAll(".touch [data-action], #touch-joystick")].map((e) => {
+    const bounds = await run(() => [...document.querySelectorAll(".touch [data-action], #touch-dpad:not([hidden]) button, #touch-joystick:not([hidden])")].map((e) => {
       const r = e.getBoundingClientRect(); return { x: r.x, y: r.y, right: r.right, bottom: r.bottom, width: r.width, height: r.height };
     }));
     assert.ok(bounds.every((r) => r.x >= 0 && r.y >= 0 && r.right <= width && r.bottom <= height && r.width >= 44 && r.height >= 44));
@@ -208,6 +246,9 @@ try {
   await new Promise((r) => setTimeout(r, 100));
   view = await layout();
   assert.equal(view.mobile, false); assert.equal(view.touch, "none", "small desktop has no automatic touch overlay");
+  await frames(2);
+  assert.ok(Math.abs(view.backing.width / view.backing.height - 720 / 600) < .003, "desktop also fills tall windows");
+  await screenshot("desktop-adaptive-battle");
   for (const option of ["always", "never", "auto"]) {
     await evaluate(`(${((option) => {
       document.getElementById("home-link").click();
@@ -219,6 +260,21 @@ try {
     }).toString()})(${JSON.stringify(option)})`);
     assert.equal((await layout()).touch, option === "always" ? "block" : "none", `${option} touch preference`);
   }
+  // A real navigation reload must restore the chosen control from browser storage.
+  await setControl("joystick");
+  await send("Page.removeScriptToEvaluateOnNewDocument", { identifier: initScript.identifier });
+  await send("Page.reload", { ignoreCache: true });
+  for (let i = 0; i < 100; i++) {
+    if (await run(() => document.readyState === "complete" && document.body.dataset.directionControl === "joystick")) break;
+    await new Promise((r) => setTimeout(r, 50));
+  }
+  assert.equal(await run(() => document.body.dataset.directionControl), "joystick");
+  await run(() => {
+    document.querySelector('[data-go="options"]').click();
+    document.getElementById("reset-options").click();
+  });
+  assert.equal(await run(() => document.getElementById("direction-control").value), "joystick");
+  assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.directionControl), "joystick");
   assert.deepEqual(errors, []); assert.deepEqual(networkErrors, []);
   await writeFile("artifacts/mobile-browser-check.json", JSON.stringify({ results, desktop: view, errors, networkErrors }, null, 2));
   console.log("Mobile browser QA passed: portrait fallback, landscape full canvas, eight directions, six keys, four directional attacks, aerial attack, multi-touch, pause cleanup, phone sizes, watch and desktop visibility; no resource or runtime errors.");

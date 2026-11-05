@@ -13,6 +13,7 @@ export const DEFAULT_OPTIONS = {
   shake: true,
   scanlines: true,
   touch: "auto",
+  directionControl: "joystick",
 };
 const choose = (value, values, fallback) =>
   values.includes(value) ? value : fallback;
@@ -40,6 +41,7 @@ export function normalizeOptions(value = {}) {
     shake: typeof value.shake === "boolean" ? value.shake : true,
     scanlines: typeof value.scanlines === "boolean" ? value.scanlines : true,
     touch: choose(value.touch, ["auto", "always", "never"], "auto"),
+    directionControl: choose(value.directionControl, ["dpad", "joystick"], "joystick"),
   };
 }
 export function loadPreferences() {

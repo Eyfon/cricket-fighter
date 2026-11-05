@@ -11,6 +11,7 @@ import { drawAnimatedFighter } from "./animation.js";
 import { drawProjectiles, drawMoveAura } from "./energy-effects.js";
 import { bindings, HumanInput, eventCode } from "./input.js";
 import { createMobileControls } from "./mobile-controls.js";
+import { battleViewport } from "./battle-viewport.js";
 import {
   drawStage,
   drawHUD,
@@ -24,6 +25,14 @@ import { Fighter, FLOOR, cpuInput, defenseInput, resolveHit, intersects } from "
 const $ = (id) => document.getElementById(id),
   canvas = $("arena"),
   ctx = canvas.getContext("2d");
+let viewport = battleViewport(960, 540);
+new ResizeObserver(([entry]) => {
+  const { width, height } = entry.contentRect;
+  if (width <= 0 || height <= 0) return;
+  viewport = battleViewport(width, height);
+  canvas.width = Math.round(viewport.width);
+  canvas.height = Math.round(viewport.height);
+}).observe(canvas);
 const world = new CombatWorld();
 const audio = new ArcadeAudio();
 let superFlash = null;
@@ -567,36 +576,39 @@ function render() {
     return;
   }
   if (!fighters.length) {
-    drawStage(ctx);
+    drawStage(ctx, viewport);
+    ctx.save();
+    ctx.translate(viewport.worldX, viewport.worldY);
     roster
       .slice(0, 2)
       .forEach((def, i) =>
         drawFighter(new Fighter(def, i ? 715 : 245, i ? -1 : 1)),
       );
-    text("READY TO FIGHT?", 480, 235, 46, "#ffe9a7");
-    text("选择上方模式与角色 · 点击开始对战", 480, 272, 16, "#ffe7c7");
+    ctx.restore();
+    text("READY TO FIGHT?", viewport.width / 2, viewport.height / 2, 46, "#ffe9a7");
     return;
   }
-  ctx.fillStyle = "#090a18";
-  ctx.fillRect(0, 0, 960, 540);
+  drawStage(ctx, viewport);
   ctx.save();
   const scale = superFlash ? superFrame(superFlash.elapsed).scale : 1;
-  ctx.translate(480, 270);
+  ctx.translate(viewport.width / 2, viewport.height / 2);
   ctx.scale(scale, scale);
-  ctx.translate(-480, -270);
-  drawStage(ctx);
+  ctx.translate(-viewport.width / 2 + viewport.worldX, -viewport.height / 2 + viewport.worldY);
   ctx.translate((Math.random() - 0.5) * shake, (Math.random() - 0.5) * shake);
   drawProjectiles(ctx, world);
   fighters.forEach(drawFighter);
   drawImpact(ctx, particles);
-  if (superFlash) drawSuperFlash(ctx, superFlash);
+  if (superFlash) drawSuperFlash(ctx, superFlash, {
+    x: -viewport.worldX - viewport.width, y: -viewport.worldY - viewport.height,
+    width: viewport.width * 3, height: viewport.height * 3,
+  });
   ctx.restore();
-  drawHUD(ctx, fighters, timer, round, activeConfig.wins);
+  drawHUD(ctx, fighters, timer, round, activeConfig.wins, viewport.width);
   if (finale && !matchOver) {
     drawFinale();
   } else if (paused || intro > 0 || matchOver) {
     ctx.fillStyle = "#090f1b85";
-    ctx.fillRect(0, 155, 960, 180);
+    ctx.fillRect(0, viewport.height / 2 - 90, viewport.width, 180);
     const winner = fighters[0].hp > fighters[1].hp ? fighters[0] : fighters[1];
     text(
       paused
@@ -612,8 +624,8 @@ function render() {
                 : fighters[0].hp === fighters[1].hp
                   ? "DRAW"
                   : "K.O.",
-      480,
-      238,
+      viewport.width / 2,
+      viewport.height / 2 - 7,
       64,
       "#ffe19a",
     );
@@ -625,8 +637,8 @@ function render() {
           : intro > 0
             ? `${fighters[0].def.name}  vs  ${fighters[1].def.name}`
             : `${fighters[0].hp === fighters[1].hp ? "平局" : winner.def.name + " 获胜"}`,
-      480,
-      280,
+      viewport.width / 2,
+      viewport.height / 2 + 35,
       19,
       "#dae1ea",
     );
@@ -638,19 +650,19 @@ function drawFinale() {
   ctx.save();
   if (frame.stage === "impact" && finale.knockout) {
     ctx.fillStyle = `rgba(255,235,189,${0.65 * (1 - t / 0.28)})`;
-    ctx.fillRect(0, 0, 960, 540);
+    ctx.fillRect(0, 0, viewport.width, viewport.height);
     ctx.restore();
     return;
   }
   const bars = Math.min(1, t / 0.4) * 30;
   ctx.fillStyle = "#08070bd9";
-  ctx.fillRect(0, 0, 960, bars);
-  ctx.fillRect(0, 540 - bars, 960, bars);
+  ctx.fillRect(0, 0, viewport.width, bars);
+  ctx.fillRect(0, viewport.height - bars, viewport.width, bars);
   if (frame.stage === "ko" || frame.stage === "winner") {
     const since = t - (frame.stage === "ko" ? 1.15 : 3.1);
     const enter = Math.min(1, since / 0.22);
     const koPulse = frame.stage === "ko" ? Math.max(0, 1 - since / 0.72) : 0;
-    ctx.translate(480, 250);
+    ctx.translate(viewport.width / 2, viewport.height / 2 - 20);
     ctx.scale(
       1 + (1 - enter) * 0.7 + Math.sin(since * 34) * koPulse * 0.035,
       1 + (1 - enter) * 0.7 + Math.sin(since * 34) * koPulse * 0.035,
@@ -660,7 +672,7 @@ function drawFinale() {
       ctx.save();
       ctx.globalAlpha = enter * (0.35 + koPulse * 0.65);
       ctx.fillStyle = `rgba(224, 35, 45, ${0.18 + koPulse * 0.22})`;
-      ctx.fillRect(-480, -170, 960, 340);
+      ctx.fillRect(-viewport.width, -170, viewport.width * 2, 340);
       ctx.strokeStyle = `rgba(255, 206, 104, ${0.35 + koPulse * 0.5})`;
       ctx.lineWidth = 3 + koPulse * 5;
       for (let i = 0; i < 18; i++) {
@@ -675,7 +687,7 @@ function drawFinale() {
       ctx.restore();
     }
     ctx.fillStyle = "#120e17bd";
-    ctx.fillRect(-480, -96, 960, 188);
+    ctx.fillRect(-viewport.width, -96, viewport.width * 2, 188);
     const headline =
       frame.stage === "ko"
         ? finale.winner
@@ -725,6 +737,7 @@ requestAnimationFrame(loop);
 // Read-only inspection for browser QA and future replay tooling.
 export function snapshot() {
   return {
+    viewport: { ...viewport },
     screen: menu.screen,
     config: activeConfig ? { ...activeConfig } : null,
     running,

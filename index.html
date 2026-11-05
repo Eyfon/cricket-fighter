@@ -234,6 +234,17 @@
           ><button id="pause" tabindex="-1">暂停 / Esc</button>
         </nav>
         <section class="touch" aria-label="1P 手机控制" hidden>
+          <div id="touch-dpad" role="group" aria-label="十字方向键：支持斜方向、滑动换向与多指组合" hidden>
+            <button data-directions="left up" aria-label="左上跳跃" class="diagonal">↖</button>
+            <button data-directions="up" aria-label="跳跃">▲</button>
+            <button data-directions="right up" aria-label="右上跳跃" class="diagonal">↗</button>
+            <button data-directions="left" aria-label="向左">◀</button>
+            <span class="dpad-center" aria-hidden="true">✦</span>
+            <button data-directions="right" aria-label="向右">▶</button>
+            <button data-directions="left guard" aria-label="左下防御" class="diagonal">↙</button>
+            <button data-directions="guard" aria-label="下防御">▼</button>
+            <button data-directions="right guard" aria-label="右下防御" class="diagonal">↘</button>
+          </div>
           <div id="touch-joystick" role="group" aria-label="八方向摇杆：上跳，下防御，下后蹲防">
             <span class="stick-direction up">▲</span><span class="stick-direction right">▶</span>
             <span class="stick-direction down">▼</span><span class="stick-direction left">◀</span>
@@ -324,6 +335,11 @@
                 <option value="always">始终显示</option>
                 <option value="never">隐藏</option>
               </select></label
+            ><label
+              >手机方向操作<select id="direction-control">
+                <option value="joystick">摇杆（默认）</option>
+                <option value="dpad">十字按键</option>
+              </select></label
             ><button id="fullscreen">切换全屏</button
             ><button id="reset-options" class="text-button">恢复默认选项</button
             ><small id="option-status" role="status"
@@ -336,7 +352,7 @@
               1P：WASD 方向；J 拳，K 脚，L 闪避，U / I 技能，O 大招。
             </p>
             <p>2P：方向键；小键盘 1 拳、2 脚、3 闪避、4 / 5 技能、6 大招。</p>
-            <p>手机：左摇杆控制八方向，右侧六键操作 1P；上推跳跃，下推防御，下后蹲防，前或下加拳脚触发方向招式。手机横屏布局，点击开始尝试进入全屏；右上角可切换全屏，战斗中可触屏暂停。本地双人的 2P 使用外接键盘。</p>
+            <p>手机：左侧默认摇杆，可切换为十字方向键；右侧六键操作 1P。上跳跃，下防御，下后蹲防，前或下加拳脚触发方向招式。手机横屏布局，点击开始尝试进入全屏；右上角可切换全屏，战斗中可触屏暂停。本地双人的 2P 使用外接键盘。</p>
             <p>
               前或下加拳脚触发方向攻击；后方向防御，下后蹲防。单按闪避原地闪避，方向加闪避定向翻滚。
             </p>
@@ -361,8 +377,8 @@
       </footer>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=37b9560a7b8e","./js/ai.js":"./js/ai.js?v=37b9560a7b8e","./js/animation-data.js":"./js/animation-data.js?v=37b9560a7b8e","./js/animation.js":"./js/animation.js?v=37b9560a7b8e","./js/arena.js":"./js/arena.js?v=37b9560a7b8e","./js/asset-url.js":"./js/asset-url.js?v=37b9560a7b8e","./js/audio.js":"./js/audio.js?v=37b9560a7b8e","./js/battle-frame.js":"./js/battle-frame.js?v=37b9560a7b8e","./js/character-schema.js":"./js/character-schema.js?v=37b9560a7b8e","./js/combat-world.js":"./js/combat-world.js?v=37b9560a7b8e","./js/combat.js":"./js/combat.js?v=37b9560a7b8e","./js/energy-effects.js":"./js/energy-effects.js?v=37b9560a7b8e","./js/input.js":"./js/input.js?v=37b9560a7b8e","./js/language.js":"./js/language.js?v=37b9560a7b8e","./js/maps.js":"./js/maps.js?v=37b9560a7b8e","./js/menu.js":"./js/menu.js?v=37b9560a7b8e","./js/mobile-controls.js":"./js/mobile-controls.js?v=37b9560a7b8e","./js/presentation.js":"./js/presentation.js?v=37b9560a7b8e","./js/roster.js":"./js/roster.js?v=37b9560a7b8e","./js/round-ending.js":"./js/round-ending.js?v=37b9560a7b8e","./js/settings.js":"./js/settings.js?v=37b9560a7b8e","./js/stages.js":"./js/stages.js?v=37b9560a7b8e","./js/super-flash.js":"./js/super-flash.js?v=37b9560a7b8e"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=0fa893342e1f","./js/ai.js":"./js/ai.js?v=0fa893342e1f","./js/animation-data.js":"./js/animation-data.js?v=0fa893342e1f","./js/animation.js":"./js/animation.js?v=0fa893342e1f","./js/arena.js":"./js/arena.js?v=0fa893342e1f","./js/asset-url.js":"./js/asset-url.js?v=0fa893342e1f","./js/audio.js":"./js/audio.js?v=0fa893342e1f","./js/battle-frame.js":"./js/battle-frame.js?v=0fa893342e1f","./js/battle-viewport.js":"./js/battle-viewport.js?v=0fa893342e1f","./js/character-schema.js":"./js/character-schema.js?v=0fa893342e1f","./js/combat-world.js":"./js/combat-world.js?v=0fa893342e1f","./js/combat.js":"./js/combat.js?v=0fa893342e1f","./js/energy-effects.js":"./js/energy-effects.js?v=0fa893342e1f","./js/input.js":"./js/input.js?v=0fa893342e1f","./js/language.js":"./js/language.js?v=0fa893342e1f","./js/maps.js":"./js/maps.js?v=0fa893342e1f","./js/menu.js":"./js/menu.js?v=0fa893342e1f","./js/mobile-controls.js":"./js/mobile-controls.js?v=0fa893342e1f","./js/presentation.js":"./js/presentation.js?v=0fa893342e1f","./js/roster.js":"./js/roster.js?v=0fa893342e1f","./js/round-ending.js":"./js/round-ending.js?v=0fa893342e1f","./js/settings.js":"./js/settings.js?v=0fa893342e1f","./js/stages.js":"./js/stages.js?v=0fa893342e1f","./js/super-flash.js":"./js/super-flash.js?v=0fa893342e1f"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=37b9560a7b8e"></script>
+    <script type="module" src="./js/arena.js?v=0fa893342e1f"></script>
   </body>
 </html>

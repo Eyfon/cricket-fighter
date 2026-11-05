@@ -19,6 +19,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     lastMatch = null,
     activeCharacter = roster[0].id;
   if (saved.audioDefaultsVersion !== 2) options.muted = false;
+  if (saved.directionControlVersion !== 1) options.directionControl = "joystick";
   const modeNames = {
     watch: "电子斗蛐蛐 · AI vs AI",
     cpu: "单人挑战 · 1P vs AI",
@@ -37,6 +38,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       rules,
       options,
       audioDefaultsVersion: 2,
+      directionControlVersion: 1,
       p1: $("p1").value,
       p2: $("p2").value,
       mode: $("mode").value,
@@ -224,11 +226,13 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     $("shake").checked = options.shake;
     $("scanlines").checked = options.scanlines;
     $("touch-option").value = options.touch;
+    $("direction-control").value = options.directionControl;
     document.body.classList.toggle("no-scanlines", !options.scanlines);
     document.body.dataset.touch = options.touch;
+    document.body.dataset.directionControl = options.directionControl;
     onOptions({ ...options });
   }
-  for (const id of ["muted", "volume", "shake", "scanlines", "touch-option"])
+  for (const id of ["muted", "volume", "shake", "scanlines", "touch-option", "direction-control"])
     $(id).addEventListener("input", () => {
       options = normalizeOptions({
         muted: $("muted").checked,
@@ -236,6 +240,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
         shake: $("shake").checked,
         scanlines: $("scanlines").checked,
         touch: $("touch-option").value,
+        directionControl: $("direction-control").value,
       });
       renderOptions();
       persist();

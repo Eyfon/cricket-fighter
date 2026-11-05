@@ -141,15 +141,59 @@ body[data-screen="battle"] .touch {
   --button-size: clamp(46px, calc(var(--control-height) * .15), 66px);
 }
 body[data-screen="battle"].touch-visible .touch { display: block; }
+body[data-screen="battle"] #touch-dpad {
+  position: absolute;
+  left: max(58px, env(safe-area-inset-left) + 32px, env(safe-area-inset-bottom) + 32px);
+  bottom: max(42px, env(safe-area-inset-bottom) + 24px, env(safe-area-inset-right) + 24px);
+  width: clamp(132px, calc(var(--control-height) * .4), 168px);
+  height: clamp(132px, calc(var(--control-height) * .4), 168px);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  pointer-events: auto;
+  touch-action: none;
+}
+body[data-screen="battle"] #touch-dpad button,
+body[data-screen="battle"] #touch-dpad .dpad-center {
+  display: grid;
+  place-items: center;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+  border-radius: 9px;
+  border: 1px solid #d5e7f9a8;
+  background: #182637db;
+  color: #fff0d7;
+  font-size: 20px;
+  box-shadow: inset 0 -3px #0003;
+  touch-action: none;
+  transition: none;
+}
+body[data-screen="battle"] #touch-dpad button.diagonal {
+  border-color: #d5e7f966;
+  background: #1826378c;
+  color: #e3edfad9;
+  font-size: 16px;
+}
+body[data-screen="battle"] #touch-dpad .dpad-center {
+  color: #c4d6eb80;
+  border: 0;
+}
+body[data-screen="battle"] #touch-dpad button.held {
+  background: #bb743ddd;
+  border-color: #fff3d3;
+  transform: none;
+}
 body[data-screen="battle"] #touch-joystick {
   position: absolute;
-  left: max(28px, env(safe-area-inset-left), env(safe-area-inset-bottom));
-  bottom: max(24px, env(safe-area-inset-bottom), env(safe-area-inset-right));
+  left: max(58px, env(safe-area-inset-left) + 32px, env(safe-area-inset-bottom) + 32px);
+  bottom: max(42px, env(safe-area-inset-bottom) + 24px, env(safe-area-inset-right) + 24px);
   width: var(--stick-size);
   height: var(--stick-size);
-  border: 1px solid #d5e7f96b;
+  border: 1px solid #d5e7f9b8;
   border-radius: 50%;
-  background: radial-gradient(circle, #cbeaff14 0 30%, #0d172434 31% 62%, #d7eaff10 63%);
+  background: radial-gradient(circle, #cbeaff50 0 30%, #0d1724a8 31% 62%, #d7eaff55 63%);
   box-shadow: inset 0 0 22px #0005, 0 3px 18px #0003;
   pointer-events: auto;
   touch-action: none;
@@ -174,8 +218,8 @@ body[data-screen="battle"] #touch-joystick {
 #touch-joystick.held { border-color: #ffe0ac; }
 body[data-screen="battle"] .touch .touch-actions {
   position: absolute;
-  right: max(24px, env(safe-area-inset-right), env(safe-area-inset-top));
-  bottom: max(20px, env(safe-area-inset-bottom), env(safe-area-inset-right));
+  right: max(58px, env(safe-area-inset-right) + 32px, env(safe-area-inset-top) + 32px);
+  bottom: max(42px, env(safe-area-inset-bottom) + 24px, env(safe-area-inset-right) + 24px);
   display: grid;
   grid-template-columns: repeat(3, var(--button-size));
   grid-template-rows: repeat(2, var(--button-size));
@@ -193,7 +237,7 @@ body[data-screen="battle"] .touch .touch-actions button {
   padding: 0;
   border-radius: 50%;
   border: 1px solid #ffe1b18c;
-  background: radial-gradient(circle at 35% 20%, #53453b9e, #191c269c);
+  background: radial-gradient(circle at 35% 20%, #53453be8, #191c26e8);
   color: #fff0d7;
   text-shadow: 0 1px 3px #000;
   font-size: 13px;
@@ -204,7 +248,7 @@ body[data-screen="battle"] .touch .touch-actions button {
   transition: none;
 }
 .touch-actions small { font-size: 9px; font-weight: 400; opacity: .75; }
-body[data-screen="battle"] .touch .touch-skill { border-color: #88cfffaf; background: #18375491; }
-body[data-screen="battle"] .touch .touch-super { border-color: #ffbf75c4; background: #73311c96; }
+body[data-screen="battle"] .touch .touch-skill { border-color: #88cfffdf; background: #183754e0; }
+body[data-screen="battle"] .touch .touch-super { border-color: #ffbf75ed; background: #73311ce0; }
 body[data-screen="battle"] .touch button.held { background: #bb743ddd; border-color: #fff3d3; transform: scale(.94); }
 body[data-screen="battle"] .touch.touch-blocked { pointer-events: none; visibility: hidden; }

@@ -9,56 +9,62 @@ const stage = new Image();
 stage.src = assetUrl("./assets/arena/rooftop-sunset.png");
 export const stageReady = () => stage.complete && stage.naturalWidth > 0;
 
-export function drawStage(ctx) {
+export function drawStage(ctx, { width = 960, height = 540, worldY = 0 } = {}) {
+  const ground = 438 + worldY;
   ctx.imageSmoothingEnabled = false;
   ctx.fillStyle = "#382d32";
-  ctx.fillRect(0, 0, 960, 540);
+  ctx.fillRect(0, 0, width, height);
   if (currentMap.id === "training") {
     ctx.fillStyle = "#192532";
-    ctx.fillRect(0, 0, 960, 540);
+    ctx.fillRect(0, 0, width, height);
     ctx.strokeStyle = "#66839b33";
     ctx.lineWidth = 1;
-    for (let x = 0; x <= 960; x += 40) {
+    for (let x = 0; x <= width; x += 40) {
       ctx.beginPath();
       ctx.moveTo(x, 0);
-      ctx.lineTo(x, 540);
+      ctx.lineTo(x, height);
       ctx.stroke();
     }
-    for (let y = 0; y <= 540; y += 40) {
+    for (let y = ground % 40; y <= height; y += 40) {
       ctx.beginPath();
       ctx.moveTo(0, y);
-      ctx.lineTo(960, y);
+      ctx.lineTo(width, y);
       ctx.stroke();
     }
     ctx.strokeStyle = "#9dbfcaaa";
     ctx.beginPath();
-    ctx.moveTo(0, 438);
-    ctx.lineTo(960, 438);
+    ctx.moveTo(0, ground);
+    ctx.lineTo(width, ground);
     ctx.stroke();
   } else if (stageReady()) {
     ctx.save();
     ctx.filter = currentMap.filter;
-    ctx.drawImage(stage, 0, 0, 960, 540);
+    // Adapt scenery to the viewport; keep the floor aligned with the fighters.
+    ctx.drawImage(stage, 0, 0, stage.naturalWidth, stage.naturalHeight * 438 / 540,
+      0, 0, width, ground);
+    ctx.drawImage(stage, 0, stage.naturalHeight * 438 / 540,
+      stage.naturalWidth, stage.naturalHeight * 102 / 540,
+      0, ground, width, 102);
     ctx.restore();
   }
   const shade = ctx.createLinearGradient(0, 0, 0, 170);
   shade.addColorStop(0, "#100f19ed");
   shade.addColorStop(1, "#100f1900");
   ctx.fillStyle = shade;
-  ctx.fillRect(0, 0, 960, 170);
+  ctx.fillRect(0, 0, width, 170);
   // Warm floating dust, intentionally independent of the simulation RNG.
   const t = performance.now() / 1000;
   for (let i = 0; i < 16; i++) {
     ctx.fillStyle = i % 2 ? "#ffd49c66" : "#ffe7b22f";
     ctx.fillRect(
-      (i * 127 + t * (5 + (i % 4))) % 960,
-      170 + ((i * 67) % 270) + Math.sin(t + i) * 12,
+      (i * 127 + t * (5 + (i % 4))) % width,
+      170 + ((i * 67) % Math.max(1, ground - 170)) + Math.sin(t + i) * 12,
       2,
       2,
     );
   }
-  label(ctx, currentMap.english, 23, 518, 11, "#ffe6bd", "left");
-  label(ctx, "STAGE 01  /  FREE PLAY", 936, 518, 10, "#ffe6bd", "right");
+  label(ctx, currentMap.english, 23, height - 22, 11, "#ffe6bd", "left");
+  label(ctx, "STAGE 01  /  FREE PLAY", width - 24, height - 22, 10, "#ffe6bd", "right");
 }
 export function label(
   ctx,
@@ -87,8 +93,10 @@ function polygon(ctx, points, color) {
   ctx.closePath();
   ctx.fill();
 }
-export function drawHUD(ctx, fighters, timer, round, winsRequired = 2) {
+export function drawHUD(ctx, fighters, timer, round, winsRequired = 2, width = 960) {
   fighters.forEach((f, i) => {
+    ctx.save();
+    if (i) ctx.translate(width - 960, 0);
     ctx.save();
     if (i) {
       ctx.translate(960, 0);
@@ -223,7 +231,10 @@ export function drawHUD(ctx, fighters, timer, round, winsRequired = 2) {
       f.energyPoints === 3 ? "#ffe388" : "#ebd3b9",
       i ? "right" : "left",
     );
+    ctx.restore();
   });
+  ctx.save();
+  ctx.translate((width - 960) / 2, 0);
   polygon(
     ctx,
     [
@@ -248,6 +259,7 @@ export function drawHUD(ctx, fighters, timer, round, winsRequired = 2) {
     timer < 10 ? "#ff745e" : "#fff3cf",
   );
   label(ctx, `ROUND ${round}`, 480, 113, 11, "#f0d2a6");
+  ctx.restore();
 }
 
 export function drawImpact(ctx, particles) {

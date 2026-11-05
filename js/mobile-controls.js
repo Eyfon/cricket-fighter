@@ -16,6 +16,17 @@ export function joystickVector(dx, dy, radius, rotated = false) {
   return { x, y, actions };
 }
 
+// A square 3 × 3 pad: the center is neutral, corners hold two directions.
+export function dpadVector(dx, dy, radius, rotated = false) {
+  if (rotated) [dx, dy] = [dy, -dx];
+  const actions = [];
+  if (dx > radius / 3) actions.push("right");
+  if (dx < -radius / 3) actions.push("left");
+  if (dy > radius / 3) actions.push("guard");
+  if (dy < -radius / 3) actions.push("up");
+  return actions;
+}
+
 // Separate from physical keys: releasing a finger must not release a keyboard key.
 export class PointerKeys {
   constructor() { this.pointers = new Map(); this.pending = new Map(); }
@@ -42,22 +53,25 @@ export function createMobileControls({ canInput, onPause }) {
   const body = document.body, app = document.querySelector(".app");
   const panel = document.querySelector(".touch");
   const stick = document.getElementById("touch-joystick");
+  const pad = document.getElementById("touch-dpad");
+  const directionButtons = [...pad.querySelectorAll("[data-directions]")];
   const buttons = [...panel.querySelectorAll("[data-action]")];
   const fullscreen = document.getElementById("mobile-fullscreen");
   const pause = document.getElementById("mobile-pause");
   const notice = document.getElementById("mobile-notice");
   const coarse = matchMedia("(pointer: coarse)");
   const state = new PointerKeys(), binding = bindings[0];
-  let stickId = null, rotated = false, noticeTimer, fullscreenRequest = null;
+  const padDirections = new Map();
+  let stickId = null, rotated = false, noticeTimer, fullscreenRequest = null, directionControl;
   const mobile = () => coarse.matches && navigator.maxTouchPoints > 0;
   const enabled = () => canInput() && !panel.hidden && body.dataset.touch !== "never";
   function clear() {
-    state.clear(); stickId = null;
-    for (const button of buttons) button.classList.remove("held");
+    state.clear(); padDirections.clear(); stickId = null;
+    for (const button of [...buttons, ...directionButtons]) button.classList.remove("held");
     stick.classList.remove("held");
     stick.style.setProperty("--stick-x", "0px");
     stick.style.setProperty("--stick-y", "0px");
-    for (const element of [stick, ...buttons]) {
+    for (const element of [stick, pad, ...buttons]) {
       for (const id of element._pointers || []) {
         if (element.hasPointerCapture(id)) element.releasePointerCapture(id);
       }
@@ -65,6 +79,11 @@ export function createMobileControls({ canInput, onPause }) {
     }
   }
   function refresh() {
+    const nextControl = body.dataset.directionControl === "joystick" ? "joystick" : "dpad";
+    if (directionControl !== nextControl) clear();
+    directionControl = nextControl;
+    stick.hidden = directionControl !== "joystick";
+    pad.hidden = directionControl !== "dpad";
     const isMobile = mobile();
     const width = window.visualViewport?.width || innerWidth;
     const height = window.visualViewport?.height || innerHeight;
@@ -135,7 +154,7 @@ export function createMobileControls({ canInput, onPause }) {
     stick.style.setProperty("--stick-y", `${vector.y * 0.55}px`);
   };
   stick.addEventListener("pointerdown", (event) => {
-    if (!enabled() || stickId !== null) return;
+    if (!enabled() || directionControl !== "joystick" || stickId !== null) return;
     capture(stick, event); stickId = event.pointerId;
     stick.classList.add("held"); moveStick(event);
   });
@@ -143,16 +162,38 @@ export function createMobileControls({ canInput, onPause }) {
     if (event.pointerId !== stickId) return;
     event.preventDefault(); moveStick(event);
   });
+  function paintPad() {
+    const held = new Set([...padDirections.values()].flat());
+    for (const button of directionButtons)
+      button.classList.toggle("held", button.dataset.directions.split(" ").every((action) => held.has(action)));
+  }
+  function movePad(event) {
+    const rect = pad.getBoundingClientRect();
+    const actions = dpadVector(event.clientX - rect.left - rect.width / 2,
+      event.clientY - rect.top - rect.height / 2, Math.min(rect.width, rect.height) / 2, rotated);
+    padDirections.set(event.pointerId, actions);
+    state.set(event.pointerId, actions.map((action) => binding[action]), false);
+    paintPad();
+  }
+  pad.addEventListener("pointerdown", (event) => {
+    if (!enabled() || directionControl !== "dpad") return;
+    capture(pad, event); movePad(event);
+  });
+  pad.addEventListener("pointermove", (event) => {
+    if (!padDirections.has(event.pointerId)) return;
+    event.preventDefault(); movePad(event);
+  });
   for (const button of buttons) button.addEventListener("pointerdown", (event) => {
     if (!enabled()) return;
     capture(button, event);
     state.set(event.pointerId, [binding[button.dataset.action]]);
     button.classList.add("held");
   });
-  for (const element of [stick, ...buttons]) {
+  for (const element of [stick, pad, ...buttons]) {
     for (const type of ["pointerup", "pointercancel", "lostpointercapture"]) {
       element.addEventListener(type, (event) => {
         state.release(event.pointerId, type === "pointercancel");
+        if (padDirections.delete(event.pointerId)) paintPad();
         element._pointers?.delete(event.pointerId);
         if (!element._pointers?.size) element.classList.remove("held");
         if (event.pointerId === stickId) {
@@ -170,7 +211,7 @@ export function createMobileControls({ canInput, onPause }) {
   coarse.addEventListener("change", refresh);
   document.addEventListener("fullscreenchange", () => { clear(); refresh(); });
   new MutationObserver(refresh).observe(body, {
-    attributes: true, attributeFilter: ["data-screen", "data-mode", "data-touch"],
+    attributes: true, attributeFilter: ["data-screen", "data-mode", "data-touch", "data-direction-control"],
   });
   refresh();
   return { clear, refresh, sample: () => enabled() ? state.sample() : new Set() };

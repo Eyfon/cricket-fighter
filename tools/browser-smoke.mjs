@@ -378,7 +378,7 @@ try {
   await launch();
   assert.equal(await page.locator(".touch").isVisible(), true);
   const points = await page.evaluate(() => {
-    const s = document.getElementById("touch-joystick").getBoundingClientRect();
+    const s = document.querySelector('#touch-dpad:not([hidden]), #touch-joystick:not([hidden])').getBoundingClientRect();
     const b = document.querySelector('[data-action="punch"]').getBoundingClientRect();
     const radius = Math.min(s.width, s.height) / 2;
     const rotated = document.body.classList.contains("mobile-portrait");

@@ -27,6 +27,7 @@ for (const file of [
   "js/energy-effects.js",
   "js/input.js",
   "js/mobile-controls.js",
+  "js/battle-viewport.js",
   "js/roster.js",
   "js/character-schema.js",
   "js/presentation.js",
