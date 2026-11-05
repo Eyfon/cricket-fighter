@@ -51,6 +51,7 @@ try {
     screenOrientation: { type: height > width ? "portraitPrimary" : "landscapePrimary", angle: height > width ? 0 : 90 },
   });
   await send("Runtime.enable"); await send("Page.enable"); await send("Network.enable");
+  await send("Network.setCacheDisabled", { cacheDisabled: true });
   await metrics(390, 844);
   await send("Emulation.setTouchEmulationEnabled", { enabled: true, maxTouchPoints: 5 });
   let initScript;
@@ -89,9 +90,37 @@ try {
   assert.ok(Math.abs(view.app.width - 390) < 1 && Math.abs(view.app.height - 844) < 1);
   assert.ok(await run(() => document.querySelector(".home-copy").offsetWidth > 700), "home uses the full logical landscape width");
   await screenshot("mobile-portrait-menu");
+  // Draft alternates through the shared pool, keeps locked picks and permits mirrors.
+  await run(() => document.getElementById("training").click());
+  assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "p1");
+  await frames(2);
+  await screenshot("mobile-portrait-selection");
+  const tap = async (selector) => {
+    const point = await evaluate(`(() => { const r = document.querySelector(${JSON.stringify(selector)}).getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; })()`);
+    await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ id: 1, ...point }] });
+    await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  };
+  await tap('[data-roster-id="prototype-b"]');
+  assert.equal(await run(() => document.getElementById("p1").value), "prototype-b");
+  await tap("#characters-next");
+  assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "p2");
+  await tap('[data-roster-id="prototype-b"]');
+  await tap("#characters-next");
+  assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "ready");
+  await tap('[data-edit-pick="p1"]');
+  assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "p1");
+  await tap('[data-roster-id="prototype-a"]');
+  await tap("#characters-next");
+  assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "ready", "editing one side keeps the other locked");
+  await tap("#characters-next");
+  assert.equal((await state()).screen, "setup");
+  await tap('[data-map="midnight"]');
+  assert.equal(await run(() => document.getElementById("map-name").textContent), "午夜天台");
+  await screenshot("mobile-portrait-stage");
+  await run(() => document.getElementById("home-link").click());
   await run(() => {
     document.getElementById("training").click();
-    document.getElementById("characters-next").click();
+    for (let pick = 0; pick < 3; pick++) document.getElementById("characters-next").click();
     document.getElementById("training-energy").checked = true;
     document.getElementById("start").click();
   });
@@ -226,23 +255,44 @@ try {
     const check = (name) => out.push({ name, width: app.clientWidth, scrollWidth: app.scrollWidth });
     click("home-link"); check("home"); click("play"); check("mode");
     document.querySelector("[data-mode=cpu]").click(); check("characters");
-    click("characters-next"); check("setup");
+    for (let pick = 0; pick < 3; pick++) click("characters-next"); check("setup");
     click("home-link"); document.querySelector('[data-go="options"]').click(); check("options");
     click("home-link"); document.querySelector('[data-go="gallery"]').click(); check("gallery");
     return out;
   });
   assert.ok(menus.every((m) => m.scrollWidth <= m.width + 1), JSON.stringify(menus));
+  // Both pre-match screens fit without page scrolling at small landscape sizes;
+  // rules can scroll independently and the primary action stays reachable.
+  for (const [width, height] of [[568, 320], [667, 375], [844, 390], [915, 412]]) {
+    await metrics(width, height); await new Promise((r) => setTimeout(r, 100));
+    await run(() => {
+      document.getElementById("home-link").click(); document.getElementById("play").click();
+      document.querySelector("[data-mode=watch]").click();
+    });
+    await frames(2);
+    const checkScreen = async (buttonId) => {
+      const sizing = await evaluate(`(() => { const app=document.querySelector('.app'), c=document.getElementById(${JSON.stringify(buttonId)}).getBoundingClientRect(); return {client:app.clientHeight,scroll:app.scrollHeight,width:app.clientWidth,scrollWidth:app.scrollWidth,button:{x:c.x,y:c.y,right:c.right,bottom:c.bottom,height:c.height}};})()`);
+      assert.ok(sizing.scroll <= sizing.client + 1 && sizing.scrollWidth <= sizing.width + 1, JSON.stringify({ width, height, buttonId, sizing }));
+      assert.ok(sizing.button.y >= 0 && sizing.button.bottom <= height && sizing.button.height >= 44, JSON.stringify(sizing));
+    };
+    await checkScreen("characters-next");
+    await screenshot(`selection-${width}x${height}`);
+    await run(() => { for(let i=0;i<3;i++) document.getElementById("characters-next").click(); });
+    await checkScreen("start");
+    await screenshot(`stage-${width}x${height}`);
+  }
+  await run(() => { document.getElementById("home-link").click(); document.querySelector('[data-go="gallery"]').click(); });
   await frames(2);
   await screenshot("mobile-small-gallery");
   await run(() => {
     document.getElementById("home-link").click(); document.getElementById("play").click();
     document.querySelector("[data-mode=watch]").click();
-    document.getElementById("characters-next").click(); document.getElementById("start").click();
+    for (let pick = 0; pick < 3; pick++) document.getElementById("characters-next").click(); document.getElementById("start").click();
   });
   assert.equal((await layout()).touch, "none", "watch hides touch controls");
   await metrics(720, 600, false);
   await send("Emulation.setTouchEmulationEnabled", { enabled: false });
-  await run(() => { document.getElementById("home-link").click(); document.getElementById("training").click(); document.getElementById("characters-next").click(); document.getElementById("start").click(); });
+  await run(() => { document.getElementById("home-link").click(); document.getElementById("training").click(); for (let pick = 0; pick < 3; pick++) document.getElementById("characters-next").click(); document.getElementById("start").click(); });
   await new Promise((r) => setTimeout(r, 100));
   view = await layout();
   assert.equal(view.mobile, false); assert.equal(view.touch, "none", "small desktop has no automatic touch overlay");
@@ -256,7 +306,7 @@ try {
       const select = document.getElementById("touch-option"); select.value = option;
       select.dispatchEvent(new Event("input"));
       document.getElementById("home-link").click(); document.getElementById("training").click();
-      document.getElementById("characters-next").click(); document.getElementById("start").click();
+      for (let pick = 0; pick < 3; pick++) document.getElementById("characters-next").click(); document.getElementById("start").click();
     }).toString()})(${JSON.stringify(option)})`);
     assert.equal((await layout()).touch, option === "always" ? "block" : "none", `${option} touch preference`);
   }
@@ -275,6 +325,33 @@ try {
   });
   assert.equal(await run(() => document.getElementById("direction-control").value), "joystick");
   assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.directionControl), "joystick");
+  await metrics(1280, 800, false);
+  await run(() => {
+    document.getElementById("home-link").click(); document.getElementById("play").click();
+    document.querySelector("[data-mode=watch]").click();
+    document.querySelector('[data-roster-id="prototype-a"]').focus();
+  });
+  await send("Input.dispatchKeyEvent", { type: "keyDown", key: "ArrowRight", code: "ArrowRight" });
+  await send("Input.dispatchKeyEvent", { type: "keyUp", key: "ArrowRight", code: "ArrowRight" });
+  assert.equal(await run(() => document.getElementById("p1").value), "prototype-b", "keyboard previews roster entries");
+  // Following the preference reload above, animation uses native RAF.
+  await new Promise((r) => setTimeout(r, 250));
+  await screenshot("desktop-fighter-draft");
+  await run(() => { for(let i=0;i<3;i++) document.getElementById("characters-next").click(); });
+  assert.equal(await run(() => document.getElementById("p1-ai-field").hidden), false);
+  assert.equal(await run(() => document.getElementById("p2-ai-field").hidden), false);
+  await screenshot("desktop-stage-setup");
+  for (const mode of ["local", "cpu", "training"]) {
+    await evaluate(`(() => {
+      document.getElementById('home-link').click();
+      if (${JSON.stringify(mode)} === 'training') document.getElementById('training').click();
+      else {document.getElementById('play').click();document.querySelector('[data-mode=${mode}]').click();}
+      for(let i=0;i<3;i++) document.getElementById('characters-next').click();
+    })()`);
+    const fields = await run(() => ({ p1: !document.getElementById("p1-ai-field").hidden,
+      p2: !document.getElementById("p2-ai-field").hidden, training: !document.getElementById("training-settings").hidden }));
+    assert.deepEqual(fields, { p1: false, p2: mode === "cpu", training: mode === "training" });
+  }
   assert.deepEqual(errors, []); assert.deepEqual(networkErrors, []);
   await writeFile("artifacts/mobile-browser-check.json", JSON.stringify({ results, desktop: view, errors, networkErrors }, null, 2));
   console.log("Mobile browser QA passed: portrait fallback, landscape full canvas, eight directions, six keys, four directional attacks, aerial attack, multi-touch, pause cleanup, phone sizes, watch and desktop visibility; no resource or runtime errors.");

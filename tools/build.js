@@ -33,6 +33,7 @@ for (const file of [
   "js/presentation.js",
   "style/arena.css",
   "style/mobile-arena.css",
+  "style/match-lobby.css",
 ]) {
   const dest = path.join(root, "dist", file);
   await mkdir(path.dirname(dest), { recursive: true });

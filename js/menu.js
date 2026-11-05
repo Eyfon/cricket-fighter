@@ -33,6 +33,83 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
   $("mode").value = ["watch", "cpu", "local"].includes(saved.mode)
     ? saved.mode
     : "watch";
+  let pickTurn = "p1";
+  const lockedPicks = { p1: false, p2: false };
+  function renderDraft() {
+    $("selection-arena").dataset.turn = pickTurn || "ready";
+    for (const side of ["p1", "p2"]) {
+      const character = roster.find((c) => c.id === $(side).value);
+      $(side + "-name").textContent = character.name;
+      const panel = document.querySelector(`[data-player="${side}"]`);
+      panel.classList.toggle("is-active", pickTurn === side);
+      panel.classList.toggle("is-locked", lockedPicks[side]);
+      const edit = panel.querySelector("[data-edit-pick]");
+      edit.disabled = !lockedPicks[side];
+      edit.textContent = lockedPicks[side] ? "已锁定 · 重选 ↻" : pickTurn === side ? "正在选择" : "等待选择";
+      const mode = $("mode").value;
+      $(side + "-controller").textContent = mode === "watch" || (mode === "cpu" && side === "p2")
+        ? "电脑" : mode === "training" && side === "p2" ? "练习对手" : "玩家";
+    }
+    $("draft-turn").textContent = pickTurn ? `${pickTurn === "p1" ? "1P" : "2P"} 选择出战角色` : "双方就绪";
+    $("draft-hint").textContent = pickTurn ? "点击角色预览，再确认出战" : "前往选择地图与对战规则";
+    $("characters-next").textContent = pickTurn ? `锁定 ${pickTurn === "p1" ? "1P" : "2P"} 角色 →` : "选择地图 →";
+    $("random-fighter").disabled = !pickTurn;
+    document.querySelectorAll("[data-roster-id]").forEach((card) => {
+      card.disabled = !pickTurn;
+      card.setAttribute("aria-pressed", !!pickTurn && card.dataset.rosterId === $(pickTurn).value);
+      for (const side of ["p1", "p2"]) {
+        const mark = card.querySelector(`[data-pick-marker="${side}"]`);
+        mark.hidden = card.dataset.rosterId !== $(side).value;
+        mark.textContent = `${side === "p1" ? "1P" : "2P"}${lockedPicks[side] ? " ✓" : ""}`;
+      }
+    });
+  }
+  function previewPick(id) {
+    if (!pickTurn) return;
+    $(pickTurn).value = id;
+    refreshCharacters();
+  }
+  $("roster-count").textContent = `${String(roster.length).padStart(2, "0")} FIGHTERS`;
+  for (const character of roster) {
+    const card = document.createElement("button");
+    card.className = "roster-card";
+    card.dataset.rosterId = character.id;
+    card.setAttribute("aria-label", `选择${character.name}`);
+    const canvas = document.createElement("canvas");
+    canvas.id = "pool-preview-" + character.id;
+    canvas.width = 240;
+    canvas.height = 260;
+    canvas.setAttribute("aria-hidden", "true");
+    const name = document.createElement("strong");
+    name.textContent = character.name;
+    const marks = document.createElement("span");
+    marks.className = "pick-markers";
+    for (const side of ["p1", "p2"]) {
+      const mark = document.createElement("span");
+      mark.dataset.pickMarker = side;
+      marks.append(mark);
+    }
+    card.append(canvas, name, marks);
+    card.onclick = () => previewPick(character.id);
+    $("roster-pool").append(card);
+  }
+  $("roster-pool").addEventListener("keydown", (event) => {
+    const delta = { ArrowRight: 1, ArrowDown: 1, ArrowLeft: -1, ArrowUp: -1 }[event.key];
+    if (!pickTurn || !delta) return;
+    event.preventDefault();
+    const index = roster.findIndex((c) => c.id === $(pickTurn).value);
+    const character = roster[(index + delta + roster.length) % roster.length];
+    previewPick(character.id);
+    [...$("roster-pool").children].find((c) => c.dataset.rosterId === character.id).focus({ preventScroll: true });
+  });
+  $("random-fighter").onclick = () => previewPick(roster[Math.floor(Math.random() * roster.length)].id);
+  document.querySelectorAll("[data-edit-pick]").forEach((button) => {
+    button.onclick = () => {
+      pickTurn = button.dataset.editPick;
+      lockedPicks[pickTurn] = false;
+      renderDraft();
+    };
+  });
   function persist() {
     savePreferences({
       rules,
@@ -76,6 +153,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       : AI_PROFILES[rules.p2Difficulty].description + ' 伤害、血量和能量规则相同。';
     const map = maps.find((map) => map.id === rules.stage);
     $("map-name").textContent = map.name;
+    $("map-english").textContent = map.english;
     $("map-subtitle").textContent = map.subtitle;
     $("map-preview").classList.toggle("grid-map", !map.image);
     $("map-preview").style.setProperty(
@@ -96,6 +174,11 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       `${names[0]} vs ${names[1]} · ${map.name} · ${training ? "练习 / 无限时间" : (rules.time ? rules.time + " 秒" : "无限时间") + " / " + rules.wins + " 胜"} · 双方 ${rules.healthMultiplier} 倍血量`;
   }
   function show(next) {
+    if (next === "characters" && screen !== "characters") {
+      pickTurn = "p1";
+      lockedPicks.p1 = lockedPicks.p2 = false;
+      renderDraft();
+    }
     screen = next;
     onScreen?.(next);
     document.body.dataset.screen = next;
@@ -126,6 +209,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     }
   }
   function refreshCharacters() {
+    renderDraft();
     renderRules();
     persist();
   }
@@ -142,18 +226,22 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
         show("characters");
       }),
   );
-  document.querySelectorAll("[data-random]").forEach(
-    (button) =>
-      (button.onclick = () => {
-        const select = $(button.dataset.random);
-        select.value = roster[Math.floor(Math.random() * roster.length)].id;
-        select.dispatchEvent(new Event("change"));
-      }),
-  );
-  for (const map of maps) {
+  for (const [index, map] of maps.entries()) {
     const button = document.createElement("button");
     button.dataset.map = map.id;
-    button.textContent = map.name;
+    const thumb = document.createElement("span");
+    thumb.className = "map-thumb" + (!map.image ? " grid-map" : "");
+    thumb.setAttribute("aria-hidden", "true");
+    if (map.image) thumb.style.backgroundImage = `url("${new URL(assetUrl(map.image), document.baseURI).href}")`;
+    thumb.style.filter = map.filter;
+    const caption = document.createElement("span");
+    caption.className = "map-caption";
+    const number = document.createElement("small");
+    number.textContent = String(index + 1).padStart(2, "0");
+    const name = document.createElement("strong");
+    name.textContent = map.name;
+    caption.append(number, name);
+    button.append(thumb, caption);
     button.onclick = () => {
       rules.stage = map.id;
       renderRules();
@@ -190,7 +278,13 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
   };
   $("characters-back").onclick = () =>
     show($("mode").value === "training" ? "home" : "mode");
-  $("characters-next").onclick = () => show("setup");
+  $("characters-next").onclick = () => {
+    if (!pickTurn) { show("setup"); return; }
+    lockedPicks[pickTurn] = true;
+    pickTurn = ["p1", "p2"].find((side) => !lockedPicks[side]) || null;
+    renderDraft();
+    persist();
+  };
   function launch(config) {
     lastMatch = { ...config };
     show("battle");

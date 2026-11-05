@@ -14,6 +14,7 @@
     <link rel="icon" href="data:," />
     <link rel="stylesheet" href="./style/arena.css" />
     <link rel="stylesheet" href="./style/mobile-arena.css" />
+    <link rel="stylesheet" href="./style/match-lobby.css" />
   </head>
   <body data-screen="home">
     <main class="app">
@@ -80,61 +81,58 @@
           </button>
         </div>
       </section>
-      <section data-screen="characters" class="screen" hidden>
+      <section data-screen="characters" class="screen match-lobby selection-screen" hidden>
         <div class="page-heading">
-          <div>
-            <p class="eyebrow">02 / SELECT YOUR FIGHTERS</p>
-            <h1>谁来上场？</h1>
-          </div>
+          <div><p class="eyebrow">02 / FIGHTER DRAFT</p><h1>选择你的出战角色</h1></div>
           <button id="characters-back" class="back">← 返回</button>
         </div>
-        <div class="character-grid">
-          <article class="fighter-card blue-card">
-            <div class="fighter-card-top">
-              <span>1P / 左方</span><button data-random="p1">随机 ↻</button>
-            </div>
-            <canvas id="preview-p1" width="360" height="300"></canvas
-            ><label>选择角色<select id="p1"></select></label>
+        <div class="selection-arena" id="selection-arena" data-turn="p1">
+          <article class="draft-player" data-player="p1">
+            <div class="player-header"><span class="player-tag">1P</span><span id="p1-controller"></span></div>
+            <div class="draft-art"><span class="player-watermark" aria-hidden="true">01</span><canvas id="preview-p1" width="360" height="300" aria-hidden="true"></canvas></div>
+            <div class="player-identity"><small>LEFT SIDE</small><h2 id="p1-name"></h2></div>
+            <button data-edit-pick="p1" class="pick-status" disabled>正在选择</button>
+            <select id="p1" aria-label="左方角色" hidden></select>
           </article>
-          <div class="large-vs">VS</div>
-          <article class="fighter-card red-card">
-            <div class="fighter-card-top">
-              <span>2P / 右方</span><button data-random="p2">随机 ↻</button>
-            </div>
-            <canvas id="preview-p2" width="360" height="300"></canvas
-            ><label>选择角色<select id="p2"></select></label>
+          <div class="roster-pool">
+            <div class="pool-heading"><span class="eyebrow">THE ROSTER</span><span id="roster-count"></span></div>
+            <div class="draft-turn" id="draft-turn" role="status" aria-live="polite"></div>
+            <div class="roster-cards" id="roster-pool" role="group" aria-label="共享角色池"></div>
+            <div class="pool-tools"><span id="draft-hint">点击角色预览，再确认出战</span><button id="random-fighter" class="text-button">随机 ↻</button></div>
+          </div>
+          <article class="draft-player" data-player="p2">
+            <div class="player-header"><span class="player-tag">2P</span><span id="p2-controller"></span></div>
+            <div class="draft-art"><span class="player-watermark" aria-hidden="true">02</span><canvas id="preview-p2" width="360" height="300" aria-hidden="true"></canvas></div>
+            <div class="player-identity"><small>RIGHT SIDE</small><h2 id="p2-name"></h2></div>
+            <button data-edit-pick="p2" class="pick-status" disabled>等待选择</button>
+            <select id="p2" aria-label="右方角色" hidden></select>
           </article>
         </div>
-        <div class="page-bottom">
-          <span id="mode-summary"></span
-          ><button id="characters-next" class="primary">
-            确认角色 · 选择地图 →
-          </button>
-        </div>
+        <div class="page-bottom lobby-footer"><div><span class="eyebrow">MATCH MODE</span><span id="mode-summary"></span></div><button id="characters-next" class="primary">锁定 1P 角色 →</button></div>
       </section>
-      <section data-screen="setup" class="screen" hidden>
+      <section data-screen="setup" class="screen match-lobby setup-screen" hidden>
         <div class="page-heading">
           <div>
             <p class="eyebrow">03 / STAGE & MATCH RULES</p>
-            <h1>选好擂台，定下规则。</h1>
+            <h1>下一战，在哪里？</h1>
           </div>
           <button data-go="characters" class="back">← 重新选人</button>
         </div>
         <div class="setup-grid">
           <article class="stage-panel">
+            <div class="stage-heading"><span class="eyebrow">SELECT YOUR STAGE</span><button id="random-map" class="text-button">随机擂台 ↻</button></div>
             <div class="map-preview" id="map-preview">
               <div>
-                <small>SELECTED STAGE</small>
+                <small id="map-english">SELECTED STAGE</small>
                 <h2 id="map-name"></h2>
                 <p id="map-subtitle"></p>
               </div>
             </div>
-            <div class="map-list" id="map-list"></div>
-            <button id="random-map" class="text-button">随机地图 ↻</button>
+            <div class="map-list" id="map-list" role="group" aria-label="地图选择"></div>
           </article>
           <article class="rule-panel">
-            <p class="eyebrow">MATCH RULES</p>
-            <h2>对战设置</h2>
+            <div class="rules-heading"><div><p class="eyebrow">MAKE IT YOUR MATCH</p><h2>对战设置</h2></div><button id="reset-rules" class="text-button">重置</button></div>
+            <div class="rule-fields">
             <label
               >回合时间<select id="round-time">
                 <option value="30">30 秒</option>
@@ -183,13 +181,10 @@
                 练习时无限能量点</label
               ><small>练习不计比赛胜负，击败木桩后自动重置。</small>
             </div>
-            <button id="reset-rules" class="text-button">恢复默认规则</button>
+            </div>
           </article>
         </div>
-        <div class="page-bottom">
-          <span id="match-summary"></span
-          ><button id="start" class="primary">开始对战 ▶</button>
-        </div>
+        <div class="page-bottom lobby-footer"><div><span class="eyebrow">READY TO FIGHT</span><span id="match-summary"></span></div><button id="start" class="primary">进入擂台 ▶</button></div>
       </section>
       <section data-screen="battle" class="screen battle-screen" hidden>
         <div class="cabinet">
@@ -377,8 +372,8 @@
       </footer>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=0fa893342e1f","./js/ai.js":"./js/ai.js?v=0fa893342e1f","./js/animation-data.js":"./js/animation-data.js?v=0fa893342e1f","./js/animation.js":"./js/animation.js?v=0fa893342e1f","./js/arena.js":"./js/arena.js?v=0fa893342e1f","./js/asset-url.js":"./js/asset-url.js?v=0fa893342e1f","./js/audio.js":"./js/audio.js?v=0fa893342e1f","./js/battle-frame.js":"./js/battle-frame.js?v=0fa893342e1f","./js/battle-viewport.js":"./js/battle-viewport.js?v=0fa893342e1f","./js/character-schema.js":"./js/character-schema.js?v=0fa893342e1f","./js/combat-world.js":"./js/combat-world.js?v=0fa893342e1f","./js/combat.js":"./js/combat.js?v=0fa893342e1f","./js/energy-effects.js":"./js/energy-effects.js?v=0fa893342e1f","./js/input.js":"./js/input.js?v=0fa893342e1f","./js/language.js":"./js/language.js?v=0fa893342e1f","./js/maps.js":"./js/maps.js?v=0fa893342e1f","./js/menu.js":"./js/menu.js?v=0fa893342e1f","./js/mobile-controls.js":"./js/mobile-controls.js?v=0fa893342e1f","./js/presentation.js":"./js/presentation.js?v=0fa893342e1f","./js/roster.js":"./js/roster.js?v=0fa893342e1f","./js/round-ending.js":"./js/round-ending.js?v=0fa893342e1f","./js/settings.js":"./js/settings.js?v=0fa893342e1f","./js/stages.js":"./js/stages.js?v=0fa893342e1f","./js/super-flash.js":"./js/super-flash.js?v=0fa893342e1f"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=0add73338ff3","./js/ai.js":"./js/ai.js?v=0add73338ff3","./js/animation-data.js":"./js/animation-data.js?v=0add73338ff3","./js/animation.js":"./js/animation.js?v=0add73338ff3","./js/arena.js":"./js/arena.js?v=0add73338ff3","./js/asset-url.js":"./js/asset-url.js?v=0add73338ff3","./js/audio.js":"./js/audio.js?v=0add73338ff3","./js/battle-frame.js":"./js/battle-frame.js?v=0add73338ff3","./js/battle-viewport.js":"./js/battle-viewport.js?v=0add73338ff3","./js/character-schema.js":"./js/character-schema.js?v=0add73338ff3","./js/combat-world.js":"./js/combat-world.js?v=0add73338ff3","./js/combat.js":"./js/combat.js?v=0add73338ff3","./js/energy-effects.js":"./js/energy-effects.js?v=0add73338ff3","./js/input.js":"./js/input.js?v=0add73338ff3","./js/language.js":"./js/language.js?v=0add73338ff3","./js/maps.js":"./js/maps.js?v=0add73338ff3","./js/menu.js":"./js/menu.js?v=0add73338ff3","./js/mobile-controls.js":"./js/mobile-controls.js?v=0add73338ff3","./js/presentation.js":"./js/presentation.js?v=0add73338ff3","./js/roster.js":"./js/roster.js?v=0add73338ff3","./js/round-ending.js":"./js/round-ending.js?v=0add73338ff3","./js/settings.js":"./js/settings.js?v=0add73338ff3","./js/stages.js":"./js/stages.js?v=0add73338ff3","./js/super-flash.js":"./js/super-flash.js?v=0add73338ff3"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=0fa893342e1f"></script>
+    <script type="module" src="./js/arena.js?v=0add73338ff3"></script>
   </body>
 </html>

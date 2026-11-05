@@ -101,8 +101,10 @@ try {
     await goSelection(mode);
     assert.equal((await state()).audio.stage, "selection");
     assert.equal((await state()).audio.paused, false);
-    await page.selectOption("#p1", p1);
-    await page.selectOption("#p2", p2);
+    await card(`[data-roster-id="${p1}"]`);
+    await click("characters-next");
+    await card(`[data-roster-id="${p2}"]`);
+    await click("characters-next");
     await click("characters-next");
     await page.selectOption("#health-multiplier", String(health));
     if (mode !== "training") {
@@ -168,8 +170,10 @@ try {
     await page.locator('.screen[data-screen="characters"] dt').count(),
     0,
   );
-  await page.selectOption("#p1", "prototype-b");
-  await page.selectOption("#p1", "prototype-a");
+  await card('[data-roster-id="prototype-b"]');
+  await card('[data-roster-id="prototype-a"]');
+  await click("characters-next");
+  await click("characters-next");
   await click("characters-next");
   assert.equal(await page.locator("#round-time").inputValue(), "60");
   assert.equal(await page.locator("#health-multiplier").inputValue(), "1");
@@ -213,6 +217,8 @@ try {
   await togglePause();
   await click("battle-return");
   assert.equal((await state()).screen, "characters");
+  await click("characters-next");
+  await click("characters-next");
   await click("characters-next");
   assert.equal(await page.locator("#health-multiplier").inputValue(), "3");
   await click("reset-rules");
@@ -315,8 +321,10 @@ try {
   await click("battle-return");
   await click("home-link");
   await click("training");
-  await page.selectOption("#p1", "prototype-a");
-  await page.selectOption("#p2", "prototype-b");
+  await card('[data-roster-id="prototype-a"]');
+  await click("characters-next");
+  await card('[data-roster-id="prototype-b"]');
+  await click("characters-next");
   await click("characters-next");
   assert.equal(await page.locator("#round-time").inputValue(), "0");
   await card('[data-map="training"]');

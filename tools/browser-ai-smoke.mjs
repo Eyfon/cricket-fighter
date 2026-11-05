@@ -60,7 +60,7 @@ try {
     const { snapshot } = await import('./js/arena.js');
     const click = (id) => document.getElementById(id).click();
     const change = (id, value) => { const input = document.getElementById(id); input.value = value; input.dispatchEvent(new Event('change')); };
-    click('play'); document.querySelector('[data-mode=watch]').click(); click('characters-next');
+    click('play'); document.querySelector('[data-mode=watch]').click(); for (let pick = 0; pick < 3; pick++) click('characters-next');
     change('p1-difficulty', 'easy'); change('difficulty', 'hard'); change('wins-required', '1');
     advanceFrames(2);
     return { p1Visible: !document.getElementById('p1-ai-field').hidden, p2Visible: !document.getElementById('p2-ai-field').hidden,
@@ -85,12 +85,12 @@ try {
     click('restart');
     observations.push({ kind: 'rematch', previousSeed, state: snapshot() });
     for (const level of ['easy', 'normal', 'hard']) {
-      click('home-link'); click('play'); document.querySelector('[data-mode=cpu]').click(); click('characters-next');
+      click('home-link'); click('play'); document.querySelector('[data-mode=cpu]').click(); for (let pick = 0; pick < 3; pick++) click('characters-next');
       const visible = { p1: !document.getElementById('p1-ai-field').hidden, p2: !document.getElementById('p2-ai-field').hidden };
       change('difficulty', level); click('start'); await ready(); advanceFrames(600);
       observations.push({ kind: 'cpu', level, visible, state: snapshot() });
     }
-    click('home-link'); click('play'); document.querySelector('[data-mode=local]').click(); click('characters-next');
+    click('home-link'); click('play'); document.querySelector('[data-mode=local]').click(); for (let pick = 0; pick < 3; pick++) click('characters-next');
     observations.push({ kind: 'local', p1Hidden: document.getElementById('p1-ai-field').hidden, p2Hidden: document.getElementById('p2-ai-field').hidden });
     return observations;
   });

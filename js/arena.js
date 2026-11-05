@@ -548,6 +548,7 @@ function renderMenuPortraits() {
     portrait("home-right", roster[1] || roster[0], -1, 1.85);
   }
   if (menu.screen === "characters") {
+    for (const def of roster) portrait("pool-preview-" + def.id, def, 1, 1.15);
     portrait(
       "preview-p1",
       roster.find((c) => c.id === $("p1").value),

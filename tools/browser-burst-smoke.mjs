@@ -64,7 +64,7 @@ try {
     window.skillQA={seen,hits,world:()=>activeWorld};
     Fighter.prototype.step = function(...args) { if (!seen.includes(this)) seen.push(this); return original.apply(this,args); };
     document.getElementById('training').click();
-    document.getElementById('characters-next').click();
+    for (let pick = 0; pick < 3; pick++) document.getElementById('characters-next').click();
     document.getElementById('start').click();
     advance(150);
     const run = index => {
