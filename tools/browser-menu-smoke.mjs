@@ -75,6 +75,8 @@ try {
     await new Promise((r) => setTimeout(r, 100));
   }
   await settle();
+  assert.equal(await run(() => document.querySelector(".app-header").getClientRects().length), 0);
+  assert.equal(await run(() => document.querySelectorAll(".keyboard-hints,.touch-hints").length), 0);
   await fits("#play"); await screenshot("game-menu-desktop-home");
   await key("ArrowDown");
   assert.equal(await run(() => document.querySelector(".home-menu .is-highlighted").id), "training");
@@ -103,6 +105,49 @@ try {
     await click('[data-mode="watch"]');
     await fits("#characters-next"); await screenshot(`game-menu-${width}-draft`);
     for (let i = 0; i < 3; i++) await click("#characters-next");
+    const setup = await run(() => {
+      const rail = document.getElementById("map-list"), scene = document.getElementById("map-scene");
+      const full = document.getElementById("mobile-fullscreen").getBoundingClientRect();
+      const back = document.querySelector('.setup-screen .back').getBoundingClientRect();
+      const image = document.getElementById("map-image");
+      return { rail: { h: rail.clientHeight, scroll: rail.scrollHeight, direction: getComputedStyle(rail).flexDirection },
+        scene: { w: scene.clientWidth, h: scene.clientHeight }, imageFit: getComputedStyle(image).objectFit,
+        overlap: full.left < back.right && full.right > back.left && full.top < back.bottom && full.bottom > back.top,
+        selects: [...document.querySelectorAll('.setup-screen select')].every(el => !el.getClientRects().length) };
+    });
+    assert.equal(setup.rail.direction, "column");
+    assert.ok(setup.rail.scroll > setup.rail.h, "map rail scrolls vertically on phones");
+    assert.ok(setup.scene.h >= 90 && setup.scene.w >= 130, JSON.stringify(setup));
+    assert.equal(setup.imageFit, "contain");
+    assert.equal(setup.overlap, false, "fullscreen and back have separate touch targets");
+    assert.ok(setup.selects, "setup exposes buttons instead of native option sheets");
+    const railBox = await run(() => {
+      const e = document.getElementById("map-list"); e.scrollTop = 0;
+      const r = e.getBoundingClientRect(); return { x: r.x + r.width / 2, top: r.top + 12, bottom: r.bottom - 12 };
+    });
+    await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: railBox.x, y: railBox.bottom, id: 1 }] });
+    for (let step = 1; step <= 8; step++) {
+      await send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: railBox.x, y: railBox.bottom + (railBox.top - railBox.bottom) * step / 8, id: 1 }] });
+    }
+    await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    assert.ok(await run(() => document.getElementById("map-list").scrollTop > 10), "map rail supports landscape touch dragging");
+    await click('[data-rule="health-multiplier"][data-rule-step="1"]');
+    assert.equal(await run(() => document.getElementById("health-multiplier-value").value), "2 倍");
+    assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).rules.healthMultiplier), 2);
+    await click('[data-rule="health-multiplier"][data-rule-step="-1"]');
+    assert.equal(await run(() => document.querySelector('[data-rule="health-multiplier"][data-rule-step="-1"]').disabled), true);
+    await click('[data-rule="round-time"][data-rule-step="1"]');
+    await click('[data-rule="round-time"][data-rule-step="1"]');
+    assert.equal(await run(() => document.getElementById("round-time-value").value), "无限时间");
+    assert.equal(await run(() => document.querySelector('[data-rule="round-time"][data-rule-step="1"]').disabled), true);
+    await click("#reset-rules");
+    await run(() => document.getElementById("map-list").scrollTop = 9999);
+    await click('[data-map="training"]');
+    assert.equal(await run(() => document.getElementById("map-name").textContent), "训练空间");
+    assert.equal(await run(() => document.getElementById("map-image").hidden), true);
+    await click("#random-map");
+    await click("#reset-rules");
+    await run(() => document.getElementById("map-list").scrollTop = 0);
     await fits("#start"); await screenshot(`game-menu-${width}-stage`);
     await click("#home-link"); await click('[data-go="options"]');
     await fits(".options-grid"); await screenshot(`game-menu-${width}-options`);

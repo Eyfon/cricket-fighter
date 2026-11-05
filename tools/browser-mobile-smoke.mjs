@@ -128,7 +128,29 @@ try {
   assert.equal((await state()).screen, "setup");
   await tap('[data-map="midnight"]');
   assert.equal(await run(() => document.getElementById("map-name").textContent), "午夜天台");
-  assert.deepEqual(await nativeActions("#health-multiplier"), { contextmenu: false, selectstart: false, dragstart: false }, "native rule selectors retain their events");
+  assert.deepEqual(await nativeActions('[data-rule="health-multiplier"][data-rule-step="1"]'), { contextmenu: true, selectstart: true, dragstart: true }, "rule buttons block long-press browser actions");
+  await tap('[data-rule="health-multiplier"][data-rule-step="1"]');
+  assert.equal(await run(() => document.getElementById("health-multiplier").value), "2");
+  await tap('[data-rule="health-multiplier"][data-rule-step="-1"]');
+  const rail = await run(() => {
+    const element = document.getElementById("map-list");
+    element.scrollTop = 0;
+    const r = element.getBoundingClientRect();
+    // In portrait fallback, logical up points toward physical right.
+    return { start: r.left + r.width * .2, end: r.left + r.width * .8, y: r.top + r.height / 2 };
+  });
+  await send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: rail.start, y: rail.y, id: 1 }] });
+  for (let step = 1; step <= 8; step++) {
+    await send("Input.dispatchTouchEvent", { type: "touchMove", touchPoints: [{ x: rail.start + (rail.end - rail.start) * step / 8, y: rail.y, id: 1 }] });
+    await new Promise(r => setTimeout(r, 25));
+  }
+  await send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+  await new Promise(r => setTimeout(r, 250));
+  const railResult = await run(() => { const e = document.getElementById("map-list"); return { top: e.scrollTop, height: e.clientHeight, scroll: e.scrollHeight }; });
+  assert.ok(railResult.top > 10, "map rail scrolls with a real touch gesture in portrait fallback: " + JSON.stringify({ rail, railResult }));
+  assert.equal(await run(() => document.getElementById("map-name").textContent), "午夜天台", "dragging does not accidentally select another map");
+  await tap('[data-map="training"]');
+  assert.equal(await run(() => document.getElementById("map-name").textContent), "训练空间");
   await screenshot("mobile-portrait-stage");
   await run(() => document.getElementById("home-link").click());
   await run(() => {
@@ -143,6 +165,8 @@ try {
   assert.equal(view.touch, "block"); assert.equal(view.toolbar, "none");
   assert.equal(view.arena.width, 390); assert.equal(view.arena.height, 844);
   assert.equal(view.control, "joystick", "fresh mobile settings default to joystick");
+  assert.equal(await run(() => getComputedStyle(document.getElementById("touch-joystick")).opacity), "0.56");
+  assert.equal(await run(() => getComputedStyle(document.querySelector(".touch-actions")).opacity), "0.56");
   assert.ok(Math.abs(view.backing.width / view.backing.height - 844 / 390) < .006, "actual drawing fills canvas without letterboxing");
   assert.ok(view.fullscreenCalls > 0 && view.lockCalls.includes("landscape"));
   const points = (dx = 0, dy = 0, action = null) => evaluate(`(${((dx, dy, action) => {

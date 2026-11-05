@@ -131,8 +131,8 @@ body.mobile-device h2 { font-size: 20px; margin: 4px 0 14px; }
 body.mobile-device[data-screen="battle"] .app { padding: 0; overflow: hidden; }
 body.mobile-device[data-screen="battle"] .battle-screen { height: 100%; min-height: 0; padding: 0; }
 body.mobile-device[data-screen="battle"] .mobile-tools {
-  top: max(98px, env(safe-area-inset-top));
-  right: calc(50% - 45px);
+  top: max(132px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
 }
 body.mobile-device .dialog { padding: 16px 24px; max-height: calc(var(--game-height) - 20px); overflow: auto; }
 body.mobile-device .dialog h2 { font-size: 24px; margin: 8px 0 12px; }
@@ -155,7 +155,9 @@ body[data-screen="battle"] .touch {
   --control-height: var(--game-height, 100svh);
   --stick-size: clamp(110px, calc(var(--control-height) * .34), 156px);
   --button-size: clamp(46px, calc(var(--control-height) * .15), 66px);
+  --control-opacity: .56;
 }
+body[data-screen="battle"] :is(#touch-dpad, #touch-joystick, .touch-actions) { opacity: var(--control-opacity); }
 body[data-screen="battle"].touch-visible .touch { display: block; }
 body[data-screen="battle"] #touch-dpad {
   position: absolute;

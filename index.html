@@ -24,7 +24,7 @@
         <button id="mobile-pause" aria-label="暂停" title="暂停" hidden>Ⅱ</button>
       </nav>
       <p id="mobile-notice" role="status" hidden></p>
-      <header class="app-header">
+      <header class="app-header" hidden>
         <button class="brand" id="home-link" aria-label="返回主界面">
           蛐蛐<span>格斗</span><small>FIGHT NIGHT</small>
         </button>
@@ -124,7 +124,8 @@
           <article class="stage-panel">
             <div class="stage-heading"><span class="eyebrow">SELECT YOUR STAGE</span><button id="random-map" class="text-button">随机擂台 ↻</button></div>
             <div class="map-preview" id="map-preview">
-              <div>
+              <div class="map-scene" id="map-scene"><img id="map-image" alt="" /></div>
+              <div class="map-info">
                 <small id="map-english">SELECTED STAGE</small>
                 <h2 id="map-name"></h2>
                 <p id="map-subtitle"></p>
@@ -370,13 +371,11 @@
       </section>
       <footer class="game-command-bar">
         <span><i aria-hidden="true"></i><span id="menu-location">MAIN MENU</span></span>
-        <span class="keyboard-hints"><kbd>↑ ↓</kbd> 选择 <kbd>ENTER</kbd> 确认 <kbd>ESC</kbd> 返回</span>
-        <span class="touch-hints">点选操作 <b>／</b> 横屏游玩</span>
       </footer>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=0586ad46a218","./js/ai.js":"./js/ai.js?v=0586ad46a218","./js/animation-data.js":"./js/animation-data.js?v=0586ad46a218","./js/animation.js":"./js/animation.js?v=0586ad46a218","./js/arena.js":"./js/arena.js?v=0586ad46a218","./js/asset-url.js":"./js/asset-url.js?v=0586ad46a218","./js/audio.js":"./js/audio.js?v=0586ad46a218","./js/battle-frame.js":"./js/battle-frame.js?v=0586ad46a218","./js/battle-viewport.js":"./js/battle-viewport.js?v=0586ad46a218","./js/character-schema.js":"./js/character-schema.js?v=0586ad46a218","./js/combat-world.js":"./js/combat-world.js?v=0586ad46a218","./js/combat.js":"./js/combat.js?v=0586ad46a218","./js/energy-effects.js":"./js/energy-effects.js?v=0586ad46a218","./js/input.js":"./js/input.js?v=0586ad46a218","./js/language.js":"./js/language.js?v=0586ad46a218","./js/maps.js":"./js/maps.js?v=0586ad46a218","./js/menu.js":"./js/menu.js?v=0586ad46a218","./js/mobile-controls.js":"./js/mobile-controls.js?v=0586ad46a218","./js/presentation.js":"./js/presentation.js?v=0586ad46a218","./js/roster.js":"./js/roster.js?v=0586ad46a218","./js/round-ending.js":"./js/round-ending.js?v=0586ad46a218","./js/settings.js":"./js/settings.js?v=0586ad46a218","./js/stages.js":"./js/stages.js?v=0586ad46a218","./js/super-flash.js":"./js/super-flash.js?v=0586ad46a218"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=5e15e62ef673","./js/ai.js":"./js/ai.js?v=5e15e62ef673","./js/animation-data.js":"./js/animation-data.js?v=5e15e62ef673","./js/animation.js":"./js/animation.js?v=5e15e62ef673","./js/arena.js":"./js/arena.js?v=5e15e62ef673","./js/asset-url.js":"./js/asset-url.js?v=5e15e62ef673","./js/audio.js":"./js/audio.js?v=5e15e62ef673","./js/battle-frame.js":"./js/battle-frame.js?v=5e15e62ef673","./js/battle-viewport.js":"./js/battle-viewport.js?v=5e15e62ef673","./js/character-schema.js":"./js/character-schema.js?v=5e15e62ef673","./js/combat-world.js":"./js/combat-world.js?v=5e15e62ef673","./js/combat.js":"./js/combat.js?v=5e15e62ef673","./js/energy-effects.js":"./js/energy-effects.js?v=5e15e62ef673","./js/input.js":"./js/input.js?v=5e15e62ef673","./js/language.js":"./js/language.js?v=5e15e62ef673","./js/maps.js":"./js/maps.js?v=5e15e62ef673","./js/menu.js":"./js/menu.js?v=5e15e62ef673","./js/mobile-controls.js":"./js/mobile-controls.js?v=5e15e62ef673","./js/presentation.js":"./js/presentation.js?v=5e15e62ef673","./js/roster.js":"./js/roster.js?v=5e15e62ef673","./js/round-ending.js":"./js/round-ending.js?v=5e15e62ef673","./js/settings.js":"./js/settings.js?v=5e15e62ef673","./js/stages.js":"./js/stages.js?v=5e15e62ef673","./js/super-flash.js":"./js/super-flash.js?v=5e15e62ef673"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=0586ad46a218"></script>
+    <script type="module" src="./js/arena.js?v=5e15e62ef673"></script>
   </body>
 </html>

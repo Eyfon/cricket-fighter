@@ -177,6 +177,55 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       stage: rules.stage,
     });
   }
+  // Retain the existing select values as the configuration source, but expose
+  // bounded buttons instead of opening native option sheets during setup.
+  const ruleSteppers = [];
+  for (const select of document.querySelectorAll(".setup-screen select")) {
+    const label = select.closest("label");
+    const field = document.createElement("div");
+    field.className = "rule-field";
+    if (label.id) field.id = label.id;
+    const title = document.createElement("span");
+    title.className = "rule-label";
+    title.id = select.id + "-label";
+    for (const node of [...label.childNodes]) if (node !== select) title.append(node);
+    const stepper = document.createElement("div");
+    stepper.className = "rule-stepper";
+    stepper.setAttribute("role", "group");
+    stepper.setAttribute("aria-labelledby", title.id);
+    const output = document.createElement("output");
+    output.id = select.id + "-value";
+    output.setAttribute("aria-live", "polite");
+    const buttons = [-1, 1].map((delta) => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.textContent = delta < 0 ? "−" : "+";
+      button.dataset.rule = select.id;
+      button.dataset.ruleStep = delta;
+      button.onclick = () => {
+        if (button.disabled) return;
+        select.selectedIndex += delta;
+        select.dispatchEvent(new Event("change", { bubbles: true }));
+        syncRuleSteppers();
+      };
+      return button;
+    });
+    stepper.append(buttons[0], output, buttons[1]);
+    select.hidden = true;
+    field.append(title, select, stepper);
+    label.replaceWith(field);
+    ruleSteppers.push({ select, title, output, buttons });
+    select.addEventListener("change", syncRuleSteppers);
+  }
+  function syncRuleSteppers() {
+    for (const { select, title, output, buttons } of ruleSteppers) {
+      output.value = select.selectedOptions[0]?.textContent.replace(" · 默认", "") || "";
+      for (const [index, button] of buttons.entries()) {
+        button.disabled = select.disabled || (index === 0 ? select.selectedIndex <= 0 : select.selectedIndex >= select.options.length - 1);
+        button.setAttribute("aria-label", `${index === 0 ? "减少" : "增加"}${title.textContent.trim()}`);
+      }
+    }
+  }
   function renderRules() {
     $("round-time").value = $("mode").value === "training" ? 0 : rules.time;
     $("wins-required").value = rules.wins;
@@ -201,6 +250,10 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     $("map-english").textContent = map.english;
     $("map-subtitle").textContent = map.subtitle;
     $("map-preview").classList.toggle("grid-map", !map.image);
+    $("map-scene").classList.toggle("grid-map", !map.image);
+    $("map-image").hidden = !map.image;
+    if (map.image) $("map-image").src = assetUrl(map.image);
+    else $("map-image").removeAttribute("src");
     $("map-preview").style.setProperty(
       "--map-image",
       map.image
@@ -217,6 +270,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     );
     $("match-summary").textContent =
       `${names[0]} vs ${names[1]} · ${map.name} · ${training ? "练习 / 无限时间" : (rules.time ? rules.time + " 秒" : "无限时间") + " / " + rules.wins + " 胜"} · 双方 ${rules.healthMultiplier} 倍血量`;
+    syncRuleSteppers();
   }
   function show(next) {
     if (next === "characters" && screen !== "characters") {
@@ -303,6 +357,42 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     renderRules();
     persist();
   };
+  // Pointer scrolling also works in the CSS-rotated portrait fallback, where
+  // browser scroll gestures can otherwise be interpreted on the wrong axis.
+  const mapRail = $("map-list");
+  let railDrag = null, suppressMapClick = false;
+  mapRail.addEventListener("pointerdown", (event) => {
+    if (railDrag || event.button !== 0) return;
+    suppressMapClick = false;
+    railDrag = { id: event.pointerId, x: event.clientX, y: event.clientY,
+      top: mapRail.scrollTop, rotated: document.body.classList.contains("mobile-portrait") };
+  });
+  mapRail.addEventListener("pointermove", (event) => {
+    if (!railDrag || event.pointerId !== railDrag.id) return;
+    const delta = railDrag.rotated ? railDrag.x - event.clientX : event.clientY - railDrag.y;
+    if (!suppressMapClick && Math.abs(delta) < 8) return;
+    suppressMapClick = true;
+    mapRail.setPointerCapture(event.pointerId);
+    mapRail.scrollTop = railDrag.top - delta;
+    event.preventDefault();
+  });
+  const endRailDrag = (event) => {
+    if (!railDrag || event.pointerId !== railDrag.id) return;
+    if (mapRail.hasPointerCapture(event.pointerId)) mapRail.releasePointerCapture(event.pointerId);
+    railDrag = null;
+  };
+  for (const type of ["pointerup", "pointercancel"]) mapRail.addEventListener(type, endRailDrag);
+  mapRail.addEventListener("lostpointercapture", (event) => {
+    // Touch starts with implicit capture on a card; transferring it to the rail
+    // must not end the drag when the old card's loss event bubbles here.
+    if (event.target === mapRail) endRailDrag(event);
+  });
+  mapRail.addEventListener("click", (event) => {
+    if (suppressMapClick && event.detail) { event.preventDefault(); event.stopImmediatePropagation(); }
+  }, { capture: true });
+  window.addEventListener("pointerup", endRailDrag);
+  window.addEventListener("pointercancel", endRailDrag);
+  window.addEventListener("blur", () => { railDrag = null; });
   for (const id of [
     "round-time",
     "wins-required",
