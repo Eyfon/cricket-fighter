@@ -31,6 +31,21 @@ body.mobile-device .app {
   -webkit-overflow-scrolling: touch;
   background: #100e12;
 }
+/* Apply to descendants too: native button/text styles can otherwise restore
+   selection and callouts on long presses, particularly in iOS Safari. */
+body.mobile-device .app,
+body.mobile-device .app * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}
+body.mobile-device .app input,
+body.mobile-device .app textarea,
+body.mobile-device .app [contenteditable="true"] {
+  -webkit-user-select: text;
+  user-select: text;
+}
 body.mobile-portrait .app {
   left: calc(var(--view-left, 0px) + var(--view-width) / 2);
   top: calc(var(--view-top, 0px) + var(--view-height) / 2);
@@ -90,7 +105,8 @@ body.mobile-device .home-menu {
 }
 body.mobile-device .home-menu button { padding: 10px 16px; font-size: 15px; }
 body.mobile-device .home-foot { font-size: 9px; }
-body.mobile-device .mode-grid { grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 12px 0; }
+body.mobile-device .mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 12px 0; }
+body.mobile-device [data-mode="local"] { display: none; }
 body.mobile-device .mode-card { min-height: 170px; padding: 18px; }
 body.mobile-device .mode-number { font-size: 24px; margin-bottom: 8px; }
 body.mobile-device .mode-card strong { font-size: 20px; }

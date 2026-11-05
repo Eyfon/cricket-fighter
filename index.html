@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="./style/arena.css" />
     <link rel="stylesheet" href="./style/mobile-arena.css" />
     <link rel="stylesheet" href="./style/match-lobby.css" />
+    <link rel="stylesheet" href="./style/game-shell.css" />
   </head>
   <body data-screen="home">
     <main class="app">
@@ -32,58 +33,59 @@
           ><span data-step="characters">02 角色</span
           ><span data-step="setup">03 地图与规则</span>
         </nav>
-        <span class="free-play">LOCAL ARCADE / FREE PLAY</span>
+        <span class="free-play"><i aria-hidden="true"></i> OFFLINE ARCADE</span>
       </header>
       <section data-screen="home" class="screen home-screen">
         <div class="home-art">
           <canvas id="home-left" width="360" height="400"></canvas
           ><canvas id="home-right" width="360" height="400"></canvas
-          ><span class="art-caption">VOL.01 / STREET FIGHTERS</span>
+          ><span class="art-caption">苍岚 <b>VS</b> 赤锋</span>
         </div>
         <div class="home-copy">
-          <p class="eyebrow">THE NEXT ROUND IS YOURS</p>
-          <h1>让他们<br /><em>打个痛快。</em></h1>
-          <p class="home-sub">
-            像素擂台，自由开战。亲自上场，或者坐看一场电子斗蛐蛐。
-          </p>
+          <div class="home-title">
+            <p class="eyebrow"><span>VOL.01</span> THE FIGHTING ARENA</p>
+            <h1>蛐蛐<em>格斗</em></h1>
+            <p class="title-english">FIGHT NIGHT<span>街机格斗</span></p>
+          </div>
           <div class="home-menu">
             <button id="play" class="primary">
-              开始对战 <span>01 ↗</span></button
-            ><button id="training">练习模式 <span>02 →</span></button
-            ><button data-go="gallery">角色图鉴 <span>03 →</span></button
-            ><button data-go="options">游戏选项 <span>04 →</span></button>
+              <span class="menu-label">开始对战<small>BATTLE</small></span><span class="menu-arrow" aria-hidden="true">▶</span></button
+            ><button id="training"><span class="menu-label">练习模式<small>TRAINING</small></span><span class="menu-arrow" aria-hidden="true">▶</span></button
+            ><button data-go="gallery"><span class="menu-label">角色图鉴<small>FIGHTERS</small></span><span class="menu-arrow" aria-hidden="true">▶</span></button
+            ><button data-go="options"><span class="menu-label">游戏选项<small>OPTIONS</small></span><span class="menu-arrow" aria-hidden="true">▶</span></button>
           </div>
-          <small class="home-foot">无需登录 · 无需下载 · 支持电脑与手机</small>
         </div>
+        <span class="home-backdrop-word" aria-hidden="true">FIGHT!</span>
+        <span class="home-corner" aria-hidden="true">READY FOR THE NEXT BATTLE</span>
       </section>
       <section data-screen="mode" class="screen" hidden>
         <div class="page-heading">
           <div>
-            <p class="eyebrow">01 / CHOOSE YOUR MODE</p>
-            <h1>以什么方式开战？</h1>
+            <p class="eyebrow">MODE SELECT</p>
+            <h1>模式选择<span class="heading-slash" aria-hidden="true"> / 01</span></h1>
           </div>
           <button data-go="home" class="back">← 返回</button>
         </div>
         <input type="hidden" id="mode" value="watch" />
         <div class="mode-grid">
           <button class="mode-card" data-mode="watch">
-            <span class="mode-number">01</span><strong>电子斗蛐蛐</strong
+            <span class="mode-number">01</span><span class="mode-emblem" aria-hidden="true">CPU<span>×</span>CPU</span><strong>电子斗蛐蛐</strong
             ><small>AI vs AI</small>
-            <p>双方交给 AI 操作，选好角色，享受对战。</p></button
+            <p>双方自动战斗 · 观战模式</p><span class="mode-enter" aria-hidden="true">SELECT MODE ↗</span></button
           ><button class="mode-card" data-mode="cpu">
-            <span class="mode-number">02</span><strong>单人挑战</strong
+            <span class="mode-number">02</span><span class="mode-emblem" aria-hidden="true">1P<span>×</span>CPU</span><strong>单人挑战</strong
             ><small>PLAYER vs CPU</small>
-            <p>你控制左方角色，与电脑切磋。</p></button
+            <p>亲自出战 · 挑战电脑</p><span class="mode-enter" aria-hidden="true">SELECT MODE ↗</span></button
           ><button class="mode-card" data-mode="local">
-            <span class="mode-number">03</span><strong>本地双人</strong
+            <span class="mode-number">03</span><span class="mode-emblem" aria-hidden="true">1P<span>×</span>2P</span><strong>本地双人</strong
             ><small>PLAYER vs PLAYER</small>
-            <p>共用一副键盘，用两组键位决胜负。</p>
+            <p>同屏对决 · 双人键盘</p><span class="mode-enter" aria-hidden="true">SELECT MODE ↗</span>
           </button>
         </div>
       </section>
       <section data-screen="characters" class="screen match-lobby selection-screen" hidden>
         <div class="page-heading">
-          <div><p class="eyebrow">02 / FIGHTER DRAFT</p><h1>选择你的出战角色</h1></div>
+          <div><p class="eyebrow">CHARACTER SELECT</p><h1>选择斗士<span class="heading-slash" aria-hidden="true"> / 02</span></h1></div>
           <button id="characters-back" class="back">← 返回</button>
         </div>
         <div class="selection-arena" id="selection-arena" data-turn="p1">
@@ -113,8 +115,8 @@
       <section data-screen="setup" class="screen match-lobby setup-screen" hidden>
         <div class="page-heading">
           <div>
-            <p class="eyebrow">03 / STAGE & MATCH RULES</p>
-            <h1>下一战，在哪里？</h1>
+            <p class="eyebrow">STAGE SELECT</p>
+            <h1>选择擂台<span class="heading-slash" aria-hidden="true"> / 03</span></h1>
           </div>
           <button data-go="characters" class="back">← 重新选人</button>
         </div>
@@ -131,7 +133,7 @@
             <div class="map-list" id="map-list" role="group" aria-label="地图选择"></div>
           </article>
           <article class="rule-panel">
-            <div class="rules-heading"><div><p class="eyebrow">MAKE IT YOUR MATCH</p><h2>对战设置</h2></div><button id="reset-rules" class="text-button">重置</button></div>
+            <div class="rules-heading"><div><p class="eyebrow">MATCH CONFIG</p><h2>对战设置</h2></div><button id="reset-rules" class="text-button">重置</button></div>
             <div class="rule-fields">
             <label
               >回合时间<select id="round-time">
@@ -272,7 +274,7 @@
         <div class="page-heading">
           <div>
             <p class="eyebrow">FIGHTER ARCHIVE</p>
-            <h1>每个人都有一套打法。</h1>
+            <h1>角色图鉴</h1>
           </div>
           <button data-go="home" class="back">← 返回主界面</button>
         </div>
@@ -301,7 +303,7 @@
         <div class="page-heading">
           <div>
             <p class="eyebrow">GAME OPTIONS</p>
-            <h1>把擂台调成你的样子。</h1>
+            <h1>系统设置</h1>
           </div>
           <button data-go="home" class="back">← 返回主界面</button>
         </div>
@@ -347,7 +349,7 @@
               1P：WASD 方向；J 拳，K 脚，L 闪避，U / I 技能，O 大招。
             </p>
             <p>2P：方向键；小键盘 1 拳、2 脚、3 闪避、4 / 5 技能、6 大招。</p>
-            <p>手机：左侧默认摇杆，可切换为十字方向键；右侧六键操作 1P。上跳跃，下防御，下后蹲防，前或下加拳脚触发方向招式。手机横屏布局，点击开始尝试进入全屏；右上角可切换全屏，战斗中可触屏暂停。本地双人的 2P 使用外接键盘。</p>
+            <p>手机：左侧摇杆或十字键，右侧六键。上跳跃，下防御，下后蹲防，方向加拳脚触发招式。右上角可切换全屏，战斗中可触屏暂停。</p>
             <p>
               前或下加拳脚触发方向攻击；后方向防御，下后蹲防。单按闪避原地闪避，方向加闪避定向翻滚。
             </p>
@@ -366,14 +368,15 @@
           </article>
         </div>
       </section>
-      <footer>
-        <span>FIGHT NIGHT / VOL.01</span
-        ><span>LOCAL PLAY · NO LOGIN REQUIRED</span>
+      <footer class="game-command-bar">
+        <span><i aria-hidden="true"></i><span id="menu-location">MAIN MENU</span></span>
+        <span class="keyboard-hints"><kbd>↑ ↓</kbd> 选择 <kbd>ENTER</kbd> 确认 <kbd>ESC</kbd> 返回</span>
+        <span class="touch-hints">点选操作 <b>／</b> 横屏游玩</span>
       </footer>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=0add73338ff3","./js/ai.js":"./js/ai.js?v=0add73338ff3","./js/animation-data.js":"./js/animation-data.js?v=0add73338ff3","./js/animation.js":"./js/animation.js?v=0add73338ff3","./js/arena.js":"./js/arena.js?v=0add73338ff3","./js/asset-url.js":"./js/asset-url.js?v=0add73338ff3","./js/audio.js":"./js/audio.js?v=0add73338ff3","./js/battle-frame.js":"./js/battle-frame.js?v=0add73338ff3","./js/battle-viewport.js":"./js/battle-viewport.js?v=0add73338ff3","./js/character-schema.js":"./js/character-schema.js?v=0add73338ff3","./js/combat-world.js":"./js/combat-world.js?v=0add73338ff3","./js/combat.js":"./js/combat.js?v=0add73338ff3","./js/energy-effects.js":"./js/energy-effects.js?v=0add73338ff3","./js/input.js":"./js/input.js?v=0add73338ff3","./js/language.js":"./js/language.js?v=0add73338ff3","./js/maps.js":"./js/maps.js?v=0add73338ff3","./js/menu.js":"./js/menu.js?v=0add73338ff3","./js/mobile-controls.js":"./js/mobile-controls.js?v=0add73338ff3","./js/presentation.js":"./js/presentation.js?v=0add73338ff3","./js/roster.js":"./js/roster.js?v=0add73338ff3","./js/round-ending.js":"./js/round-ending.js?v=0add73338ff3","./js/settings.js":"./js/settings.js?v=0add73338ff3","./js/stages.js":"./js/stages.js?v=0add73338ff3","./js/super-flash.js":"./js/super-flash.js?v=0add73338ff3"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=0586ad46a218","./js/ai.js":"./js/ai.js?v=0586ad46a218","./js/animation-data.js":"./js/animation-data.js?v=0586ad46a218","./js/animation.js":"./js/animation.js?v=0586ad46a218","./js/arena.js":"./js/arena.js?v=0586ad46a218","./js/asset-url.js":"./js/asset-url.js?v=0586ad46a218","./js/audio.js":"./js/audio.js?v=0586ad46a218","./js/battle-frame.js":"./js/battle-frame.js?v=0586ad46a218","./js/battle-viewport.js":"./js/battle-viewport.js?v=0586ad46a218","./js/character-schema.js":"./js/character-schema.js?v=0586ad46a218","./js/combat-world.js":"./js/combat-world.js?v=0586ad46a218","./js/combat.js":"./js/combat.js?v=0586ad46a218","./js/energy-effects.js":"./js/energy-effects.js?v=0586ad46a218","./js/input.js":"./js/input.js?v=0586ad46a218","./js/language.js":"./js/language.js?v=0586ad46a218","./js/maps.js":"./js/maps.js?v=0586ad46a218","./js/menu.js":"./js/menu.js?v=0586ad46a218","./js/mobile-controls.js":"./js/mobile-controls.js?v=0586ad46a218","./js/presentation.js":"./js/presentation.js?v=0586ad46a218","./js/roster.js":"./js/roster.js?v=0586ad46a218","./js/round-ending.js":"./js/round-ending.js?v=0586ad46a218","./js/settings.js":"./js/settings.js?v=0586ad46a218","./js/stages.js":"./js/stages.js?v=0586ad46a218","./js/super-flash.js":"./js/super-flash.js?v=0586ad46a218"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=0add73338ff3"></script>
+    <script type="module" src="./js/arena.js?v=0586ad46a218"></script>
   </body>
 </html>

@@ -65,6 +65,15 @@ export function createMobileControls({ canInput, onPause }) {
   let stickId = null, rotated = false, noticeTimer, fullscreenRequest = null, directionControl;
   const mobile = () => coarse.matches && navigator.maxTouchPoints > 0;
   const enabled = () => canInput() && !panel.hidden && body.dataset.touch !== "never";
+  // Cancel native long-press actions without cancelling menu taps, scrolling,
+  // or the change/input events used by native rule selectors and sliders.
+  for (const type of ["contextmenu", "selectstart", "dragstart"]) {
+    app.addEventListener(type, (event) => {
+      if (!mobile() || !(event.target instanceof Element)) return;
+      if (event.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+      event.preventDefault();
+    }, { capture: true });
+  }
   function clear() {
     state.clear(); padDirections.clear(); stickId = null;
     for (const button of [...buttons, ...directionButtons]) button.classList.remove("held");

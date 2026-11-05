@@ -35,6 +35,51 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     : "watch";
   let pickTurn = "p1";
   const lockedPicks = { p1: false, p2: false };
+  const menuLists = {
+    home: ".home-menu button",
+    mode: "[data-mode]",
+    gallery: ".archive-card",
+  };
+  const locations = {
+    home: "MAIN MENU", mode: "MODE SELECT", characters: "CHARACTER SELECT",
+    setup: "STAGE SELECT", gallery: "FIGHTER ARCHIVE",
+    "character-detail": "FIGHTER DATA", options: "SYSTEM OPTIONS",
+  };
+  const menuItems = () => [...document.querySelectorAll(menuLists[screen] || ".no-menu-items")]
+    .filter((item) => !item.disabled && item.getClientRects().length);
+  function highlightMenu(item) {
+    menuItems().forEach((button) => button.classList.toggle("is-highlighted", button === item));
+  }
+  for (const type of ["pointerover", "focusin"]) {
+    document.addEventListener(type, (event) => {
+      if (!menuLists[screen] || !(event.target instanceof Element)) return;
+      const button = event.target.closest("button");
+      if (menuItems().includes(button)) highlightMenu(button);
+    });
+  }
+  document.addEventListener("keydown", (event) => {
+    if (screen === "battle" || !(event.target instanceof Element) || event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey
+      || event.target.closest('input, select, textarea, [contenteditable="true"]')) return;
+    if (event.key === "Escape") {
+      const back = { mode: "home", characters: $("mode").value === "training" ? "home" : "mode",
+        setup: "characters", gallery: "home", "character-detail": "gallery", options: "home" }[screen];
+      if (back) { event.preventDefault(); if (!event.repeat) show(back); }
+      return;
+    }
+    const items = menuItems();
+    if (!items.length) return;
+    const current = Math.max(0, items.findIndex((button) => button.classList.contains("is-highlighted")));
+    const delta = { ArrowUp: -1, ArrowLeft: -1, ArrowDown: 1, ArrowRight: 1 }[event.key];
+    if (delta) {
+      event.preventDefault();
+      const next = items[(current + delta + items.length) % items.length];
+      highlightMenu(next);
+      next.focus({ preventScroll: true });
+    } else if (event.key === "Enter" && (!event.target.closest("button") || items.includes(event.target.closest("button")))) {
+      event.preventDefault();
+      if (!event.repeat) items[current].click();
+    }
+  });
   function renderDraft() {
     $("selection-arena").dataset.turn = pickTurn || "ready";
     for (const side of ["p1", "p2"]) {
@@ -185,6 +230,10 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     document
       .querySelectorAll(".screen")
       .forEach((section) => (section.hidden = section.dataset.screen !== next));
+    if (document.activeElement?.closest(".screen[hidden]")) document.activeElement.blur();
+    $("menu-location").textContent = locations[next] || "FIGHT NIGHT";
+    const items = menuItems();
+    if (items.length) highlightMenu(items[0]);
     document
       .querySelectorAll("[data-step]")
       .forEach((step) =>

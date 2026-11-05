@@ -34,6 +34,7 @@ for (const file of [
   "style/arena.css",
   "style/mobile-arena.css",
   "style/match-lobby.css",
+  "style/game-shell.css",
 ]) {
   const dest = path.join(root, "dist", file);
   await mkdir(path.dirname(dest), { recursive: true });

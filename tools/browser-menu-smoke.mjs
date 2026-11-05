@@ -1,0 +1,114 @@
+import { spawn } from "node:child_process";
+import { mkdir, writeFile } from "node:fs/promises";
+import path from "node:path";
+import assert from "node:assert/strict";
+
+await mkdir("artifacts", { recursive: true });
+const port = 9355;
+const chrome = spawn(process.env.CHROMIUM_PATH || "C:/Program Files/Google/Chrome/Application/chrome.exe", [
+  "--headless=new", "--disable-gpu", "--no-first-run", "--no-default-browser-check",
+  `--remote-debugging-port=${port}`, `--user-data-dir=${path.resolve("artifacts/menu-chrome-profile")}`, "about:blank",
+], { windowsHide: true, stdio: "ignore" });
+let socket;
+try {
+  let targets;
+  for (let i = 0; i < 80; i++) {
+    try { targets = await (await fetch(`http://127.0.0.1:${port}/json`)).json(); break; }
+    catch { await new Promise((r) => setTimeout(r, 100)); }
+  }
+  assert.ok(targets, "Chrome starts");
+  socket = new WebSocket(targets.find((t) => t.type === "page").webSocketDebuggerUrl);
+  await new Promise((resolve, reject) => { socket.onopen = resolve; socket.onerror = reject; });
+  const pending = new Map(), errors = [];
+  let sequence = 0;
+  socket.onmessage = ({ data }) => {
+    const message = JSON.parse(data);
+    if (message.id) {
+      const p = pending.get(message.id); pending.delete(message.id);
+      if (message.error) p.reject(new Error(JSON.stringify(message.error))); else p.resolve(message.result);
+    } else if (message.method === "Runtime.exceptionThrown") errors.push(message.params.exceptionDetails);
+    else if (message.method === "Network.responseReceived" && message.params.response.status >= 400)
+      errors.push(`${message.params.response.status} ${message.params.response.url}`);
+  };
+  const send = (method, params = {}) => new Promise((resolve, reject) => {
+    const id = ++sequence; pending.set(id, { resolve, reject }); socket.send(JSON.stringify({ id, method, params }));
+  });
+  const evaluate = async (expression) => {
+    const response = await send("Runtime.evaluate", { expression, awaitPromise: true, returnByValue: true });
+    if (response.exceptionDetails) throw new Error(JSON.stringify(response.exceptionDetails));
+    return response.result.value;
+  };
+  const run = (fn) => evaluate(`(${fn.toString()})()`);
+  const settle = () => new Promise((r) => setTimeout(r, 230));
+  const click = async (selector) => { await evaluate(`document.querySelector(${JSON.stringify(selector)}).click()`); await settle(); };
+  const key = async (name) => {
+    await send("Input.dispatchKeyEvent", { type: "keyDown", key: name, code: name });
+    await send("Input.dispatchKeyEvent", { type: "keyUp", key: name, code: name });
+    await settle();
+  };
+  const screenshot = async (name) => {
+    const shot = await send("Page.captureScreenshot", { format: "png" });
+    await writeFile(`artifacts/${name}.png`, Buffer.from(shot.data, "base64"));
+  };
+  const metrics = async (width, height, mobile) => {
+    await send("Emulation.setDeviceMetricsOverride", { width, height, deviceScaleFactor: 1, mobile });
+    await send("Emulation.setTouchEmulationEnabled", { enabled: mobile, maxTouchPoints: mobile ? 5 : 1 });
+    await settle();
+  };
+  const fits = async (selector) => {
+    const result = await evaluate(`(() => {
+      const app=document.querySelector('.app'), el=document.querySelector(${JSON.stringify(selector)}), r=el.getBoundingClientRect();
+      return {name:document.body.dataset.screen,app:{w:app.clientWidth,h:app.clientHeight,sw:app.scrollWidth,sh:app.scrollHeight},
+        element:{x:r.x,y:r.y,right:r.right,bottom:r.bottom,w:r.width,h:r.height},w:innerWidth,h:innerHeight};
+    })()`);
+    assert.ok(result.app.sw <= result.app.w + 1 && result.app.sh <= result.app.h + 1, JSON.stringify(result));
+    assert.ok(result.element.x >= 0 && result.element.y >= 0 && result.element.right <= result.w + 1 && result.element.bottom <= result.h + 1, JSON.stringify(result));
+    return result;
+  };
+  await send("Runtime.enable"); await send("Page.enable"); await send("Network.enable");
+  await send("Network.setCacheDisabled", { cacheDisabled: true });
+  await send("Page.addScriptToEvaluateOnNewDocument", { source: "localStorage.clear();" });
+  await metrics(1440, 900, false);
+  await send("Page.navigate", { url: process.env.GAME_URL || "http://127.0.0.1:5173/" });
+  for (let i = 0; i < 100; i++) {
+    if (await run(() => document.readyState === "complete" && !!document.querySelector("#p1 option"))) break;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+  await settle();
+  await fits("#play"); await screenshot("game-menu-desktop-home");
+  await key("ArrowDown");
+  assert.equal(await run(() => document.querySelector(".home-menu .is-highlighted").id), "training");
+  await key("ArrowUp"); await key("Enter");
+  assert.equal(await run(() => document.body.dataset.screen), "mode");
+  await fits('[data-mode="local"]'); await screenshot("game-menu-desktop-modes");
+  await key("ArrowRight"); await key("Enter");
+  assert.equal(await run(() => document.getElementById("mode").value), "cpu");
+  await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "mode");
+  await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "home");
+  await click('[data-go="options"]'); await fits("#reset-options"); await screenshot("game-menu-desktop-options");
+  // Native select key presses must not navigate or leave the menu.
+  await run(() => document.getElementById("direction-control").focus()); await key("ArrowDown");
+  assert.equal(await run(() => document.body.dataset.screen), "options");
+  await run(() => document.activeElement.blur()); await key("Escape");
+  await click('[data-go="gallery"]'); await screenshot("game-menu-desktop-gallery");
+  await key("Enter"); assert.equal(await run(() => document.body.dataset.screen), "character-detail");
+  await fits(".detail-grid"); await screenshot("game-menu-desktop-details");
+  await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "gallery");
+
+  for (const [width, height] of [[844, 390], [568, 320]]) {
+    await metrics(width, height, true);
+    await click("#home-link"); await fits("#play"); await screenshot(`game-menu-${width}-home`);
+    await click("#play"); await fits('[data-mode="cpu"]'); await screenshot(`game-menu-${width}-modes`);
+    assert.equal(await run(() => document.querySelector('[data-mode="local"]').getClientRects().length), 0);
+    await click('[data-mode="watch"]');
+    await fits("#characters-next"); await screenshot(`game-menu-${width}-draft`);
+    for (let i = 0; i < 3; i++) await click("#characters-next");
+    await fits("#start"); await screenshot(`game-menu-${width}-stage`);
+    await click("#home-link"); await click('[data-go="options"]');
+    await fits(".options-grid"); await screenshot(`game-menu-${width}-options`);
+    await click("#home-link"); await click('[data-go="gallery"]');
+    await fits(".gallery-grid"); await screenshot(`game-menu-${width}-gallery`);
+  }
+  assert.deepEqual(errors, []);
+  console.log("Game menu QA passed: keyboard selection/confirm/back, native settings controls, archive details, full viewport menus at desktop and two phone sizes; no runtime/resource errors.");
+} finally { socket?.close(); chrome.kill(); }

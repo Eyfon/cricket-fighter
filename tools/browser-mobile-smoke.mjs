@@ -90,6 +90,18 @@ try {
   assert.ok(Math.abs(view.app.width - 390) < 1 && Math.abs(view.app.height - 844) < 1);
   assert.ok(await run(() => document.querySelector(".home-copy").offsetWidth > 700), "home uses the full logical landscape width");
   await screenshot("mobile-portrait-menu");
+  await run(() => document.getElementById("play").click());
+  assert.deepEqual(await run(() => [...document.querySelectorAll("[data-mode]")]
+    .filter((e) => e.getClientRects().length).map((e) => e.dataset.mode)), ["watch", "cpu"], "phones show only supported modes");
+  assert.equal(await run(() => getComputedStyle(document.querySelector(".mode-grid")).gridTemplateColumns.split(" ").length), 2);
+  const nativeActions = (selector) => evaluate(`(() => {
+    const target=document.querySelector(${JSON.stringify(selector)});
+    return Object.fromEntries(['contextmenu','selectstart','dragstart'].map(type => {
+      const event=new Event(type,{bubbles:true,cancelable:true});target.dispatchEvent(event);return [type,event.defaultPrevented];
+    }));
+  })()`);
+  assert.deepEqual(await nativeActions('[data-mode="cpu"] strong'), { contextmenu: true, selectstart: true, dragstart: true });
+  await screenshot("mobile-mode-two-options");
   // Draft alternates through the shared pool, keeps locked picks and permits mirrors.
   await run(() => document.getElementById("training").click());
   assert.equal(await run(() => document.getElementById("selection-arena").dataset.turn), "p1");
@@ -116,6 +128,7 @@ try {
   assert.equal((await state()).screen, "setup");
   await tap('[data-map="midnight"]');
   assert.equal(await run(() => document.getElementById("map-name").textContent), "午夜天台");
+  assert.deepEqual(await nativeActions("#health-multiplier"), { contextmenu: false, selectstart: false, dragstart: false }, "native rule selectors retain their events");
   await screenshot("mobile-portrait-stage");
   await run(() => document.getElementById("home-link").click());
   await run(() => {
@@ -159,6 +172,15 @@ try {
     touchActive = false;
   };
   const restart = async () => { await endTouch(); await run(() => document.getElementById("restart").click()); await frames(150); };
+
+  await startTouch(0, 0, "punch"); await frames(1);
+  await new Promise((r) => setTimeout(r, 900));
+  assert.equal(await run(() => getSelection().toString()), "", "holding an attack does not select text");
+  assert.equal(await run(() => getComputedStyle(document.querySelector('[data-action="skill"] small')).userSelect), "none");
+  assert.deepEqual(await nativeActions('[data-action="punch"]'), { contextmenu: true, selectstart: true, dragstart: true });
+  await endTouch();
+  assert.equal(await run(() => document.querySelectorAll(".touch .held").length), 0, "long press releases normally");
+  await restart();
 
   // Actual CDP multi-touch, including the 90-degree portrait transformation.
   await startTouch(-0.7, 0.7); await frames(2);
@@ -326,6 +348,11 @@ try {
   assert.equal(await run(() => document.getElementById("direction-control").value), "joystick");
   assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.directionControl), "joystick");
   await metrics(1280, 800, false);
+  await send("Emulation.setTouchEmulationEnabled", { enabled: false });
+  await new Promise((r) => setTimeout(r, 100));
+  await run(() => { document.getElementById("home-link").click(); document.getElementById("play").click(); });
+  assert.equal(await run(() => document.querySelector('[data-mode="local"]').getClientRects().length > 0), true, "desktop keeps local versus");
+  assert.deepEqual(await nativeActions('[data-mode="cpu"] strong'), { contextmenu: false, selectstart: false, dragstart: false }, "desktop native actions are unchanged");
   await run(() => {
     document.getElementById("home-link").click(); document.getElementById("play").click();
     document.querySelector("[data-mode=watch]").click();
