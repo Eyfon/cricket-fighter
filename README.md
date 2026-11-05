@@ -1,4 +1,4 @@
-# 蛐蛐格斗 / Arcade Lab
+# 蛐蛐乱斗 / Arcade Lab
 
 基于克隆的 [fogolin/js-fighter](https://github.com/fogolin/js-fighter) 仓库整理的网页格斗基架。新入口使用独立编写的战斗引擎，原始 `js/game.js`、样式、素材和说明保留，方便对照学习。当前使用内置生成的原创像素示例角色与夕阳天台背景，无需额外下载素材。新增两套各 16 帧像素动作图集：走路交替迈步，出招按蓄势/出手/收招播放；与原有姿态配合使用，动作按阶段逐帧切换，不叠加残影。
 
@@ -164,7 +164,7 @@ npm run build
 
 ## 放到 GitHub Pages
 
-项目仓库：[Eyfon/cricket-fighter](https://github.com/Eyfon/cricket-fighter)。游戏地址：[蛐蛐格斗](https://eyfon.github.io/cricket-fighter/)。网站展示最近一次成功部署的版本。
+项目仓库：[Eyfon/cricket-fighter](https://github.com/Eyfon/cricket-fighter)。游戏地址：[蛐蛐乱斗](https://eyfon.github.io/cricket-fighter/)。网站展示最近一次成功部署的版本。
 
 仓库使用 GitHub Actions 部署：推送到 `main` 后，`Deploy game to GitHub Pages` 工作流会测试、构建并发布；也可以在 [Actions 页面](https://github.com/Eyfon/cricket-fighter/actions/workflows/pages.yml) 手动运行。确认对应提交的工作流成功后，再检查线上更新。
 

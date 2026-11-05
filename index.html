@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover"
     />
-    <title>蛐蛐格斗 · FIGHT NIGHT</title>
+    <title>蛐蛐乱斗 · FIGHT NIGHT</title>
     <meta
       name="description"
       content="像素街机格斗：选角色、选地图，立即开战。"
@@ -26,7 +26,7 @@
       <p id="mobile-notice" role="status" hidden></p>
       <header class="app-header" hidden>
         <button class="brand" id="home-link" aria-label="返回主界面">
-          蛐蛐<span>格斗</span><small>FIGHT NIGHT</small>
+          蛐蛐<span>乱斗</span><small>FIGHT NIGHT</small>
         </button>
         <nav id="steps" aria-label="对战流程">
           <span data-step="mode">01 模式</span
@@ -43,7 +43,7 @@
         <div class="home-copy">
           <div class="home-title">
             <p class="eyebrow"><span>VOL.01</span> THE FIGHTING ARENA</p>
-            <h1>蛐蛐<em>格斗</em></h1>
+            <h1>蛐蛐<em>乱斗</em></h1>
             <p class="title-english">FIGHT NIGHT<span>街机格斗</span></p>
           </div>
           <div class="home-menu">
@@ -156,6 +156,7 @@
                 <option value="5">5 倍</option>
               </select></label
             >
+            <label id="training-energy-field" hidden>无限能量点<input id="training-energy" type="checkbox" checked /></label>
             <p class="field-note">统一作用于双方。战斗中仅显示血条。</p>
             <label id="p1-ai-field"
               >1P AI 难度<select id="p1-difficulty">
@@ -178,9 +179,6 @@
                   <option value="idle">原地待机</option>
                   <option value="guard">持续防御</option>
                 </select></label
-              ><label class="check"
-                ><input id="training-energy" type="checkbox" checked />
-                练习时无限能量点</label
               ><small>练习不计比赛胜负，击败木桩后自动重置。</small>
             </div>
             </div>
@@ -313,14 +311,15 @@
             <label class="check"
               ><input id="muted" type="checkbox" />
               全部静音（音乐／音效／播报）</label
-            ><label
-              >总音量<input
+            ><label class="rule-field volume-field"
+              ><span id="volume-label" class="rule-label">总音量</span><span class="volume-control"><input
                 id="volume"
+                aria-labelledby="volume-label"
                 type="range"
                 min="0"
                 max="1"
                 step="0.05"
-                value="0.5" /></label
+                value="0.5" /><output id="volume-value" for="volume">50%</output></span></label
             ><label class="check"
               ><input id="shake" type="checkbox" checked /> 命中震屏</label
             ><label class="check"
@@ -337,11 +336,8 @@
                 <option value="joystick">摇杆（默认）</option>
                 <option value="dpad">十字按键</option>
               </select></label
-            ><button id="fullscreen">切换全屏</button
-            ><button id="reset-options" class="text-button">恢复默认选项</button
-            ><small id="option-status" role="status"
-              >设置会保存在当前浏览器。</small
-            >
+            ><div class="options-actions"><button id="fullscreen">切换全屏</button><button id="reset-options">恢复默认设置</button></div>
+            <small id="option-status" role="status" hidden></small>
           </article>
           <article class="rule-panel">
             <h2>操作说明</h2>
@@ -361,17 +357,13 @@
               能量条每蓄满一次加 1 点，最多 3 点。两种技能各消耗 1 点，大招消耗 3
               点，两者无时间冷却；特殊招式也不设额外时间冷却。
             </p>
-            <label class="check"
-              ><input id="boxes" type="checkbox" />
-              显示判定框（练习辅助）</label
-            >
           </article>
         </div>
       </section>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=1c0f8d3c378e","./js/ai.js":"./js/ai.js?v=1c0f8d3c378e","./js/animation-data.js":"./js/animation-data.js?v=1c0f8d3c378e","./js/animation.js":"./js/animation.js?v=1c0f8d3c378e","./js/arena.js":"./js/arena.js?v=1c0f8d3c378e","./js/asset-url.js":"./js/asset-url.js?v=1c0f8d3c378e","./js/audio.js":"./js/audio.js?v=1c0f8d3c378e","./js/battle-frame.js":"./js/battle-frame.js?v=1c0f8d3c378e","./js/battle-viewport.js":"./js/battle-viewport.js?v=1c0f8d3c378e","./js/character-schema.js":"./js/character-schema.js?v=1c0f8d3c378e","./js/combat-world.js":"./js/combat-world.js?v=1c0f8d3c378e","./js/combat.js":"./js/combat.js?v=1c0f8d3c378e","./js/energy-effects.js":"./js/energy-effects.js?v=1c0f8d3c378e","./js/input.js":"./js/input.js?v=1c0f8d3c378e","./js/language.js":"./js/language.js?v=1c0f8d3c378e","./js/maps.js":"./js/maps.js?v=1c0f8d3c378e","./js/menu.js":"./js/menu.js?v=1c0f8d3c378e","./js/mobile-controls.js":"./js/mobile-controls.js?v=1c0f8d3c378e","./js/presentation.js":"./js/presentation.js?v=1c0f8d3c378e","./js/roster.js":"./js/roster.js?v=1c0f8d3c378e","./js/round-ending.js":"./js/round-ending.js?v=1c0f8d3c378e","./js/settings.js":"./js/settings.js?v=1c0f8d3c378e","./js/stages.js":"./js/stages.js?v=1c0f8d3c378e","./js/super-flash.js":"./js/super-flash.js?v=1c0f8d3c378e"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=29e00d0f2c84","./js/ai.js":"./js/ai.js?v=29e00d0f2c84","./js/animation-data.js":"./js/animation-data.js?v=29e00d0f2c84","./js/animation.js":"./js/animation.js?v=29e00d0f2c84","./js/arena.js":"./js/arena.js?v=29e00d0f2c84","./js/asset-url.js":"./js/asset-url.js?v=29e00d0f2c84","./js/audio.js":"./js/audio.js?v=29e00d0f2c84","./js/battle-frame.js":"./js/battle-frame.js?v=29e00d0f2c84","./js/battle-viewport.js":"./js/battle-viewport.js?v=29e00d0f2c84","./js/character-schema.js":"./js/character-schema.js?v=29e00d0f2c84","./js/combat-world.js":"./js/combat-world.js?v=29e00d0f2c84","./js/combat.js":"./js/combat.js?v=29e00d0f2c84","./js/energy-effects.js":"./js/energy-effects.js?v=29e00d0f2c84","./js/input.js":"./js/input.js?v=29e00d0f2c84","./js/language.js":"./js/language.js?v=29e00d0f2c84","./js/maps.js":"./js/maps.js?v=29e00d0f2c84","./js/menu.js":"./js/menu.js?v=29e00d0f2c84","./js/mobile-controls.js":"./js/mobile-controls.js?v=29e00d0f2c84","./js/presentation.js":"./js/presentation.js?v=29e00d0f2c84","./js/roster.js":"./js/roster.js?v=29e00d0f2c84","./js/round-ending.js":"./js/round-ending.js?v=29e00d0f2c84","./js/settings.js":"./js/settings.js?v=29e00d0f2c84","./js/stages.js":"./js/stages.js?v=29e00d0f2c84","./js/super-flash.js":"./js/super-flash.js?v=29e00d0f2c84"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=1c0f8d3c378e"></script>
+    <script type="module" src="./js/arena.js?v=29e00d0f2c84"></script>
   </body>
 </html>

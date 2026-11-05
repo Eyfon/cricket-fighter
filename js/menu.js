@@ -175,7 +175,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
   // Keep configuration inputs as the data source; expose accessible arrow buttons.
   const ruleSteppers = [];
   for (const source of document.querySelectorAll(
-    '.setup-screen select, .options-grid select, .options-grid input',
+    '.setup-screen select, .setup-screen input[type="checkbox"], .options-grid select, .options-grid input[type="checkbox"]',
   )) {
     const label = source.closest("label");
     const field = document.createElement("div");
@@ -244,6 +244,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     $("p1-difficulty").value = rules.p1Difficulty;
     const training = $("mode").value === "training";
     $("training-settings").hidden = !training;
+    $("training-energy-field").hidden = !training;
     $("round-time").disabled = training;
     $("wins-required").disabled = training;
     $("difficulty").disabled = ["local", "training"].includes($("mode").value);
@@ -465,6 +466,7 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
   function renderOptions() {
     $("muted").checked = options.muted;
     $("volume").value = options.volume;
+    $("volume-value").value = `${Math.round(options.volume * 100)}%`;
     $("shake").checked = options.shake;
     $("scanlines").checked = options.scanlines;
     $("touch-option").value = options.touch;
@@ -490,8 +492,6 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     });
   $("reset-options").onclick = () => {
     options = { ...DEFAULT_OPTIONS };
-    $("boxes").checked = false;
-    $("boxes").dispatchEvent(new Event("change"));
     renderOptions();
     persist();
   };
@@ -499,8 +499,9 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     try {
       if (document.fullscreenElement) await document.exitFullscreen();
       else await document.documentElement.requestFullscreen();
-      $("option-status").textContent = "设置已保存。";
+      $("option-status").hidden = true;
     } catch {
+      $("option-status").hidden = false;
       $("option-status").textContent =
         "当前浏览器不支持全屏，可使用浏览器全屏功能。";
     }

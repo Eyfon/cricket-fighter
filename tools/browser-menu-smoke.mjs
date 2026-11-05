@@ -90,20 +90,25 @@ try {
   await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "mode");
   await key("Escape"); assert.equal(await run(() => document.body.dataset.screen), "home");
   await click('[data-go="options"]'); await fits("#reset-options"); await screenshot("game-menu-desktop-options");
-  // Options use the same arrow buttons as match rules, with native values retained internally.
-  assert.ok(await run(() => [...document.querySelectorAll('.options-grid select, .options-grid input')].every(el => !el.getClientRects().length)));
+  // Toggles use arrow buttons; volume keeps its native accessible slider.
+  assert.ok(await run(() => [...document.querySelectorAll('.options-grid select, .options-grid input[type="checkbox"]')].every(el => !el.getClientRects().length)));
+  assert.ok(await run(() => document.getElementById('volume').getClientRects().length));
+  assert.equal(await run(() => document.querySelector('#boxes')), null);
+  assert.equal(await run(() => document.getElementById('option-status').getClientRects().length), 0);
   await click('[data-rule="direction-control"][data-rule-step="1"]');
   assert.equal(await run(() => document.body.dataset.directionControl), "dpad");
   assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.directionControl), "dpad");
   await run(() => document.querySelector('[data-rule="direction-control"][data-rule-step="-1"]').focus()); await key("Enter");
   assert.equal(await run(() => document.body.dataset.directionControl), "joystick");
-  await click('[data-rule="volume"][data-rule-step="1"]');
+  await run(() => document.getElementById('volume').focus()); await key('ArrowRight');
   assert.equal(await run(() => document.getElementById("volume-value").value), "55%");
+  assert.equal(await run(() => JSON.parse(localStorage.getItem('cricket-fighter-menu-v1')).options.volume), .55);
   await click('[data-rule="muted"][data-rule-step="1"]');
   assert.equal(await run(() => JSON.parse(localStorage.getItem("cricket-fighter-menu-v1")).options.muted), true);
   await click('#reset-options');
   assert.equal(await run(() => document.getElementById("volume-value").value), "50%");
   assert.equal(await run(() => document.getElementById("muted-value").value), "关闭");
+  assert.equal(await run(() => document.title), '蛐蛐乱斗 · FIGHT NIGHT');
   assert.equal(await run(() => document.body.dataset.screen), "options");
   await run(() => document.activeElement.blur()); await key("Escape");
   await click('[data-go="gallery"]'); await screenshot("game-menu-desktop-gallery");
@@ -166,9 +171,35 @@ try {
     await click("#reset-rules");
     await run(() => document.getElementById("map-list").scrollTop = 0);
     await fits("#start"); await screenshot(`game-menu-${width}-stage`);
+    await click('#home-link'); await click('#training');
+    for (let i = 0; i < 3; i++) await click('#characters-next');
+    const trainingLayout = await run(() => {
+      const hp = document.getElementById('health-multiplier').parentElement.getBoundingClientRect();
+      const energy = document.getElementById('training-energy-field').getBoundingClientRect();
+      return { hp: {x:hp.x,y:hp.y}, energy: {x:energy.x,y:energy.y} };
+    });
+    assert.ok(Math.abs(trainingLayout.hp.y - trainingLayout.energy.y) < 1 && trainingLayout.energy.x > trainingLayout.hp.x, JSON.stringify(trainingLayout));
+    await click('[data-rule="training-energy"][data-rule-step="-1"]');
+    assert.equal(await run(() => document.getElementById('training-energy').checked), false);
+    await click('[data-rule="training-energy"][data-rule-step="1"]');
+    assert.equal(await run(() => document.getElementById('training-energy').checked), true);
+    await screenshot(`game-menu-${width}-training`);
     await click("#home-link"); await click('[data-go="options"]');
     await click('[data-rule="direction-control"][data-rule-step="1"]');
     assert.equal(await run(() => document.body.dataset.directionControl), "dpad");
+    await click('#reset-options');
+    const buttons = await run(() => [...document.querySelectorAll('.options-actions button')].map(el => ({w:el.offsetWidth,h:el.offsetHeight})));
+    assert.deepEqual(buttons[0], buttons[1]);
+    const slider = await run(() => {
+      const r = document.getElementById('volume').getBoundingClientRect();
+      return { x:r.x, y:r.y+r.height/2, width:r.width };
+    });
+    await send('Input.dispatchTouchEvent', {type:'touchStart',touchPoints:[{x:slider.x+slider.width/2,y:slider.y,id:1}]});
+    await send('Input.dispatchTouchEvent', {type:'touchMove',touchPoints:[{x:slider.x+slider.width*.8,y:slider.y,id:1}]});
+    await send('Input.dispatchTouchEvent', {type:'touchEnd',touchPoints:[]});
+    const volume = await run(() => Number(document.getElementById('volume').value));
+    assert.ok(volume >= .75 && volume <= .9, `touch volume is ${volume}`);
+    assert.equal(await run(() => JSON.parse(localStorage.getItem('cricket-fighter-menu-v1')).options.volume), volume);
     await click('#reset-options');
     await fits(".options-grid"); await screenshot(`game-menu-${width}-options`);
     await click("#home-link"); await click('[data-go="gallery"]');

@@ -183,9 +183,6 @@ function togglePause() {
 }
 $("pause").onclick = togglePause;
 $("resume").onclick = togglePause;
-$("boxes").onchange = () => {
-  showBoxes = $("boxes").checked;
-};
 const gameCodes = new Set(
   bindings.flatMap((binding) => Object.values(binding)),
 );
