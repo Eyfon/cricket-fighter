@@ -77,6 +77,7 @@ try {
   await settle();
   assert.equal(await run(() => document.querySelector(".app-header").getClientRects().length), 0);
   assert.equal(await run(() => document.querySelectorAll(".keyboard-hints,.touch-hints").length), 0);
+  assert.equal(await run(() => document.querySelectorAll(".game-command-bar").length), 0);
   await fits("#play"); await screenshot("game-menu-desktop-home");
   await key("ArrowDown");
   assert.equal(await run(() => document.querySelector(".home-menu .is-highlighted").id), "training");

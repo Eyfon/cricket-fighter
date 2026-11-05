@@ -40,11 +40,6 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     mode: "[data-mode]",
     gallery: ".archive-card",
   };
-  const locations = {
-    home: "MAIN MENU", mode: "MODE SELECT", characters: "CHARACTER SELECT",
-    setup: "STAGE SELECT", gallery: "FIGHTER ARCHIVE",
-    "character-detail": "FIGHTER DATA", options: "SYSTEM OPTIONS",
-  };
   const menuItems = () => [...document.querySelectorAll(menuLists[screen] || ".no-menu-items")]
     .filter((item) => !item.disabled && item.getClientRects().length);
   function highlightMenu(item) {
@@ -285,7 +280,6 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       .querySelectorAll(".screen")
       .forEach((section) => (section.hidden = section.dataset.screen !== next));
     if (document.activeElement?.closest(".screen[hidden]")) document.activeElement.blur();
-    $("menu-location").textContent = locations[next] || "FIGHT NIGHT";
     const items = menuItems();
     if (items.length) highlightMenu(items[0]);
     document

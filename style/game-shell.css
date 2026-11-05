@@ -6,7 +6,7 @@ body:not([data-screen="battle"]) {
   --ui-accent: #e9ff72;
   --ui-line: #8da3b52b;
   --shell-header: 0px;
-  --shell-footer: 34px;
+  --shell-footer: 0px;
   --shell-height: 100svh;
   color: var(--ui-ink);
   overflow: hidden;
@@ -55,7 +55,7 @@ body:not([data-screen="battle"]) .free-play {
   font: 10px Consolas, monospace;
   letter-spacing: 1px;
 }
-.free-play i, .game-command-bar i { width: 5px; height: 5px; background: #e9ff72; display: inline-block; }
+.free-play i { width: 5px; height: 5px; background: #e9ff72; display: inline-block; }
 body:not([data-screen="battle"]) #steps { gap: 20px; font: 11px Consolas, "Microsoft YaHei", monospace; color: #677583; }
 body:not([data-screen="battle"]) #steps span { padding: 8px 0; border-bottom: 2px solid transparent; }
 body:not([data-screen="battle"]) #steps .active { color: var(--ui-accent); border-color: var(--ui-accent); }
@@ -90,21 +90,6 @@ body:not([data-screen="battle"]) .primary:hover { background: #f4ffb3; }
 body:not([data-screen="battle"]) :is(button, select, input):focus-visible { outline-color: var(--ui-accent); outline-offset: -3px; }
 body:not([data-screen="battle"]) :is(.back, .text-button) { color: #c8d4db; border-color: var(--ui-line); background: #16212b80; min-height: 40px; }
 body:not([data-screen="battle"]) :is(.back, .text-button):hover { border-color: var(--ui-accent); color: var(--ui-accent); background: #22312f; }
-body:not([data-screen="battle"]) .game-command-bar {
-  display: flex;
-  height: var(--shell-footer);
-  padding: 0;
-  margin: 0;
-  align-items: center;
-  justify-content: space-between;
-  border-top: 1px solid var(--ui-line);
-  color: var(--ui-dim);
-  font: 10px Consolas, "Microsoft YaHei", monospace;
-  letter-spacing: 1px;
-}
-.game-command-bar > span { display: flex; align-items: center; gap: 10px; }
-.game-command-bar kbd { font: 9px Consolas, monospace; color: #ecf1ec; border: 1px solid #71859466; padding: 2px 5px; }
-.game-command-bar .touch-hints { display: none; }
 
 /* Title screen: a menu rail in front of the animated fighter artwork. */
 body:not([data-screen="battle"]) .home-screen { justify-content: center; position: relative; isolation: isolate; padding: 20px 0; }
@@ -324,7 +309,7 @@ body:not([data-screen="battle"]) #detail-moves dt { color: var(--ui-accent); }
 body:not([data-screen="battle"]) #detail-moves dd { color: #a2b6c6; }
 
 /* Logical landscape dimensions also cover portrait-rotated phone browsers. */
-body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 24px; }
+body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
 body.mobile-device:not([data-screen="battle"]) .app { --shell-height: var(--game-height); width: var(--game-width); height: var(--game-height); position: fixed; padding: 0 max(20px, env(safe-area-inset-left), env(safe-area-inset-right)); }
 body.mobile-device:not([data-screen="battle"]) .app-header { height: var(--shell-header); padding-right: 48px; }
 body.mobile-device:not([data-screen="battle"]) .brand { font-size: 17px; }
@@ -337,10 +322,6 @@ body.mobile-device:not([data-screen="battle"]) .page-heading h1 { font-size: 21p
 body.mobile-device:not([data-screen="battle"]) .page-heading .eyebrow { display: none; }
 body.mobile-device:not([data-screen="battle"]) .heading-slash { font-size: 13px; }
 body.mobile-device:not([data-screen="battle"]) .back { min-height: 34px; padding: 6px 12px; font-size: 10px; }
-body.mobile-device:not([data-screen="battle"]) .game-command-bar { display: flex; font-size: 8px; }
-body.mobile-device .game-command-bar .keyboard-hints { display: none; }
-body.mobile-device .game-command-bar .touch-hints { display: flex; font-size: 8px; gap: 6px; }
-body.mobile-device .game-command-bar .touch-hints b { color: #e9ff72; font-weight: 400; }
 body.mobile-device:not([data-screen="battle"]) .home-copy { display: grid; grid-template-columns: 1fr; gap: 16px; padding: 0; align-content: center; }
 body.mobile-device .home-title { width: 48%; }
 body.mobile-device .home-title .eyebrow { font-size: 7px; letter-spacing: 2px; margin-bottom: 7px; }
@@ -396,7 +377,7 @@ body.mobile-device:not([data-screen="battle"]) #detail-moves dt { font-size: 12p
 body.mobile-device:not([data-screen="battle"]) #detail-moves dd { font-size: 10px; }
 
 @media (max-height: 360px), (max-width: 360px) {
-  body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 20px; }
+  body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
   body.mobile-device:not([data-screen="battle"]) .screen { padding: 5px 0; gap: 6px; }
   body.mobile-device:not([data-screen="battle"]) .page-heading { min-height: 30px; }
   body.mobile-device:not([data-screen="battle"]) .page-heading h1 { font-size: 18px; }
@@ -419,7 +400,7 @@ body.mobile-device:not([data-screen="battle"]) #detail-moves dd { font-size: 10p
   body.mobile-device:not([data-screen="battle"]) .setup-screen .map-preview h2 { font-size: 20px; }
 }
 @media (max-height: 620px) and (pointer: fine) {
-  body:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 28px; }
+  body:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
   body:not([data-screen="battle"]) .home-copy { gap: 16px; }
   body:not([data-screen="battle"]) .home-copy h1 { font-size: 58px; }
   body:not([data-screen="battle"]) .home-menu button { min-height: 40px; padding-block: 8px; }
