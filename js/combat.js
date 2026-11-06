@@ -162,6 +162,14 @@ export class Fighter {
       !this.capturedBy
     );
   }
+  isInvulnerable() {
+    return !!(
+      this.attack &&
+      this.hp > 0 &&
+      Number.isInteger(this.attack.move.invulnerableFrames) &&
+      this.attack.frame <= this.attack.move.invulnerableFrames
+    );
+  }
   resistsHit(key, move, final = true) {
     if (!this.attack || this.hp <= 0 || this.capturedBy) return false;
     if (this.attack.key === 'super')
@@ -291,7 +299,7 @@ export class Fighter {
       a.frame++;
       if (
         a.frame === a.move.startup &&
-        (a.move.effect === 'rise' || (a.move.effect === 'burst' && a.move.riseVelocity)) &&
+        (a.move.effect === 'rise' || (a.move.effect === 'projectile' && a.move.riseVelocity) || (a.move.effect === 'burst' && a.move.riseVelocity)) &&
         this.ground
       ) {
         this.vy = a.move.riseVelocity ?? -410;
@@ -404,11 +412,12 @@ export function applyDamage(
     direction = attacker.facing,
     unblockable = false,
     final = true,
-    source = ['projectile', 'burst', 'grab'].includes(move.effect) ? move.effect : 'melee',
+    source = ['projectile', 'burst', 'grab', 'global'].includes(move.effect) ? move.effect : 'melee',
   } = {},
 ) {
   if (
     defender.dodgeTimer > 0.06 ||
+    defender.isInvulnerable() ||
     defender.escapeTimer > 0 ||
     defender.hp <= 0
   )

@@ -9,6 +9,31 @@ export function drawProjectiles(ctx, world) {
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.scale(p.direction, 1);
+    if (p.rain) {
+      const r = p.radius;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.shadowColor = "#ffe9a0";
+      ctx.shadowBlur = 16;
+      const glow = ctx.createRadialGradient(0, 0, 1, 0, 0, r * 1.4);
+      glow.addColorStop(0, "#fff8d6");
+      glow.addColorStop(0.55, "#ffe48a");
+      glow.addColorStop(1, "#f4a93d00");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 1.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fff0ae";
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#fff8d6";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     const trail = ctx.createLinearGradient(-r * 4, 0, r, 0);
     trail.addColorStop(0, "transparent");
     trail.addColorStop(0.6, blue + "66");

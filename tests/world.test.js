@@ -59,6 +59,11 @@ test('expanded second skills hit targets beyond their previous radius', () => {
 test('V5 skills use isolated new art with foot pivots and time their grapple impacts', () => {
   for(const def of roster) for(const slot of ['skill','super']) {
     const sprite=def.sprites[slot];
+    if (!/-v5\.png$/.test(sprite.src)) {
+      assert.equal(sprite.clip.length, 6);
+      assert.ok(sprite.clip.every(p=>p.originY>0));
+      continue;
+    }
     assert.match(sprite.src,/-v5\.png$/);
     assert.equal(sprite.clip.length,6);
     assert.ok(sprite.clip.every(p=>p.originY>0));

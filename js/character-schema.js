@@ -96,11 +96,14 @@ export function validateCharacter(character) {
       errors.push(`${prefix}.box 必须包含有限坐标和正数宽高`);
     if (
       move.effect &&
-      !["rise", "dash", "projectile", "burst", "rush", "grab"].includes(move.effect)
+      !["rise", "dash", "projectile", "burst", "rush", "grab", "global"].includes(move.effect)
     )
       errors.push(
-        `${prefix}.effect 仅支持 rise / dash / projectile / burst / rush / grab`,
+        `${prefix}.effect 仅支持 rise / dash / projectile / burst / rush / grab / global`,
       );
+    if (move.invulnerableFrames !== undefined &&
+      (!Number.isInteger(move.invulnerableFrames) || move.invulnerableFrames < 0))
+      errors.push(`${prefix}.invulnerableFrames 必须为非负整数帧`);
     if (
       move.dashSpeed !== undefined &&
       (!positive(move.dashSpeed) ||
@@ -113,9 +116,9 @@ export function validateCharacter(character) {
       move.riseVelocity !== undefined &&
       (!Number.isFinite(move.riseVelocity) ||
         move.riseVelocity >= 0 ||
-        !["rise", "burst"].includes(move.effect))
+        !["rise", "burst", "projectile"].includes(move.effect))
     )
-      errors.push(`${prefix}.riseVelocity 仅适用于 rise / burst 且必须为负数`);
+      errors.push(`${prefix}.riseVelocity 仅适用于 rise / burst / projectile 且必须为负数`);
     if (
       move.launch !== undefined &&
       (!Number.isFinite(move.launch) || move.launch < 0)

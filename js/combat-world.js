@@ -78,42 +78,78 @@ export class CombatWorld {
       ) {
         a.spawned = true;
         const p = a.move.projectile;
-        for (const shot of p.shots || [{ delay: 0, damage: a.move.damage }])
+        for (const [shotIndex, shot] of (p.shots || [{ delay: 0, damage: a.move.damage }]).entries())
           this.projectiles.push({
             owner: f,
             move: a.move,
             key: a.key,
-            x: f.x + f.facing * (p.offsetX ?? 64),
-            y: f.y + (p.offsetY ?? -95),
+            x: p.rain
+              ? 80 + (shotIndex + 1) * ((WIDTH - 160) / ((p.shots || []).length + 1))
+              : f.x + f.facing * (p.offsetX ?? 64),
+            y: p.rain ? -80 - shotIndex * 28 : f.y + (p.offsetY ?? -95),
             direction: f.facing,
             radius: p.radius,
-            speed: p.speed * Math.cos(shot.angle ?? 0),
-            verticalSpeed: p.speed * Math.sin(shot.angle ?? 0),
+            speed: p.rain ? 0 : p.speed * Math.cos(shot.angle ?? 0),
+            verticalSpeed: p.rain ? p.speed : p.speed * Math.sin(shot.angle ?? 0),
             life: p.life,
             power: p.power || 1,
             age: 0,
             delay: shot.delay,
             damage: shot.damage,
+            rain: !!p.rain,
           });
       }
       if (
         a?.move.effect === "burst" &&
-        !a.spawned &&
         a.frame >= a.move.startup + (a.move.burstAt === "active" ? a.move.active : 0) &&
         (a.move.burstAt !== "active" || a.landed) &&
         !f.capturedBy
       ) {
-        a.spawned = true;
-        a.impactFrame = a.frame;
+        if (!a.spawned) a.spawned = true;
+        if (a.impactFrame == null)
+          a.impactFrame = a.move.hits ? a.move.startup + a.move.active : a.frame;
         f.vx = 0;
-        f.burstVisual = { age: 0, x: f.x, y: f.y, range: a.move.burstRange, ground: !!a.move.riseVelocity };
+        if (!a.move.hits || !a.hitIndices.size)
+          f.burstVisual = { age: 0, x: f.x, y: f.y, range: a.move.burstRange, ground: !!a.move.riseVelocity };
+        const elapsed = a.frame - a.move.startup;
+        const hit = a.move.hits?.find((entry, index) => elapsed >= entry.at && !a.hitIndices.has(index));
+        if (hit) {
+          const hitIndex = a.move.hits.indexOf(hit);
+          a.hitIndices.add(hitIndex);
+          const target = fighters.find((other) => other !== f);
+          if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+            const event = applyDamage(f, target, a.move, {
+              key: a.key,
+              direction: target.x >= f.x ? 1 : -1,
+              damage: hit.damage,
+              final: hitIndex === a.move.hits.length - 1,
+              source: 'burst',
+            });
+            if (event) events.push(event);
+          }
+        } else if (!a.move.hits && !a.burstHit) {
+          a.burstHit = true;
+          const target = fighters.find((other) => other !== f);
+          if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+            const event = applyDamage(f, target, a.move, {
+              key: a.key,
+              direction: target.x >= f.x ? 1 : -1,
+              damage: a.move.damage,
+              source: 'burst',
+            });
+            if (event) events.push(event);
+          }
+        }
+      }
+      if (a?.move.effect === "global" && !a.spawned && a.frame >= a.move.startup && !f.capturedBy) {
+        a.spawned = true;
         const target = fighters.find((other) => other !== f);
-        if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+        if (target) {
           const event = applyDamage(f, target, a.move, {
             key: a.key,
             direction: target.x >= f.x ? 1 : -1,
             damage: a.move.damage,
-            source: 'burst',
+            source: 'global',
           });
           if (event) events.push(event);
         }

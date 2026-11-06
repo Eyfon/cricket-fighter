@@ -361,6 +361,22 @@
       "bytes": 1447254,
       "sha256": "036bccc412713b756c88f9c7ce10740b8463180413d1ce725b45a568084e5084"
     },
+    "assets/characters/naiwa/common/atlas.png": {
+      "bytes": 1314115,
+      "sha256": "12f0c30409e563541ed27c8319e928709b193ccd7758d11661a4c2d82611171e"
+    },
+    "assets/characters/naiwa/skill1/atlas.png": {
+      "bytes": 1408456,
+      "sha256": "5c624bc3b68fb877dbe54ac8426563b3e4f999d26d6eeb99de2860bb4b38ca2d"
+    },
+    "assets/characters/naiwa/skill2/atlas.png": {
+      "bytes": 1387383,
+      "sha256": "c888f21e4b45759f13e46d7ddfcb3a17cccc6cea63a9d765383456e4977aa87d"
+    },
+    "assets/characters/naiwa/super/atlas.png": {
+      "bytes": 1304917,
+      "sha256": "096afaab94d3ee68c42996a196008b74308e75aa20c588b0291c30baffa64e71"
+    },
     "assets/characters/skill-knockdown-v3.png": {
       "bytes": 2330991,
       "sha256": "2a60cd323408efa636dbffadfdcdb1f3e015b80941174399f9e30b55c50897d3"
