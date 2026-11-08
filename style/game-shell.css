@@ -365,6 +365,26 @@ body:not([data-screen="battle"]) .result-screen::after {
   box-shadow: none;
   clip-path: none;
   animation: result-side-in .65s cubic-bezier(.22,.8,.24,1) both;
+  overflow: hidden;
+}
+.result-page-shell::before,
+.result-page-shell::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 50%;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(145deg, #09121ee8, #142b3be8);
+}
+.result-page-shell::before {
+  left: 0;
+  animation: result-half-left .8s cubic-bezier(.22,.8,.24,1) .08s both;
+}
+.result-page-shell::after {
+  right: 0;
+  animation: result-half-right .8s cubic-bezier(.22,.8,.24,1) .08s both;
 }
 .result-page-shell > .eyebrow { color: var(--ui-accent, #e9ff72); letter-spacing: 6px; text-shadow: 0 0 18px #e9ff7288; }
 .result-page-title { display: flex; justify-content: center; align-items: center; gap: 18px; }
@@ -376,6 +396,8 @@ body:not([data-screen="battle"]) .result-screen::after {
 .result-screen .result-actions button { min-width: 180px; min-height: 52px; font-size: 15px; }
 @keyframes result-bg-in { from { opacity: 0; transform: scale(1.12) translateX(50px); } to { opacity: 1; transform: scale(1.06) translateX(0); } }
 @keyframes result-side-in { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes result-half-left { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-100%); } }
+@keyframes result-half-right { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
 
 /* Logical landscape dimensions also cover portrait-rotated phone browsers. */
 body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
