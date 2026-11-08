@@ -179,7 +179,11 @@ export class Fighter {
     if (!['skill', 'skill2'].includes(this.attack.key)) return false;
     const protectedSweep = key === 'specialKick' && move.low && this.sweepImmunity > 0;
     const knocksDown = move.knockdown && !protectedSweep;
-    return !(knocksDown || (final && (move.launch ?? 0) > 0));
+    // A launch-capable move is an offensive control move from its first
+    // pulse. Requiring `final` here made multi-hit skills (奶娃's laugh wave
+    // in particular) deal damage while leaving an opponent's skill running
+    // until the last pulse, which often arrived after that skill had ended.
+    return !(knocksDown || (move.launch ?? 0) > 0);
   }
   tryDodge(input) {
     if (

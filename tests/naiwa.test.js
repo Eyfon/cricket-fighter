@@ -27,6 +27,18 @@ test('奶娃捧腹大笑 applies four local pulses totaling its configured damag
   assert.ok(damage > 0 && damage <= naiwa.moves.skill2.damage);
 });
 
+test('奶娃捧腹大笑 interrupts 赤锋 skills on its first launch pulse', () => {
+  const a = new Fighter(naiwa, 400, 1), b = new Fighter(roster[1], 520, -1);
+  a.energyPoints = b.energyPoints = 1;
+  assert.equal(a.tryMove('skill2'), true);
+  assert.equal(b.tryMove('skill'), true);
+  a.attack.frame = a.attack.move.startup;
+  b.attack.frame = b.attack.move.startup;
+  const events = new CombatWorld().step([b, a], 1 / 60);
+  assert.equal(b.attack, null);
+  assert.ok(events.some((event) => event.key === 'skill2'));
+});
+
 test('奶娃大招 has startup invulnerability and locks one falling egg', () => {
   const a = new Fighter(naiwa, 400, 1), b = new Fighter(roster[0], 520, -1);
   a.energyPoints = 3;
