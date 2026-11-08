@@ -412,21 +412,34 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
     };
     detailPanel.addEventListener("pointerdown", (event) => {
       if (event.button !== 0) return;
+      // Capture immediately. On touch screens the first move can already
+      // leave the panel (especially in the rotated portrait fallback); if we
+      // wait until the drag threshold, the browser may stop sending moves.
+      detailPanel.setPointerCapture(event.pointerId);
       detailDrag = {
         id: event.pointerId,
         x: event.clientX,
         y: event.clientY,
         top: detailPanel.scrollTop,
         rotated: document.body.classList.contains("mobile-portrait"),
+        axis: null,
       };
+      event.preventDefault();
     });
     detailPanel.addEventListener("pointermove", (event) => {
       if (!detailDrag || event.pointerId !== detailDrag.id) return;
-      const delta = detailDrag.rotated
-        ? detailDrag.x - event.clientX
-        : event.clientY - detailDrag.y;
-      if (Math.abs(delta) < 4) return;
-      detailPanel.setPointerCapture(event.pointerId);
+      const dx = event.clientX - detailDrag.x;
+      const dy = event.clientY - detailDrag.y;
+      // In the CSS-rotated portrait fallback the logical vertical axis is
+      // normally screen X. Some browsers report gestures in the physical Y
+      // axis instead, so choose the axis the finger actually moved along.
+      if (!detailDrag.axis && Math.max(Math.abs(dx), Math.abs(dy)) >= 4) {
+        detailDrag.axis = Math.abs(dx) >= Math.abs(dy) ? "x" : "y";
+      }
+      if (!detailDrag.axis) return;
+      const delta = detailDrag.axis === "x"
+        ? (detailDrag.rotated ? -dx : dx)
+        : dy;
       detailPanel.scrollTop = detailDrag.top - delta;
       event.preventDefault();
     });
