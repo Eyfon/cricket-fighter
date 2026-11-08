@@ -456,6 +456,35 @@ body.mobile-device:not([data-screen="battle"]) .options-grid select { font-size:
 body.mobile-device:not([data-screen="battle"]) .archive-card h2 { margin: 6px 0 2px; font-size: 17px; letter-spacing: 3px; }
 body.mobile-device:not([data-screen="battle"]) .archive-card canvas { width: min(100%, 180px); max-height: 180px; }
 body.mobile-device:not([data-screen="battle"]) .detail-grid .rule-panel { padding: 12px 16px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+body.mobile-device:not([data-screen="battle"]) .detail-grid {
+  min-height: 0;
+  height: 100%;
+  overflow: hidden;
+  grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
+}
+body.mobile-device:not([data-screen="battle"]) .detail-art {
+  min-height: 0;
+  overflow: hidden;
+  justify-content: flex-start;
+}
+body.mobile-device:not([data-screen="battle"]) .detail-art canvas {
+  flex: 0 0 auto;
+  width: min(100%, 250px);
+  height: min(46%, 250px);
+  margin: 0 auto 8px;
+}
+body.mobile-device:not([data-screen="battle"]) .detail-art p {
+  min-height: 0;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px 6px;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
+}
+body.mobile-device:not([data-screen="battle"]) .detail-grid .rule-panel {
+  max-height: 100%;
+  overscroll-behavior: contain;
+}
 body.mobile-device:not([data-screen="battle"]) .result-page-shell { width: 100%; padding: 24px 18px; }
 body.mobile-device:not([data-screen="battle"]) .result-screen { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; }
 body.mobile-device:not([data-screen="battle"]) .result-page-title { gap: 8px; }

@@ -16,14 +16,6 @@ export const maps = [
     filter: "brightness(.52) saturate(.65) hue-rotate(165deg)",
   },
   {
-    id: "training",
-    name: "训练空间",
-    english: "TRAINING GRID",
-    subtitle: "清晰简洁的网格练习场",
-    image: null,
-    filter: "none",
-  },
-  {
     id: "neon",
     name: "霓虹天台",
     english: "NEON ROOFTOP",
@@ -53,6 +45,14 @@ export const maps = [
     english: "DAIRY LAB",
     subtitle: "奶蛋生产线上的荒诞擂台",
     image: "./assets/arena/dairy-lab.png",
+    filter: "none",
+  },
+  {
+    id: "training",
+    name: "训练空间",
+    english: "TRAINING GRID",
+    subtitle: "清晰简洁的网格练习场",
+    image: null,
     filter: "none",
   },
 ];
