@@ -365,26 +365,6 @@ body:not([data-screen="battle"]) .result-screen::after {
   box-shadow: none;
   clip-path: none;
   animation: result-side-in .65s cubic-bezier(.22,.8,.24,1) both;
-  overflow: hidden;
-}
-.result-page-shell::before,
-.result-page-shell::after {
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  width: 50%;
-  z-index: 2;
-  pointer-events: none;
-  background: linear-gradient(145deg, #09121ee8, #142b3be8);
-}
-.result-page-shell::before {
-  left: 0;
-  animation: result-half-left .8s cubic-bezier(.22,.8,.24,1) .08s both;
-}
-.result-page-shell::after {
-  right: 0;
-  animation: result-half-right .8s cubic-bezier(.22,.8,.24,1) .08s both;
 }
 .result-page-shell > .eyebrow { color: var(--ui-accent, #e9ff72); letter-spacing: 6px; text-shadow: 0 0 18px #e9ff7288; }
 .result-page-title { display: flex; justify-content: center; align-items: center; gap: 18px; }
@@ -396,8 +376,6 @@ body:not([data-screen="battle"]) .result-screen::after {
 .result-screen .result-actions button { min-width: 180px; min-height: 52px; font-size: 15px; }
 @keyframes result-bg-in { from { opacity: 0; transform: scale(1.12) translateX(50px); } to { opacity: 1; transform: scale(1.06) translateX(0); } }
 @keyframes result-side-in { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes result-half-left { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-100%); } }
-@keyframes result-half-right { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(100%); } }
 
 /* Logical landscape dimensions also cover portrait-rotated phone browsers. */
 body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
@@ -482,6 +460,8 @@ body.mobile-device:not([data-screen="battle"]) .detail-grid {
   min-height: 0;
   height: 100%;
   overflow: hidden;
+  flex: 1 1 auto;
+  grid-template-rows: minmax(0, 1fr);
   grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr);
 }
 body.mobile-device:not([data-screen="battle"]) .detail-art {
@@ -492,7 +472,7 @@ body.mobile-device:not([data-screen="battle"]) .detail-art {
 body.mobile-device:not([data-screen="battle"]) .detail-art canvas {
   flex: 0 0 auto;
   width: min(100%, 250px);
-  height: min(46%, 250px);
+  height: min(40%, 220px);
   margin: 0 auto 8px;
 }
 body.mobile-device:not([data-screen="battle"]) .detail-art p {
@@ -505,7 +485,15 @@ body.mobile-device:not([data-screen="battle"]) .detail-art p {
 }
 body.mobile-device:not([data-screen="battle"]) .detail-grid .rule-panel {
   max-height: 100%;
+  height: 100%;
+  overflow-y: scroll !important;
   overscroll-behavior: contain;
+}
+body.mobile-device:not([data-screen="battle"]) #detail-moves {
+  min-height: 0;
+  padding-bottom: 28px;
+  touch-action: pan-y;
+  -webkit-overflow-scrolling: touch;
 }
 body.mobile-device:not([data-screen="battle"]) .result-page-shell { width: 100%; padding: 24px 18px; }
 body.mobile-device:not([data-screen="battle"]) .result-screen { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; }

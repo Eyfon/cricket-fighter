@@ -126,7 +126,7 @@ export function drawHUD(ctx, fighters, timer, round, winsRequired = 2, width = 9
         [388, panelBottom],
         [22, panelBottom],
       ],
-      "#16151ce8",
+      "#16151cb5",
     );
     polygon(
       ctx,
