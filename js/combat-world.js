@@ -1,8 +1,18 @@
 import { FLOOR, WIDTH, intersects, applyDamage, resolveHit } from "./combat.js";
+import { newBattleSeed, seededRandom } from "./battle-frame.js";
 export class CombatWorld {
-  constructor() {
+  constructor(seed = newBattleSeed()) {
     this.projectiles = [];
     this.grabs = [];
+    this.setSeed(seed);
+  }
+  setSeed(seed) {
+    if (!Number.isInteger(seed) || seed < 0 || seed > 0xffffffff)
+      throw new RangeError("Battle seed must be an unsigned 32-bit integer");
+    this.seed = seed;
+    this.tieRandom = seededRandom(seed);
+    // Separate player streams keep AI draws from consuming collision tie rolls.
+    this.aiRandom = [seededRandom(seed ^ 0x9e3779b9), seededRandom(seed ^ 0x243f6a88)];
   }
   reset() {
     for (const g of this.grabs) this.release(g, false);
@@ -68,70 +78,124 @@ export class CombatWorld {
       ) {
         a.spawned = true;
         const p = a.move.projectile;
-        for (const shot of p.shots || [{ delay: 0, damage: a.move.damage }])
+        const lockedTarget = p.targeted ? fighters.find((other) => other !== f && other.hp > 0) : null;
+        const lockedX = lockedTarget?.x ?? f.x + f.facing * (p.offsetX ?? 64);
+        const lockedY = lockedTarget?.y ?? f.y;
+        if (lockedTarget) {
+          f.targetLock = { x: lockedX, y: lockedY, age: 0, duration: (p.lockDelay ?? 0.65) + 0.42 };
+        }
+        for (const [shotIndex, shot] of (p.shots || [{ delay: 0, damage: a.move.damage }]).entries())
           this.projectiles.push({
             owner: f,
             move: a.move,
             key: a.key,
-            x: f.x + f.facing * (p.offsetX ?? 64),
-            y: f.y + (p.offsetY ?? -95),
+            x: p.targeted
+              ? lockedX
+              : p.rain
+              ? 80 + (shotIndex + 1) * ((WIDTH - 160) / ((p.shots || []).length + 1))
+              : f.x + f.facing * (p.offsetX ?? 64),
+            y: p.targeted
+              ? lockedY - 300
+              : p.rain ? -80 - shotIndex * 28 : f.y + (p.offsetY ?? -95),
             direction: f.facing,
             radius: p.radius,
-            speed: p.speed * Math.cos(shot.angle ?? 0),
-            verticalSpeed: p.speed * Math.sin(shot.angle ?? 0),
+            speed: p.targeted || p.rain ? 0 : p.speed * Math.cos(shot.angle ?? 0),
+            verticalSpeed: p.targeted || p.rain ? p.speed : p.speed * Math.sin(shot.angle ?? 0),
             life: p.life,
             power: p.power || 1,
             age: 0,
-            delay: shot.delay,
+            delay: p.targeted ? (p.lockDelay ?? 0.65) + shot.delay : shot.delay,
             damage: shot.damage,
+            rain: !!p.rain,
+            targeted: !!p.targeted,
           });
       }
       if (
         a?.move.effect === "burst" &&
-        !a.spawned &&
         a.frame >= a.move.startup + (a.move.burstAt === "active" ? a.move.active : 0) &&
         (a.move.burstAt !== "active" || a.landed) &&
         !f.capturedBy
       ) {
-        a.spawned = true;
-        a.impactFrame = a.frame;
+        if (!a.spawned) a.spawned = true;
+        if (a.impactFrame == null)
+          a.impactFrame = a.move.hits ? a.move.startup + a.move.active : a.frame;
         f.vx = 0;
-        f.burstVisual = { age: 0, x: f.x, y: f.y, range: a.move.burstRange, ground: !!a.move.riseVelocity };
+        if (!a.move.hits || !a.hitIndices.size)
+          f.burstVisual = { age: 0, x: f.x, y: f.y, range: a.move.burstRange, ground: !!a.move.riseVelocity, soundwave: !!a.move.soundwave };
+        const elapsed = a.frame - a.move.startup;
+        const hit = a.move.hits?.find((entry, index) => elapsed >= entry.at && !a.hitIndices.has(index));
+        if (hit) {
+          const hitIndex = a.move.hits.indexOf(hit);
+          a.hitIndices.add(hitIndex);
+          const target = fighters.find((other) => other !== f);
+          if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+            const event = applyDamage(f, target, a.move, {
+              key: a.key,
+              direction: target.x >= f.x ? 1 : -1,
+              damage: hit.damage,
+              final: hitIndex === a.move.hits.length - 1,
+              source: 'burst',
+            });
+            if (event) events.push(event);
+          }
+        } else if (!a.move.hits && !a.burstHit) {
+          a.burstHit = true;
+          const target = fighters.find((other) => other !== f);
+          if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+            const event = applyDamage(f, target, a.move, {
+              key: a.key,
+              direction: target.x >= f.x ? 1 : -1,
+              damage: a.move.damage,
+              source: 'burst',
+            });
+            if (event) events.push(event);
+          }
+        }
+      }
+      if (a?.move.effect === "global" && !a.spawned && a.frame >= a.move.startup && !f.capturedBy) {
+        a.spawned = true;
         const target = fighters.find((other) => other !== f);
-        if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+        if (target) {
           const event = applyDamage(f, target, a.move, {
             key: a.key,
             direction: target.x >= f.x ? 1 : -1,
             damage: a.move.damage,
-            source: 'burst',
+            source: 'global',
           });
           if (event) events.push(event);
         }
       }
     }
-    // Sample both contacts, then resolve a single deterministic first hit.
-    // The more advanced active frame wins; ties favor the first fighter. Once
-    // that hit gives the other fighter stun or clears its attack, the stale
-    // reciprocal contact is discarded instead of producing a trade animation.
+    // Sample both contacts before applying damage. Earlier active attacks win;
+    // exact ties use one seeded 50/50 roll, never the player's array position.
+    // An interrupted reciprocal attack is still discarded to prevent normal trades.
     const contacts = fighters.map((f, i) =>
       f.active() &&
       !f.capturedBy &&
       !f.grabbing &&
+      fighters[1 - i].hp > 0 &&
+      fighters[1 - i].stun <= 0 &&
+      fighters[1 - i].dodgeTimer <= 0.06 &&
       intersects(f.hitbox(), fighters[1 - i].hurtbox())
         ? {
             f,
             target: fighters[1 - i],
             attack: f.attack,
             targetAttack: fighters[1 - i].attack,
-            index: i,
           }
         : null,
     )
       .filter(Boolean)
       .sort((a, b) => {
         const progress = (c) => c.attack.frame - c.attack.move.startup;
-        return progress(b) - progress(a) || a.index - b.index;
+        return progress(b) - progress(a);
       });
+    if (contacts.length === 2) {
+      const [a, b] = contacts;
+      const progress = (c) => c.attack.frame - c.attack.move.startup;
+      if (progress(a) === progress(b) && this.tieRandom() < 0.5)
+        contacts.reverse();
+    }
     for (const c of contacts) {
       if (
         c.f.capturedBy ||
@@ -163,6 +227,13 @@ export class CombatWorld {
       p.life -= dt;
       p.age += dt;
       const target = fighters.find((f) => f !== p.owner);
+      if (p.targeted && p.y >= FLOOR) {
+        p.y = FLOOR;
+        p.owner.eggImpact = { age: 0, x: p.x, y: FLOOR, range: 135 };
+        p.owner.burstVisual = { age: 0, x: p.x, y: FLOOR, range: 135, ground: true };
+        p.life = 0;
+        continue;
+      }
       const box = {
         x: Math.min(oldX, p.x) - p.radius,
         y: Math.min(oldY, p.y) - p.radius,
@@ -183,6 +254,10 @@ export class CombatWorld {
         });
         if (event) {
           events.push(event);
+          if (p.targeted) {
+            target.eggImpact = { age: 0, x: target.x, y: target.y, range: 110 };
+            target.burstVisual = { age: 0, x: target.x, y: target.y, range: 110, ground: true };
+          }
           p.life = 0;
         }
       }

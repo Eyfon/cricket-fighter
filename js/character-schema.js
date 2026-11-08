@@ -65,7 +65,7 @@ export function validateCharacter(character) {
     for (const key of ["damage", "range", "knockback"])
       if (!positive(move[key])) errors.push(`${prefix}.${key} 必须是正数`);
     const maxStun =
-      slot === "punch" ? 12 : slot === "kick" ? 16 : slot === "super" ? 30 : 24;
+      slot === "punch" ? 12 : slot === "kick" ? 16 : ["skill", "skill2", "super"].includes(slot) ? 30 : 24;
     if (move.stun > maxStun)
       errors.push(`${prefix}.stun 不得超过 ${maxStun} 帧，避免无限压制`);
     for (const key of ["cost", "gain"])
@@ -96,11 +96,14 @@ export function validateCharacter(character) {
       errors.push(`${prefix}.box 必须包含有限坐标和正数宽高`);
     if (
       move.effect &&
-      !["rise", "dash", "projectile", "burst", "rush", "grab"].includes(move.effect)
+      !["rise", "dash", "projectile", "burst", "rush", "grab", "global"].includes(move.effect)
     )
       errors.push(
-        `${prefix}.effect 仅支持 rise / dash / projectile / burst / rush / grab`,
+        `${prefix}.effect 仅支持 rise / dash / projectile / burst / rush / grab / global`,
       );
+    if (move.invulnerableFrames !== undefined &&
+      (!Number.isInteger(move.invulnerableFrames) || move.invulnerableFrames < 0))
+      errors.push(`${prefix}.invulnerableFrames 必须为非负整数帧`);
     if (
       move.dashSpeed !== undefined &&
       (!positive(move.dashSpeed) ||
@@ -113,9 +116,9 @@ export function validateCharacter(character) {
       move.riseVelocity !== undefined &&
       (!Number.isFinite(move.riseVelocity) ||
         move.riseVelocity >= 0 ||
-        !["rise", "burst"].includes(move.effect))
+        !["rise", "burst", "projectile"].includes(move.effect))
     )
-      errors.push(`${prefix}.riseVelocity 仅适用于 rise / burst 且必须为负数`);
+      errors.push(`${prefix}.riseVelocity 仅适用于 rise / burst / projectile 且必须为负数`);
     if (
       move.launch !== undefined &&
       (!Number.isFinite(move.launch) || move.launch < 0)
@@ -184,7 +187,7 @@ export function validateCharacter(character) {
       )
         errors.push(`${prefix}.grab 需要有效 duration、递增 hits 与正确总伤害`);
     }
-    if (move.unblockable && slot !== "super")
+    if (move.unblockable && slot !== "super" && !(character.id === "naiwa" && ["skill", "skill2"].includes(slot)))
       errors.push(`${prefix} 仅大招允许破防`);
     if (!AI_ROLES.includes(move.ai?.role) || !positive(move.ai?.weight))
       errors.push(`${prefix}.ai 需要有效 role 和正数 weight`);

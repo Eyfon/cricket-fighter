@@ -1,0 +1,39 @@
+{
+  "id": "naiwa",
+  "name": "奶娃",
+  "english": "NAIWA",
+  "style": "smooth yellow mascot",
+  "common": "./assets/characters/naiwa/common/atlas.png",
+  "skill1": "./assets/characters/naiwa/skill1/atlas.png",
+  "skill2": "./assets/characters/naiwa/skill2/atlas.png",
+  "super": "./assets/characters/naiwa/super/atlas.png",
+  "grid": {
+    "columns": 4,
+    "rows": 4,
+    "cell": [
+      320,
+      320
+    ]
+  },
+  "states": {
+    "common": [
+      "idle",
+      "walk",
+      "jump",
+      "guard",
+      "crouchGuard",
+      "hurt",
+      "punch",
+      "kick",
+      "dodge",
+      "knockdown",
+      "ko"
+    ],
+    "skill1": "回眸一击",
+    "skill2": "捧腹大笑",
+    "super": "奶蛋天降"
+  },
+  "notes": "每个图集均为透明 RGBA，已清理低透明噪点；通用动作图集单独提供蹲防、方向拳脚、上勾和扫腿。每个图集均为透明 RGBA，角色脚底使用统一 originY；技能特效由 Canvas 层绘制，避免特效串边。",
+  "commonActions": "./assets/characters/naiwa/common/actions-atlas.png",
+  "motion": "./assets/characters/naiwa/common/motion-v2.png"
+}

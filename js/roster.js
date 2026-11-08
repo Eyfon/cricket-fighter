@@ -562,6 +562,55 @@ for (const character of roster) {
 for (const character of [blue, red]) {
   character.moves.skill2 = { ...character.moves.specialPunch, cost: 1, gain: 0 };
 }
+const naiwaAtlas = "./assets/characters/naiwa/common/atlas.png";
+const naiwaActions = "./assets/characters/naiwa/common/actions-atlas.png";
+const naiwaMotion = "./assets/characters/naiwa/common/motion-v2.png";
+const naiwaWalk = "./assets/characters/naiwa/common/walk-v9.png";
+const naiwaHurt = "./assets/characters/naiwa/common/hurt-v2.png";
+const naiwaJump = "./assets/characters/naiwa/common/jump-v4.png";
+const naiwaSweep = "./assets/characters/naiwa/common/sweep-v7.png";
+const naiwaSkill1 = "./assets/characters/naiwa/skill1/atlas.png";
+const naiwaSkill2 = "./assets/characters/naiwa/skill2/atlas.png";
+const naiwaSuper = "./assets/characters/naiwa/super/atlas.png";
+const naiwaRect = (index) => [(index % 4) * 320, Math.floor(index / 4) * 320, 320, 320];
+const naiwaPose = (src, index, scale = 0.62) => ({ src, rect: naiwaRect(index), scale, anchorX: 0.5, originY: 302 });
+const naiwaClip = (src, indices, phases, scale = 0.62) => ({ src, clip: indices.map((i) => naiwaPose(src, i, scale)), fps: 12, phases });
+const naiwaPhases = { startup: [0, 1], active: [2], recovery: [2, 3] };
+const naiwaMotionPose = (index, scale = 0.62) => ({ src: naiwaMotion, rect: naiwaRect(index), scale, anchorX: 0.5, originY: 312 });
+const naiwaMotionClip = (indices, phases, scale = 0.62) => ({ src: naiwaMotion, clip: indices.map((i) => naiwaMotionPose(i, scale)), fps: 12, phases });
+const naiwaSkillPose = (src, index, scale = 0.62) => ({ src, rect: naiwaRect(index), scale, anchorX: 0.5, originY: 312 });
+const naiwaSkillClip = (src, indices, phases, scale = 0.62, fps = 16) => ({ src, clip: indices.map((i) => naiwaSkillPose(src, i, scale)), fps, phases });
+const naiwaSweepClip = (indices, phases, scale = 0.62) => ({ src: naiwaSweep, clip: indices.map((i) => ({ src: naiwaSweep, rect: [i * 320, 0, 320, 320], scale, anchorX: 0.5, originY: 312 })), fps: 12, phases });
+const naiwaSprites = {
+  idle: naiwaPose(naiwaAtlas, 0),
+  walk: { src: naiwaWalk, clip: [0, 1, 2, 3, 4, 5].map((i) => ({ src: naiwaWalk, rect: [i * 320, 0, 320, 320], scale: 0.62, anchorX: 0.5, originY: 312 })), fps: 9, loop: true, stride: 110, walkMode: "time" },
+  jump: { src: naiwaJump, clip: [0, 1, 2].map((i) => ({ src: naiwaJump, rect: [i * 320, 0, 320, 320], scale: 0.62, anchorX: 0.5, originY: 312 })), fps: 10 },
+  guard: naiwaPose(naiwaActions, 1),
+  crouchGuard: naiwaPose(naiwaActions, 0),
+  hurt: { src: naiwaHurt, clip: [0, 1, 2, 3].map((i) => ({ src: naiwaHurt, rect: [i * 320, 0, 320, 320], scale: 0.62, anchorX: 0.5, originY: 312 })), fps: 12 },
+  ko: naiwaPose(naiwaAtlas, 15),
+  knockdown: { src: naiwaAtlas, clip: [13, 14, 15].map((i) => naiwaPose(naiwaAtlas, i)), fps: 10 },
+  dodge: { src: naiwaActions, clip: [10, 11, 10].map((i) => naiwaPose(naiwaActions, i)), fps: 12 },
+  punch: naiwaMotionClip([4, 4, 5, 4], naiwaPhases),
+  kick: naiwaMotionClip([6, 6, 7, 6], naiwaPhases),
+  forwardPunch: naiwaMotionClip([4, 4, 5, 4], naiwaPhases),
+  forwardKick: naiwaMotionClip([8, 8, 9, 8], naiwaPhases),
+  specialPunch: naiwaClip(naiwaActions, [4, 4, 5, 14], naiwaPhases),
+  specialKick: naiwaSweepClip([0, 1, 2, 3], naiwaPhases),
+  skill: naiwaSkillClip(naiwaSkill1, [0, 1, 2, 3, 4, 5], { startup: [0, 1], active: [2, 3], recovery: [4, 5] }),
+  // The laugh lasts 1.5 seconds for its hit pulses.  Cycle the middle poses
+  // at a faster ping-pong rate so the hands/body keep moving instead of
+  // freezing on each atlas frame for too long.
+  skill2: Object.assign(
+    naiwaSkillClip(naiwaSkill2, [0, 1, 2, 3, 4, 5, 6, 7], {
+      startup: [0, 1, 2],
+      active: [2, 3, 4, 5, 6, 5, 4, 3],
+      recovery: [6, 7],
+    }),
+    { phaseLoop: { active: true }, phaseFps: 14 },
+  ),
+  super: naiwaSkillClip(naiwaSuper, [0, 1, 2, 3, 4, 5], { startup: [0, 1, 2], active: [3, 4], recovery: [5, 4] }),
+};
 const commonMoves = {
   punch: { name: "直拳", description: "快速近身直拳。", startup: 6, active: 4, recovery: 5, damage: 4, range: 105, box: { x: 18, y: -150, w: 95, h: 55 }, stun: 9, knockback: 220, cost: 0, gain: 12, groundOnly: false, launch: 0, ai: { role: "poke", weight: 1 }, cancel: ["kick", "forwardPunch", "forwardKick", "specialPunch", "specialKick", "skill", "skill2", "super"] },
   kick: { name: "中踢", description: "中距离踢击。", startup: 10, active: 5, recovery: 7, damage: 6.5, range: 145, box: { x: 16, y: -105, w: 130, h: 60 }, stun: 13, knockback: 310, cost: 0, gain: 14, groundOnly: false, launch: 0, ai: { role: "poke", weight: 1 } },
@@ -570,6 +619,21 @@ const commonMoves = {
   specialPunch: { name: "上勾拳", description: "向上挥拳，适合对空。", startup: 9, active: 7, recovery: 8, damage: 7, range: 110, box: { x: 8, y: -190, w: 105, h: 150 }, stun: 20, knockback: 260, cost: 0, gain: 9, groundOnly: true, launch: 220, ai: { role: "antiAir", weight: 1 } },
   specialKick: { name: "扫腿", description: "攻击下段并扫倒未防御的对手。", startup: 10, active: 6, recovery: 8, damage: 7, range: 140, box: { x: 12, y: -55, w: 130, h: 55 }, stun: 20, knockback: 280, cost: 0, gain: 9, groundOnly: true, low: true, knockdown: true, launch: 0, ai: { role: "poke", weight: 1 } },
 };
+roster.push({
+  id: "naiwa",
+  name: "奶娃",
+  subtitle: "全屏 / 范围控制",
+  description: "恶作剧型全屏控制者：回眸一击无视距离，捧腹大笑持续震慑近身敌人，奶蛋弹幕雨覆盖全场。",
+  color: "#ffd84d",
+  accent: "#fff1ad",
+  speed: 205,
+  jump: 580,
+  width: 70,
+  height: 178,
+  ai: { preferredRange: 190 },
+  sprites: naiwaSprites,
+  moves: { skill: {}, skill2: {}, super: {} },
+});
 for (const character of roster) Object.assign(character.moves, structuredClone(commonMoves));
 Object.assign(blue.moves.skill, {
   name: "三重回风",
@@ -634,5 +698,42 @@ delete red.moves.skill2.dashSpeed;
 delete red.moves.skill2.hits;
 delete blue.moves.skill2.projectile;
 delete blue.moves.skill2.minRange;
+Object.assign(roster[2].moves.skill, {
+  name: "回眸一击",
+  description: "消耗一点能量，嘲笑着指向敌人；蓄力 0.5 秒后无视距离造成伤害和硬直。",
+  startup: 30, active: 4, recovery: 8, damage: 10, range: 960,
+  box: { x: -480, y: -180, w: 960, h: 150 }, stun: 30, knockback: 180, launch: 260, knockdown: true,
+  cost: 1, gain: 0, groundOnly: true, effect: "global",
+  ai: { role: "ranged", weight: 1 },
+  unblockable: true,
+  launch: 80,
+  voiceCue: true,
+});
+Object.assign(roster[2].moves.skill2, {
+  name: "捧腹大笑",
+  description: "消耗一点能量，以自身为中心连续多段震慑并伤害附近未防御的敌人。",
+  startup: 12, active: 90, recovery: 9, damage: 12, range: 220, burstRange: 220,
+  box: { x: -220, y: -180, w: 440, h: 180 }, stun: 10, knockback: 115,
+  cost: 1, gain: 0, groundOnly: true, effect: "burst",
+  soundwave: true,
+  voiceCue: true,
+  unblockable: true,
+  launch: 90,
+  hits: [0, 10, 20, 30, 40, 50, 60, 70, 80].map((at) => ({ at, damage: 12 / 9 })),
+  ai: { role: "poke", weight: 1 },
+});
+Object.assign(roster[2].moves.super, {
+  name: "奶蛋天降",
+  description: "消耗三点能量，锁定一名敌人；短暂瞄准后从目标头顶落下尖端朝下的奶蛋，爆炸并击飞倒地。",
+  startup: 12, active: 6, recovery: 12, damage: 18, range: 960,
+  box: { x: -480, y: -260, w: 960, h: 240 }, stun: 24, knockback: 220,
+  cost: 3, gain: 0, groundOnly: true, effect: "projectile", invulnerableFrames: 18,
+  launch: 300, knockdown: true, unblockable: true, voiceCue: true,
+  projectile: {
+    speed: 1080, radius: 42, life: 1.3, power: 1, targeted: true, lockDelay: 0.48,
+    shots: [{ delay: 0, damage: 18 }],
+  },
+  ai: { role: "finisher", weight: 1 },
+});
 installAnimations(roster);
 assertRoster(roster);

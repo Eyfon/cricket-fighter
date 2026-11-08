@@ -48,6 +48,38 @@ export const MUSIC = {
     lead: [12, 16, 19, 21, 19, 16, 14, 16, 12, 16, 19, 24, 21, 19, 16, 14],
     progression: [0, 5, 7, 5],
   },
+  neon: {
+    name: "霓虹脉冲",
+    bpm: 154,
+    root: 39,
+    wave: "square",
+    lead: [12, 19, 24, 26, 19, 22, 29, 24, 14, 19, 22, 31, 26, 22, 19, 14],
+    progression: [0, 3, 7, 10],
+  },
+  factory: {
+    name: "钢铁警报",
+    bpm: 142,
+    root: 36,
+    wave: "sawtooth",
+    lead: [7, 7, 14, 19, 7, 12, 17, 14, 5, 5, 12, 17, 19, 14, 12, 7],
+    progression: [0, 2, 5, 3],
+  },
+  bamboo: {
+    name: "月影疾风",
+    bpm: 118,
+    root: 44,
+    wave: "triangle",
+    lead: [12, 16, 21, 24, 21, 16, 14, 12, 19, 21, 26, 29, 26, 21, 19, 14],
+    progression: [0, 7, 5, 2],
+  },
+  dairy: {
+    name: "奶蛋狂欢",
+    bpm: 136,
+    root: 47,
+    wave: "square",
+    lead: [19, 19, 24, 19, 16, 21, 24, 21, 12, 16, 21, 26, 24, 21, 16, 12],
+    progression: [0, 5, 9, 7],
+  },
 };
 export function musicForScreen(screen) {
   if (screen === "battle") return null; // The selected map owns battle music.
@@ -73,12 +105,14 @@ export class ArcadeAudio {
     this.sources = new Set();
     this.voices = new Map();
     this.samples = new Map();
+    this.specialSamples = new Map();
     this.sampleCounts = new Map();
     this.stage = null;
     this.paused = false;
     this.step = 0;
     this.nextBeat = 0;
     this.announcements = [];
+    this.pendingSpecial = null;
   }
   configure(options) {
     this.options = options;
@@ -159,6 +193,21 @@ export class ArcadeAudio {
           .then((buffer) => this.voices.set(key, buffer))
           .catch(() => {});
       }
+      fetch(new URL("../assets/audio/naiwa-laugh.wav", import.meta.url))
+        .then((response) => {
+          if (!response.ok) throw Error(response.status);
+          return response.arrayBuffer();
+        })
+        .then((bytes) => c.decodeAudioData(bytes))
+        .then((buffer) => {
+          this.specialSamples.set("naiwa-laugh", buffer);
+          if (this.pendingSpecial?.name === "naiwa-laugh") {
+            const pending = this.pendingSpecial;
+            this.pendingSpecial = null;
+            this.playSpecial(pending.name, pending.duration, pending.volume);
+          }
+        })
+        .catch(() => {});
     }
     if (this.context.state === "suspended")
       this.context.resume().catch(() => {});
@@ -229,6 +278,10 @@ export class ArcadeAudio {
   }
   playMove(key, move) {
     if (!this.context || this.paused) return;
+    if (move.voiceCue) {
+      this.playSpecial("naiwa-laugh", 2, 0.9);
+      return;
+    }
     const t = this.context.currentTime;
     if (key === "dodge") {
       this.noise(0.17, 0.28, 3600);
@@ -257,6 +310,7 @@ export class ArcadeAudio {
   releaseMove(key, move) {
     if (!this.context || this.paused || key === "punch" || key === "kick")
       return;
+    if (move.voiceCue) return;
     const big = key === "super",
       release = this.context.currentTime;
     if (move.effect === "projectile") {
@@ -280,6 +334,21 @@ export class ArcadeAudio {
           this.noise(0.16, 0.65, 3200, release + i * 0.075);
       this.tone(260, 42, 0.28, 0.2, "triangle", release);
     }
+  }
+  playSpecial(name, duration = 2, volume = 1) {
+    if (!this.context || this.paused || this.options.muted) return false;
+    const buffer = this.specialSamples.get(name);
+    if (!buffer) {
+      this.pendingSpecial = { name, duration, volume };
+      return false;
+    }
+    const source = this.context.createBufferSource();
+    const gain = this.context.createGain();
+    source.buffer = buffer;
+    gain.gain.value = volume;
+    source.connect(gain).connect(this.fx);
+    this.track(source, this.context.currentTime, Math.min(duration, buffer.duration), [gain]);
+    return true;
   }
   sample(name, volume = 1, delay = 0) {
     if (!this.context || this.paused || this.options.muted) return false;

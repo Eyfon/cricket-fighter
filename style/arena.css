@@ -603,37 +603,6 @@ input[type="range"] {
 .battle-controls p {
   line-height: 1.8;
 }
-.touch {
-  display: none;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 18px;
-}
-.touch > div {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-.touch > div:last-child {
-  flex-wrap: wrap;
-  max-width: 360px;
-}
-.touch button {
-  min-height: 48px;
-  min-width: 46px;
-  touch-action: none;
-  padding: 10px;
-  font-size: 12px;
-}
-.touch button.held {
-  background: #a96435;
-}
-.touch > div:last-child button {
-  flex: 1 0 27%;
-}
-body[data-touch="always"] .touch {
-  display: flex;
-}
 body[data-touch="never"] .touch {
   display: none !important;
 }
@@ -808,21 +777,6 @@ a {
     font-size: 10px;
     padding: 10px;
   }
-  .touch {
-    display: flex;
-    flex-wrap: wrap;
-  }
-  .touch > div {
-    flex: 1;
-    justify-content: space-between;
-  }
-  .touch > div:last-child {
-    max-width: none;
-  }
-  .touch button {
-    font-size: 11px;
-    min-width: 40px;
-  }
   .result-dialog {
     width: 90%;
   }
@@ -832,11 +786,6 @@ a {
   }
   .options-grid .rule-panel {
     padding: 20px;
-  }
-}
-@media (pointer: coarse) {
-  body:not([data-touch="never"]) .touch {
-    display: flex;
   }
 }
 
@@ -964,19 +913,13 @@ body[data-screen="battle"] #arena {
   width: 100%;
   height: 100%;
   aspect-ratio: auto;
-  object-fit: contain;
+  object-fit: fill;
 }
 body[data-screen="battle"] .toolbar {
   display: none !important;
 }
 body[data-screen="battle"] .battle-controls {
   display: none;
-}
-body[data-screen="battle"] .touch {
-  flex-shrink: 0;
-  margin: 0;
-  padding: 8px 12px;
-  background: #1c171b;
 }
 @media (max-width: 760px) {
   .home-copy {
@@ -1010,10 +953,6 @@ body[data-screen="battle"] .touch {
   }
   .archive-card canvas {
     width: 100%;
-  }
-  body[data-screen="battle"] .touch > div:last-child button {
-    min-height: 40px;
-    padding: 7px;
   }
   .character-grid {
     grid-template-columns: 1fr 24px 1fr;

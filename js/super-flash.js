@@ -12,12 +12,12 @@ export function superFrame(elapsed) {
     radius: 190 * Math.max(0.05, 1 - elapsed / SUPER_FREEZE),
   };
 }
-export function drawSuperFlash(ctx, flash) {
+export function drawSuperFlash(ctx, flash, bounds = { x: 0, y: 0, width: 960, height: 540 }) {
   const frame = superFrame(flash.elapsed),
     f = flash.actor;
   ctx.save();
   ctx.fillStyle = `rgba(4,7,20,${frame.burst * 0.38})`;
-  ctx.fillRect(0, 0, 960, 540);
+  ctx.fillRect(bounds.x, bounds.y, bounds.width, bounds.height);
   ctx.translate(f.x, f.y - 95);
   ctx.strokeStyle = f.def.color;
   ctx.lineWidth = 2 + frame.burst * 4;

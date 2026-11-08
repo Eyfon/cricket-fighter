@@ -1,3 +1,4 @@
+import { decideCpuInput } from './ai.js';
 export const DEFAULT_CHIP_RATIO = 0.25;
 export const KNOCKDOWN_DURATION = 0.72;
 const ATTACK_KEYS = [
@@ -66,6 +67,11 @@ export class Fighter {
       comboTime: 0,
       aiTime: 0,
       aiInput: {},
+      aiBrain: null,
+      aiProjectiles: [],
+      projectileThreat: false,
+      targetLock: null,
+      eggImpact: null,
       state: "idle",
       animTime: 0,
     });
@@ -158,6 +164,14 @@ export class Fighter {
       !this.capturedBy
     );
   }
+  isInvulnerable() {
+    return !!(
+      this.attack &&
+      this.hp > 0 &&
+      Number.isInteger(this.attack.move.invulnerableFrames) &&
+      this.attack.frame <= this.attack.move.invulnerableFrames
+    );
+  }
   resistsHit(key, move, final = true) {
     if (!this.attack || this.hp <= 0 || this.capturedBy) return false;
     if (this.attack.key === 'super')
@@ -194,6 +208,14 @@ export class Fighter {
     if (this.burstVisual) {
       this.burstVisual.age += dt;
       if (this.burstVisual.age >= 0.4) this.burstVisual = null;
+    }
+    if (this.eggImpact) {
+      this.eggImpact.age += dt;
+      if (this.eggImpact.age >= 0.45) this.eggImpact = null;
+    }
+    if (this.targetLock) {
+      this.targetLock.age += dt;
+      if (this.targetLock.age >= this.targetLock.duration) this.targetLock = null;
     }
     this.escapeTimer = Math.max(0, this.escapeTimer - dt);
     this.sweepImmunity = Math.max(0, this.sweepImmunity - dt);
@@ -287,7 +309,7 @@ export class Fighter {
       a.frame++;
       if (
         a.frame === a.move.startup &&
-        (a.move.effect === 'rise' || (a.move.effect === 'burst' && a.move.riseVelocity)) &&
+        (a.move.effect === 'rise' || (a.move.effect === 'projectile' && a.move.riseVelocity) || (a.move.effect === 'burst' && a.move.riseVelocity)) &&
         this.ground
       ) {
         this.vy = a.move.riseVelocity ?? -410;
@@ -400,11 +422,12 @@ export function applyDamage(
     direction = attacker.facing,
     unblockable = false,
     final = true,
-    source = ['projectile', 'burst', 'grab'].includes(move.effect) ? move.effect : 'melee',
+    source = ['projectile', 'burst', 'grab', 'global'].includes(move.effect) ? move.effect : 'melee',
   } = {},
 ) {
   if (
     defender.dodgeTimer > 0.06 ||
+    defender.isInvulnerable() ||
     defender.escapeTimer > 0 ||
     defender.hp <= 0
   )
@@ -418,6 +441,7 @@ export function applyDamage(
   const finalDamage = blocked
     ? damage * (move.chipRatio ?? DEFAULT_CHIP_RATIO)
     : damage;
+  const controlMove = ["skill", "skill2", "super"].includes(key);
   const sweep = key === 'specialKick' && move.low && move.knockdown;
   const knockedDown = move.knockdown && !(sweep && defender.sweepImmunity > 0);
   defender.hp = Math.max(0, defender.hp - finalDamage);
@@ -425,7 +449,8 @@ export function applyDamage(
   // prevents control only: full damage and lethal KOs still apply.
   const armored = !blocked && defender.resistsHit(key, move, final);
   if (armored) defender.attack.armorHits++;
-  if (!blocked) defender.pressureHits++;
+  if (!blocked && !controlMove) defender.pressureHits++;
+  if (controlMove) defender.controlTime = 0;
   const scaling = Math.max(
     0.45,
     1 - Math.max(0, defender.pressureHits - 1) * 0.15,
@@ -436,7 +461,7 @@ export function applyDamage(
         ? 4
         : Math.max(
             5,
-            Math.min(key === "super" ? 30 : 24, move.stun) * scaling,
+            Math.min(["skill", "skill2", "super"].includes(key) ? 30 : 24, move.stun) * scaling,
           )) / 60;
   defender.blockStun = blocked;
   defender.vx = 0;
@@ -483,6 +508,7 @@ export function applyDamage(
     !armored &&
     defender.hp > 0 &&
     !defender.capturedBy &&
+    !controlMove &&
     (defender.pressureHits >= 6 || defender.controlTime >= 0.75);
   if (escape) {
     defender.stun = 0;
@@ -533,89 +559,8 @@ export function defenseInput(self, other, crouch = false) {
   const back = other.x >= self.x ? -1 : 1;
   return {guard: true, down: crouch, left: crouch && back === -1, right: crouch && back === 1};
 }
-export function cpuInput(self, other, dt, difficulty = "normal") {
-  self.aiTime -= dt;
-  if (self.aiTime > 0)
-    return {
-      left: self.aiInput.left,
-      right: self.aiInput.right,
-      guard: self.aiInput.guard,
-      down: self.aiInput.down,
-    };
-  self.aiTime = { easy: 0.27, normal: 0.16, hard: 0.09 }[difficulty] || 0.16;
-  const dist = Math.abs(other.x - self.x),
-    dir = other.x > self.x ? 1 : -1,
-    desired = self.def.ai?.preferredRange || 95,
-    input = {};
-  if (dist > desired) {
-    input.left = dir < 0;
-    input.right = dir > 0;
-  }
-  if (
-    ((other.attack && dist < 155) || self.projectileThreat) &&
-    Math.random() < 0.65
-  ) {
-    if (self.dodgeCooldown <= 0 && Math.random() < 0.3) input.dodge = true;
-    else input.guard = true;
-  }
-  if (self.def.ai.retreatBelow && dist < self.def.ai.retreatBelow) {
-    input.left = dir > 0;
-    input.right = dir < 0;
-  }
-  if (input.guard)
-    Object.assign(input, defenseInput(self, other,
-      !!other.attack?.move.low || (dist < 155 && Math.random() < 0.25)));
-  if (dist > 180 && Math.random() < 0.12) input.jump = true;
-  const options = Object.entries(self.def.moves).filter(
-    ([key, move]) =>
-      dist < move.range &&
-      (!move.minRange || dist >= move.minRange) &&
-      (move.effect !== "grab" || other.ground) &&
-      self.canUseMove(key) &&
-      !(
-        key === "super" &&
-        (other.dodgeTimer > 0 ||
-          self.projectileThreat ||
-          (dist < 180 &&
-            other.attack &&
-            other.attack.frame <
-              other.attack.move.startup + other.attack.move.active))
-      ) &&
-      !(
-        (key === "skill" || key === "skill2") &&
-        self.energyPoints < 3 &&
-        self.hp > self.maxHp * 0.35 &&
-        self.def.ai.saveForSuper !== false
-      ),
-  );
-  if (options.length && !input.guard && !input.dodge && Math.random() > 0.18) {
-    const superMove = options.find(([key]) => key === "super");
-    let pick = superMove;
-    if (!pick) {
-      const weighted = options.map((entry) => {
-        const role = entry[1].ai?.role;
-        let weight = entry[1].ai?.weight || 1;
-        if (role === "antiAir") weight *= other.ground ? 0.2 : 5;
-        if (role === "approach")
-          weight *= dist > self.def.ai.preferredRange ? 3 : 0.4;
-        if (role === "poke") weight *= other.ground ? 2 : 0.5;
-        if (role === "ranged") weight *= dist > 180 ? 4 : 0.3;
-        if (role === "grapple") weight *= other.ground && dist < 150 ? 4 : 0.15;
-        return { entry, weight };
-      });
-      let roll =
-        Math.random() * weighted.reduce((sum, item) => sum + item.weight, 0);
-      pick = weighted[weighted.length - 1].entry;
-      for (const item of weighted) {
-        roll -= item.weight;
-        if (roll <= 0) {
-          pick = item.entry;
-          break;
-        }
-      }
-    }
-    input[pick[0]] = true;
-  }
+export function cpuInput(self, other, dt, difficulty = "normal", random = Math.random) {
+  const input = decideCpuInput(self, other, dt, difficulty, random);
   self.aiInput = input;
   return input;
 }

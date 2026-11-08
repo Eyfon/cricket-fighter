@@ -1,4 +1,4 @@
-# 蛐蛐格斗 / Arcade Lab
+# 蛐蛐乱斗 / Arcade Lab
 
 基于克隆的 [fogolin/js-fighter](https://github.com/fogolin/js-fighter) 仓库整理的网页格斗基架。新入口使用独立编写的战斗引擎，原始 `js/game.js`、样式、素材和说明保留，方便对照学习。当前使用内置生成的原创像素示例角色与夕阳天台背景，无需额外下载素材。新增两套各 16 帧像素动作图集：走路交替迈步，出招按蓄势/出手/收招播放；与原有姿态配合使用，动作按阶段逐帧切换，不叠加残影。
 
@@ -21,7 +21,7 @@ npm run dev
 
 主界面 → 模式选择 → 角色选择 → 地图与对战设置 → VS / 战斗 → 结算。
 
-- 地图与规则在同一页：夕照天台、午夜天台（同场景夜色）、网格训练场。
+- 地图与规则在同一页：夕照天台、午夜天台、网格训练场、霓虹天台、锈炉工厂、月下竹林、奶蛋实验室。
 - 时间可选 30 / 60 / 90 秒或无限，获胜目标 1 / 2 / 3 回合。
 - 双方共用 1 / 2 / 3 / 5 倍血量，默认 1 倍；基础生命 100，招式伤害直接按较低数值设计。战斗只显示血条。
 - 结算只有返回与重新开战；返回选人保留选择，重开沿用本场配置。
@@ -31,23 +31,28 @@ npm run dev
 
 ## 已实现
 
-- AI 对 AI 自动观战、人机对战、本地双人；两名可替换像素示例角色。
+- AI 对 AI 自动观战、人机对战、本地双人；三名可替换示例角色。
 - 固定 60Hz 模拟，移动、跳跃、防御、拳、脚、必杀和超杀。
 - 招式前摇 / 有效帧 / 后摇、左右镜像判定框、受击硬直和击退。
 - 普通拳命中后的取消接招；攻击与受击攒气、两个特殊招式免费、小技能消耗 1 点，无时间冷却、大招消耗 3 点，最多存 3 点。
 - 升龙、突进、独立气功波、双波、多段爪击、地面抓取连打与抛出；大型能量弹可破防和对波。
 - 可配置胜局目标和时间、平局加赛、重新开战。
-- 命中停顿、粒子、震动、分层打击／技能音效、大厅/选角/结算与三张地图独立 BGM、按实际胜负播放的英语街机播报（默认开启，首次交互后播放）。
-- 暂停、失焦自动暂停、判定框查看、手机多点触屏按键。
+- 命中停顿、粒子、震动、分层打击／技能音效、大厅/选角/结算与七张地图独立 BGM、按实际胜负播放的英语街机播报（默认开启，首次交互后播放）。
+- 暂停、失焦自动暂停、手机多点触屏按键；判定框保留为内部调试能力，不作为玩家设置项。
 
 这是简化的格斗基架。画风更新包括像素角色图集、夕阳天台场景、街机 HUD、技能光弧与命中火花。素材来源和生成提示词见 `ASSET-NOTES.md`。
 
 尚未实现方向搓招、通用投技、3v3、网络联机和完整角色动画编辑器。游戏已有蹲防、角色专属抓取技能及高低段防御判定。手机触屏控制 1P；本地双人需要键盘。
 
+手机采用横屏界面：首次点击开始时尝试全屏并锁定横屏，不支持原生全屏的浏览器使用页面旋转。战斗画面随屏幕比例铺满可用区域，保留人物比例和两侧战斗边界。左下默认八方向摇杆，可在选项的“手机方向操作”切换为十字键并保存；右下六键（上排技能一／技能二／大招，下排拳／脚／闪避），支持多指与方向组合。控件向屏幕内侧留出操作空间，并加深底色以提高辨识度。操作层悬浮在画面上，观战时隐藏；电脑键位不变。手机浏览器回归可运行 `node tools/browser-mobile-smoke.mjs`，使用 `GAME_URL` 指定本地服务地址。
+
 ## 设计与规则文档
+
+- [文档与规范总入口](docs/README.md)：规范优先级、新角色/新地图/新机制流程，以及统一验收清单。
 
 - [设计总规范](docs/DESIGN-SPEC.md)：玩法目标、通用机制、数值边界、角色制作流程与验收标准；新增机制和角色以此为总约定。
 - [战斗规则与玩法总览](docs/BATTLE-RULES.md)：当前实际操作、招式数值、能量、状态、打断和角色技能。
+- [三级 AI 规范](docs/AI-SPEC.md) 与 [实测对比](docs/AI-COMPARISON.md)：已接入延迟感知、战术评分和有限记忆；观战双方可单独选择难度，人机只设置对手难度。复测运行 `npm run ai:benchmark -- --seeds 1000 --publish-report`。
 - [角色设计与接入规范](docs/CHARACTER-SPEC.md)：角色槽位、输入约定、配置字段和角色专属技能要求。
 - [角色设计稿模板](docs/templates/CHARACTER-BRIEF.md) 与 [角色配置模板](docs/templates/character.template.json)：新角色从设计到数据接入的起点。
 - [地图设计与接入规范](docs/MAP-SPEC.md) 与 [地图设计稿模板](docs/templates/MAP-BRIEF.md)：新地图的主题、边界、资源、BGM、配置和验收标准。
@@ -138,7 +143,7 @@ assets/characters/      按人物 / common / skill1 / skill2 / super 分类的�
 tests/combat.test.js    核心战斗测试
 tools/build.js          静态打包
 tools/browser-smoke.mjs 可选浏览器验证（需要自行安装 Playwright）
-.github/workflows/      手动触发的 GitHub Pages 部署
+.github/workflows/      main 推送自动部署，也支持手动触发
 upstream.html           原项目入口
 UPSTREAM-README.md      原项目说明
 UPSTREAM-CNAME.txt      原作者域名的记录，不参与部署
@@ -155,18 +160,17 @@ npm run build
 
 角色贴图目录和裁切规则见 [贴图目录说明](docs/SPRITE-DIRECTORY.md)。重新整理现有图集可运行 `python tools/organize_sprites.py`；它会生成两个人物的独立动作图集和 `manifest.json`。
 
-生成的 `dist/` 只有新入口、13 个 JS 模块、1 个 CSS、`assets/arena/` 背景及 `assets/characters/` 角色，不会带入原作者素材或域名。所有运行资源使用相对路径，可部署到 GitHub Pages 的仓库子路径。
+生成的 `dist/` 包含新入口、战斗与 AI／手机控制模块、界面样式，以及打包清单中的角色、场景和音频资源，不会带入原作者素材或域名。所有运行资源使用相对路径，可部署到 GitHub Pages 的仓库子路径。
 
 可选浏览器 QA：安装 Playwright 与 Chromium 后运行 `node tools/browser-smoke.mjs`，默认访问本地 5173。可设置 `PLAYWRIGHT_MODULE`、`CHROMIUM_PATH`、`GAME_URL`。检查完整 AI 比赛、暂停、本地按键、人机、触屏和窄屏布局，截图输出至 `artifacts/`。
 
 ## 放到 GitHub Pages
 
-1. 在你自己的 GitHub 下创建 public 仓库，将本地项目推送到该仓库。当前 clone 的 origin 仍指向原项目，不要向原作者仓库推送。
-2. 在仓库 **Settings → Pages → Source** 选择 **GitHub Actions**。
-3. 推送到 `main` 后，`Deploy game to GitHub Pages` 会自动测试、构建并部署；也可以在 Actions 页面手动运行。
-4. 成功后，从 workflow 的 deployment 链接打开游戏，默认地址为 `https://<用户名>.github.io/<仓库名>/`。
+项目仓库：[Eyfon/cricket-fighter](https://github.com/Eyfon/cricket-fighter)。游戏地址：[蛐蛐乱斗](https://eyfon.github.io/cricket-fighter/)。网站展示最近一次成功部署的版本。
 
-也可把 `dist/` 内容交给任意静态托管。当前尚未上传或发布到你的 GitHub。
+仓库使用 GitHub Actions 部署：推送到 `main` 后，`Deploy game to GitHub Pages` 工作流会测试、构建并发布；也可以在 [Actions 页面](https://github.com/Eyfon/cricket-fighter/actions/workflows/pages.yml) 手动运行。确认对应提交的工作流成功后，再检查线上更新。
+
+如需部署到自己的仓库，在 **Settings → Pages → Source** 选择 **GitHub Actions**，并保留此工作流。也可把 `dist/` 内容交给任意静态托管。
 
 ## 原项目来源
 

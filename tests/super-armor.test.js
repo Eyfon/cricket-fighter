@@ -144,7 +144,9 @@ test("AI saves super while an opponent is dodging or attacking at close range", 
     if (threat === "projectile") a.projectileThreat = true;
     for (let i = 0; i < 80; i++) {
       a.aiTime = 0;
-      assert.ok(!cpuInput(a, b, 1 / 60).super);
+      const input = cpuInput(a, b, 1 / 60);
+      // New threats cannot affect choices before they pass the reaction delay.
+      if (a.aiBrain.time > a.aiBrain.latency + 1 / 60) assert.ok(!input.super);
     }
   }
   const [a, b] = pair();

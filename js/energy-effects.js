@@ -1,3 +1,5 @@
+const naiWaEggImage = new Image();
+naiWaEggImage.src = new URL("../assets/effects/naiwa-egg.png", import.meta.url).href;
 export function drawProjectiles(ctx, world) {
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
@@ -9,6 +11,52 @@ export function drawProjectiles(ctx, world) {
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.scale(p.direction, 1);
+    if (p.targeted) {
+      const r = p.radius;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.shadowColor = "#ffe9a0";
+      ctx.shadowBlur = 14;
+      if (naiWaEggImage.complete && naiWaEggImage.naturalWidth) {
+        const size = r * 3.4;
+        ctx.save();
+        // The falling奶蛋 must enter point-first, with its head down.
+        ctx.rotate(Math.PI);
+        ctx.drawImage(naiWaEggImage, -size / 2, -size * 0.38, size, size);
+        ctx.restore();
+      } else {
+        ctx.fillStyle = "#f4c85d";
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r * 0.9, r * 1.15, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      continue;
+    }
+    if (p.rain) {
+      const r = p.radius;
+      ctx.globalCompositeOperation = "source-over";
+      ctx.shadowColor = "#ffe9a0";
+      ctx.shadowBlur = 16;
+      const glow = ctx.createRadialGradient(0, 0, 1, 0, 0, r * 1.4);
+      glow.addColorStop(0, "#fff8d6");
+      glow.addColorStop(0.55, "#ffe48a");
+      glow.addColorStop(1, "#f4a93d00");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 1.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = "#fff0ae";
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#fff8d6";
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 0.72, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     const trail = ctx.createLinearGradient(-r * 4, 0, r, 0);
     trail.addColorStop(0, "transparent");
     trail.addColorStop(0.6, blue + "66");
@@ -68,13 +116,23 @@ export function drawMoveAura(ctx, f) {
     const v = f.burstVisual, t = v.age / 0.4;
     ctx.save();
     ctx.globalAlpha = 1 - t;
-    ctx.strokeStyle = f.def.color;
-    ctx.lineWidth = 7 * (1 - t) + 1;
     const r = v.range * (0.25 + 0.75 * t);
-    ctx.beginPath();
-    ctx.ellipse((v.x - f.x) * f.facing, v.y - f.y - (v.ground ? 5 : 80), r, v.ground ? r * 0.22 : r * 0.7, 0, 0, Math.PI * 2);
-    ctx.stroke();
-    if (v.ground) {
+    if (v.soundwave) {
+      ctx.strokeStyle = "#f4f0c2";
+      ctx.lineWidth = 4 * (1 - t) + 1;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc((v.x - f.x) * f.facing, v.y - f.y - 92, r * (0.45 + i * 0.22), 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    } else {
+      ctx.strokeStyle = f.def.color;
+      ctx.lineWidth = 7 * (1 - t) + 1;
+      ctx.beginPath();
+      ctx.ellipse((v.x - f.x) * f.facing, v.y - f.y - (v.ground ? 5 : 80), r, v.ground ? r * 0.22 : r * 0.7, 0, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    if (v.ground && !v.soundwave) {
       for (let i = 0; i < 9; i++) {
         const x = (i - 4) * r / 4;
         ctx.beginPath();
@@ -83,6 +141,20 @@ export function drawMoveAura(ctx, f) {
         ctx.stroke();
       }
     }
+    ctx.restore();
+  }
+  if (f.eggImpact) {
+    const v = f.eggImpact, t = Math.min(1, v.age / 0.45);
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = 1 - t;
+    ctx.strokeStyle = "#ffe48a";
+    ctx.shadowColor = "#ffb43b";
+    ctx.shadowBlur = 24;
+    ctx.lineWidth = 8 - t * 6;
+    ctx.beginPath();
+    ctx.arc((v.x - f.x) * f.facing, v.y - f.y - 90, v.range * (0.18 + t * 0.82), 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
   }
   if (!f.attack) return;
@@ -152,23 +224,30 @@ export function drawMoveAura(ctx, f) {
   if (m.effect === "burst") {
     const charging = a.frame < m.startup;
     const progress = charging ? a.frame / m.startup : 1;
-    const radius = charging ? 18 + progress * 18 : 52 + Math.sin(a.frame * 1.8) * 6;
-    ctx.strokeStyle = f.def.color;
-    ctx.shadowColor = f.def.accent || f.def.color;
-    ctx.shadowBlur = charging ? 12 : 22;
-    ctx.lineWidth = charging ? 3 : 5;
-    for (let i = 0; i < (charging ? 2 : 4); i++) {
-      ctx.beginPath();
-      ctx.ellipse(0, -88, radius + i * 8, radius * 0.72 + i * 5, i * 0.7, 0, Math.PI * 2);
-      ctx.stroke();
-    }
-    if (!charging) {
-      ctx.lineWidth = 3;
-      for (let i = 0; i < 8; i++) {
-        const angle = (i * Math.PI) / 4 + a.frame * 0.08;
+    if (m.soundwave) {
+      ctx.strokeStyle = "#f4f0c2";
+      ctx.shadowColor = "#fff4a8";
+      ctx.shadowBlur = 14;
+      ctx.lineWidth = charging ? 2 : 3;
+      const waveCount = charging ? 2 : 8;
+      for (let i = 0; i < waveCount; i++) {
+        const phase = (progress * 2.8 + i / waveCount) % 1;
+        const radius = 24 + phase * 150;
+        ctx.globalAlpha = charging ? 0.7 : (1 - phase) * 0.85;
         ctx.beginPath();
-        ctx.moveTo(Math.cos(angle) * 36, -88 + Math.sin(angle) * 28);
-        ctx.lineTo(Math.cos(angle) * 82, -88 + Math.sin(angle) * 62);
+        ctx.arc(0, -92, radius, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    } else {
+      const radius = charging ? 18 + progress * 18 : 52 + Math.sin(a.frame * 1.8) * 6;
+      ctx.strokeStyle = f.def.color;
+      ctx.shadowColor = f.def.accent || f.def.color;
+      ctx.shadowBlur = charging ? 12 : 22;
+      ctx.lineWidth = charging ? 3 : 5;
+      for (let i = 0; i < (charging ? 2 : 4); i++) {
+        ctx.beginPath();
+        ctx.ellipse(0, -88, radius + i * 8, radius * 0.72 + i * 5, i * 0.7, 0, Math.PI * 2);
         ctx.stroke();
       }
     }
@@ -190,4 +269,31 @@ export function drawMoveAura(ctx, f) {
     ctx.stroke();
   }
   ctx.restore();
+}
+
+export function drawTargetLocks(ctx, fighters) {
+  for (const f of fighters) {
+    const lock = f.targetLock;
+    if (!lock) continue;
+    const t = Math.max(0, Math.min(1, lock.age / lock.duration));
+    ctx.save();
+    ctx.globalCompositeOperation = "source-over";
+    ctx.translate(lock.x, lock.y - 105);
+    ctx.rotate(t * Math.PI * 2.4);
+    ctx.strokeStyle = "#ff334d";
+    ctx.shadowColor = "#ff102f";
+    ctx.shadowBlur = 16;
+    ctx.lineWidth = 5;
+    ctx.beginPath();
+    ctx.arc(0, 0, 30, 0.15, Math.PI * 0.85);
+    ctx.arc(0, 0, 30, Math.PI * 1.15, Math.PI * 1.85);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(-46, 0); ctx.lineTo(-20, 0);
+    ctx.moveTo(20, 0); ctx.lineTo(46, 0);
+    ctx.moveTo(0, -46); ctx.lineTo(0, -20);
+    ctx.moveTo(0, 20); ctx.lineTo(0, 46);
+    ctx.stroke();
+    ctx.restore();
+  }
 }

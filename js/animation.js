@@ -26,11 +26,10 @@ export function sampleAnimation(f) {
     return pair(
       frames,
       indices,
-      (((((f.vx * f.facing < 0 ? -1 : 1) * f.walkDistance) /
-        (sprite.stride || 100)) %
-        1) +
-        1) %
-        1,
+      (sprite.walkMode === "time"
+        ? ((f.animTime * (sprite.fps || 8)) / Math.max(1, indices.length)) % 1
+        : (((((f.vx * f.facing < 0 ? -1 : 1) * f.walkDistance) /
+            (sprite.stride || 100)) % 1) + 1) % 1),
       true,
     );
   if (f.grabbing && sprite.grabTimeline) {
@@ -58,12 +57,23 @@ export function sampleAnimation(f) {
     }
     if (frame < move.startup)
       return pair(frames, sprite.phases.startup, frame / move.startup);
-    if (frame < move.startup + move.active)
+    if (frame < move.startup + move.active) {
+      if (sprite.phaseLoop?.active && sprite.phaseFps > 0) {
+        // Long multi-hit moves can otherwise hold each pose for a few tenths
+        // of a second.  A short ping-pong loop keeps the body moving at a
+        // readable speed without changing hit timing or adding a crossfade.
+        const sequence = sprite.phases.active;
+        const elapsed = Math.max(0, frame - move.startup);
+        const step = Math.floor((elapsed * sprite.phaseFps) / 60) % sequence.length;
+        const pose = frames[sequence[step]];
+        return { a: pose, b: pose, blend: 0 };
+      }
       return pair(
         frames,
         sprite.phases.active,
         (frame - move.startup) / move.active,
       );
+    }
     return pair(
       frames,
       sprite.phases.recovery,

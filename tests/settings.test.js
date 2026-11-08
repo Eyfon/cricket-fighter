@@ -54,3 +54,11 @@ test("sound defaults to on while explicit mute remains supported", () => {
   assert.equal(normalizeOptions().muted, false);
   assert.equal(normalizeOptions({ muted: true }).muted, true);
 });
+
+test("mobile direction preference defaults old saves to joystick and accepts dpad", () => {
+  assert.equal(DEFAULT_OPTIONS.directionControl, "joystick");
+  assert.equal(normalizeOptions({ touch: "auto" }).directionControl, "joystick");
+  assert.equal(normalizeOptions({ directionControl: "invalid" }).directionControl, "joystick");
+  for (const directionControl of ["dpad", "joystick"])
+    assert.equal(normalizeOptions({ directionControl }).directionControl, directionControl);
+});

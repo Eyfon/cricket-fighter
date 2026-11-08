@@ -1,6 +1,22 @@
 {
   "version": 1,
   "files": {
+    "assets/arena/bamboo-moon.png": {
+      "bytes": 2703074,
+      "sha256": "becb66206d6bfac8e86d4963109ee9089150fea8c82e930dfded22ed2ebe3039"
+    },
+    "assets/arena/dairy-lab.png": {
+      "bytes": 1832514,
+      "sha256": "56c30a2e980cd20005f4493ddd01dffcd2f52779143b0e824ab10fdee9803d63"
+    },
+    "assets/arena/factory-floor.png": {
+      "bytes": 2683728,
+      "sha256": "b6275b9e276195fa59aa9e8d4ca4f150879bfcad149646042abcfa33cce17a26"
+    },
+    "assets/arena/neon-rooftop.png": {
+      "bytes": 2743549,
+      "sha256": "ee8f7ffde988d10529113683c489709b9e46c526ba0ae78fbed28043d40a7678"
+    },
     "assets/arena/rooftop-sunset.png": {
       "bytes": 2902542,
       "sha256": "faf1a88d019fd6c982abc32a4a8da483a6583af18ec59fc1d118183e4b82c53e"
@@ -168,6 +184,10 @@
     "assets/audio/combat/slash-air-2.wav": {
       "bytes": 6660,
       "sha256": "b69be04ee766af74a0b4c46cdbdc82225e3e20a7a7ac3ab06c3e0821a9f5013f"
+    },
+    "assets/audio/naiwa-laugh.wav": {
+      "bytes": 356356,
+      "sha256": "917dc02f358da7ee238190f4c51cc3db8508701928d5a53029e51a1e03762aa3"
     },
     "assets/characters/arcade-fighters.png": {
       "bytes": 1463450,
@@ -360,6 +380,106 @@
     "assets/characters/direction-attacks-v4.png": {
       "bytes": 1447254,
       "sha256": "036bccc412713b756c88f9c7ce10740b8463180413d1ce725b45a568084e5084"
+    },
+    "assets/characters/naiwa/common/actions-atlas.png": {
+      "bytes": 126649,
+      "sha256": "c606c9b1d7fa8f08fbd36069d60b353d7a1120545f9e32635e5f47d4a36da7d7"
+    },
+    "assets/characters/naiwa/common/atlas.png": {
+      "bytes": 110868,
+      "sha256": "276c693b23e7f3d0f56e5c554d25c93965b43812b5ce3ef8d9e29c3d0247862a"
+    },
+    "assets/characters/naiwa/common/hurt-v1.png": {
+      "bytes": 308146,
+      "sha256": "2ebc630f068d790bde5bf8f5797646f347f79ed87d83e035e690bf90cf3ea1b6"
+    },
+    "assets/characters/naiwa/common/hurt-v2.png": {
+      "bytes": 293475,
+      "sha256": "896df4dee8396da538738c6d9a448de963ab6b317e93cf0d1939f07102f190bd"
+    },
+    "assets/characters/naiwa/common/jump-v1.png": {
+      "bytes": 237600,
+      "sha256": "9405a21c0186d561c874ffa987f30cee4bbc1597479743a8fd4295e618c19fb1"
+    },
+    "assets/characters/naiwa/common/jump-v2.png": {
+      "bytes": 252002,
+      "sha256": "5fd1a0a0392f27d3cc5ca8b92436cf4da7ad606ddf5c574be29a4c2756038930"
+    },
+    "assets/characters/naiwa/common/jump-v3.png": {
+      "bytes": 226111,
+      "sha256": "2590a3fc6101720637e92eb943c50ca90e7b521b44fc122ba59b04ca339e978f"
+    },
+    "assets/characters/naiwa/common/jump-v4.png": {
+      "bytes": 193390,
+      "sha256": "f3baa63ce83151fb385e5caef8e864a20b8b45d78fbf18adf10c6296c71eb8c3"
+    },
+    "assets/characters/naiwa/common/motion-v2.png": {
+      "bytes": 609325,
+      "sha256": "6aa74a977dcceddd956bc4ce9520e996f6f1ca90ee0d10e0941fada9f01d7f0c"
+    },
+    "assets/characters/naiwa/common/sweep-v5.png": {
+      "bytes": 338336,
+      "sha256": "282ffdcd46c767f1a536c7813c4174e0b1cbf6fb90e94a6d92972fa2a650fc50"
+    },
+    "assets/characters/naiwa/common/sweep-v6.png": {
+      "bytes": 1668,
+      "sha256": "f026fa6b59cfc886f8d96533c336eafe4592cd6d370b3dcfb465137fe4165cf9"
+    },
+    "assets/characters/naiwa/common/sweep-v7.png": {
+      "bytes": 247180,
+      "sha256": "7e30526e9785ffe18a253d211cb49e056c610f3dfaa5f32fa7d6ac7a477f4452"
+    },
+    "assets/characters/naiwa/common/walk-v1.png": {
+      "bytes": 268592,
+      "sha256": "b3b057e236196f56345db495582f22a858bf3f6ba6761d301244b74d8c20318a"
+    },
+    "assets/characters/naiwa/common/walk-v10.png": {
+      "bytes": 122546,
+      "sha256": "bdfb9b1c799eb154eaace32f0caef25131eeffc86329ec4e3ca824918f7662cc"
+    },
+    "assets/characters/naiwa/common/walk-v2.png": {
+      "bytes": 161835,
+      "sha256": "ecbeafba724b276c8d67b4c93e500a5d0ba333e02e4fbdde7ec0a2a569f48af2"
+    },
+    "assets/characters/naiwa/common/walk-v3.png": {
+      "bytes": 282028,
+      "sha256": "cd61a69d864cc664bb75ebf8e631f4afc3331ae554bde69f6d2f1d5a6c305a4f"
+    },
+    "assets/characters/naiwa/common/walk-v4.png": {
+      "bytes": 225739,
+      "sha256": "c228960b00dadd03d8184a283f5b97010816d177c7b93816c76f794e1d9437c1"
+    },
+    "assets/characters/naiwa/common/walk-v5.png": {
+      "bytes": 212739,
+      "sha256": "11fca2605c27be8fae9fb1aff21f1628442793173e987639bbb318fba1029118"
+    },
+    "assets/characters/naiwa/common/walk-v6.png": {
+      "bytes": 232854,
+      "sha256": "57548bed96a65d9c679c5e451c8a9ec755232feeb4ef13acb18971391cd5c805"
+    },
+    "assets/characters/naiwa/common/walk-v7.png": {
+      "bytes": 257984,
+      "sha256": "088352dce220d498d263d90edc29073562bf3ed491dbb1d2bd707f2ac38d9e73"
+    },
+    "assets/characters/naiwa/common/walk-v8.png": {
+      "bytes": 407876,
+      "sha256": "2b6263876c88893d16d8122695b35e7917d1a7cd1d2e2c9ec541b280f39affff"
+    },
+    "assets/characters/naiwa/common/walk-v9.png": {
+      "bytes": 220554,
+      "sha256": "a66457a52e98167e3313aafd786d04ef904040f1e2602d469e39113e29e13d6f"
+    },
+    "assets/characters/naiwa/skill1/atlas.png": {
+      "bytes": 575728,
+      "sha256": "b1e791be136ce37d62f4e9eee6fd8954dae6ae2588eb1be8d8e10e6be8d1d36d"
+    },
+    "assets/characters/naiwa/skill2/atlas.png": {
+      "bytes": 569967,
+      "sha256": "f0b6fe1d2efcceacc39f3931f9cb46c1bf40d088a97b03d3fad76ec133c8a9d7"
+    },
+    "assets/characters/naiwa/super/atlas.png": {
+      "bytes": 636247,
+      "sha256": "74c1499bea4f6c158e683bd1ac4892b56681ff052f0f5d02b761fbfb04c752d7"
     },
     "assets/characters/skill-knockdown-v3.png": {
       "bytes": 2330991,

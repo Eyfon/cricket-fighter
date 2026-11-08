@@ -41,3 +41,17 @@ assets/characters/
 - `manifest.json`：人物动作清单与裁切坐标。
 
 不要直接把整张旧图集当作新角色动作文件使用。新增动作应先裁切到对应人物目录，再在 manifest 和动画映射中登记。
+
+### 奶娃
+
+```text
+assets/characters/naiwa/
+├─ common/atlas.png
+├─ common/actions-atlas.png  # 蹲防、方向拳脚、上勾和扫腿
+├─ skill1/atlas.png      # 回眸一击
+├─ skill2/atlas.png      # 捧腹大笑
+├─ super/atlas.png       # 奶蛋天降
+└─ manifest.json
+```
+
+奶娃的图集使用同一角色比例和 320×320 网格。圆形奶蛋、范围震荡和升空表现由 Canvas 特效层绘制，角色图集只保留人物本体，避免特效跨格和裁切串边。

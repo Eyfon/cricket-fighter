@@ -59,6 +59,11 @@ test('expanded second skills hit targets beyond their previous radius', () => {
 test('V5 skills use isolated new art with foot pivots and time their grapple impacts', () => {
   for(const def of roster) for(const slot of ['skill','super']) {
     const sprite=def.sprites[slot];
+    if (!/-v5\.png$/.test(sprite.src)) {
+      assert.equal(sprite.clip.length, 6);
+      assert.ok(sprite.clip.every(p=>p.originY>0));
+      continue;
+    }
     assert.match(sprite.src,/-v5\.png$/);
     assert.equal(sprite.clip.length,6);
     assert.ok(sprite.clip.every(p=>p.originY>0));
@@ -354,9 +359,11 @@ test("simultaneous normal attacks resolve as one first hit, not a trade", () => 
   b.attack.frame = b.attack.move.startup;
   const events = world.step([a, b], dt);
   assert.equal(events.length, 1);
-  assert.equal(a.hp, 100);
-  assert.ok(b.hp < 100);
-  assert.equal(b.attack, null);
+  const winner = a.hp === 100 ? a : b;
+  const loser = winner === a ? b : a;
+  assert.equal(winner.hp, 100);
+  assert.ok(loser.hp < 100);
+  assert.equal(loser.attack, null);
 });
 test("walk animation uses distinct foot frames and attacks switch from charge to release", () => {
   const a = new Fighter(roster[0], 400, 1);

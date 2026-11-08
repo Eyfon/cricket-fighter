@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "node tools/version-modules.js && python tools/dev-server.py",
     "test": "node --test --experimental-test-isolation=none tests/*.test.js",
-    "build": "node tools/build.js"
+    "build": "node tools/build.js",
+    "ai:benchmark": "node tools/benchmark-ai.mjs"
   }
 }
