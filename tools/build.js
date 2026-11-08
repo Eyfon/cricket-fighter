@@ -62,3 +62,9 @@ await cp(
   path.join(root, "dist/assets/audio"),
   { recursive: true },
 );
+
+await cp(
+  path.join(root, "assets/effects"),
+  path.join(root, "dist/assets/effects"),
+  { recursive: true },
+);
