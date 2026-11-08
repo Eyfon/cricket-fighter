@@ -1,6 +1,22 @@
 {
   "version": 1,
   "files": {
+    "assets/arena/bamboo-moon.png": {
+      "bytes": 2703074,
+      "sha256": "becb66206d6bfac8e86d4963109ee9089150fea8c82e930dfded22ed2ebe3039"
+    },
+    "assets/arena/dairy-lab.png": {
+      "bytes": 1832514,
+      "sha256": "56c30a2e980cd20005f4493ddd01dffcd2f52779143b0e824ab10fdee9803d63"
+    },
+    "assets/arena/factory-floor.png": {
+      "bytes": 2683728,
+      "sha256": "b6275b9e276195fa59aa9e8d4ca4f150879bfcad149646042abcfa33cce17a26"
+    },
+    "assets/arena/neon-rooftop.png": {
+      "bytes": 2743549,
+      "sha256": "ee8f7ffde988d10529113683c489709b9e46c526ba0ae78fbed28043d40a7678"
+    },
     "assets/arena/rooftop-sunset.png": {
       "bytes": 2902542,
       "sha256": "faf1a88d019fd6c982abc32a4a8da483a6583af18ec59fc1d118183e4b82c53e"

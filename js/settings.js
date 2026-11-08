@@ -27,7 +27,11 @@ export function normalizeRules(value = {}) {
     difficulty,
     p1Difficulty: choose(value.p1Difficulty, ["easy", "normal", "hard"], difficulty),
     p2Difficulty: choose(value.p2Difficulty, ["easy", "normal", "hard"], difficulty),
-    stage: choose(value.stage, ["sunset", "midnight", "training"], "sunset"),
+    stage: choose(
+      value.stage,
+      ["sunset", "midnight", "training", "neon", "factory", "bamboo", "dairy"],
+      "sunset",
+    ),
   };
 }
 export function normalizeOptions(value = {}) {

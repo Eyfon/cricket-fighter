@@ -1,12 +1,19 @@
 import { maps } from "./maps.js";
 import { assetUrl } from "./asset-url.js";
 let currentMap = maps[0];
+const stage = new Image();
+let loadedStagePath = null;
+function loadStageImage(map) {
+  const path = map.image ? assetUrl(map.image) : "";
+  if (path === loadedStagePath) return;
+  loadedStagePath = path;
+  stage.src = path;
+}
+loadStageImage(currentMap);
 export function setStage(id) {
   currentMap = maps.find((map) => map.id === id) || maps[0];
+  loadStageImage(currentMap);
 }
-// Visual presentation is separate from combat, so art can change without balance changes.
-const stage = new Image();
-stage.src = assetUrl("./assets/arena/rooftop-sunset.png");
 export const stageReady = () => stage.complete && stage.naturalWidth > 0;
 
 export function drawStage(ctx, { width = 960, height = 540, worldY = 0 } = {}) {

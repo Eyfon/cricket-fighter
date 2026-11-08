@@ -48,6 +48,38 @@ export const MUSIC = {
     lead: [12, 16, 19, 21, 19, 16, 14, 16, 12, 16, 19, 24, 21, 19, 16, 14],
     progression: [0, 5, 7, 5],
   },
+  neon: {
+    name: "霓虹脉冲",
+    bpm: 154,
+    root: 39,
+    wave: "square",
+    lead: [12, 19, 24, 26, 19, 22, 29, 24, 14, 19, 22, 31, 26, 22, 19, 14],
+    progression: [0, 3, 7, 10],
+  },
+  factory: {
+    name: "钢铁警报",
+    bpm: 142,
+    root: 36,
+    wave: "sawtooth",
+    lead: [7, 7, 14, 19, 7, 12, 17, 14, 5, 5, 12, 17, 19, 14, 12, 7],
+    progression: [0, 2, 5, 3],
+  },
+  bamboo: {
+    name: "月影疾风",
+    bpm: 118,
+    root: 44,
+    wave: "triangle",
+    lead: [12, 16, 21, 24, 21, 16, 14, 12, 19, 21, 26, 29, 26, 21, 19, 14],
+    progression: [0, 7, 5, 2],
+  },
+  dairy: {
+    name: "奶蛋狂欢",
+    bpm: 136,
+    root: 47,
+    wave: "square",
+    lead: [19, 19, 24, 19, 16, 21, 24, 21, 12, 16, 21, 26, 24, 21, 16, 12],
+    progression: [0, 5, 9, 7],
+  },
 };
 export function musicForScreen(screen) {
   if (screen === "battle") return null; // The selected map owns battle music.
