@@ -16,6 +16,10 @@ export async function versionModules() {
   const imports = Object.fromEntries(names.map(n => [`./js/${n}`, `./js/${n}?v=${revision}`]));
   const filename = path.join(root, 'index.html');
   let html = await readFile(filename, 'utf8');
+  for (const style of ['arena.css', 'mobile-arena.css', 'match-lobby.css', 'game-shell.css']) {
+    const link = new RegExp(`href="\\./style/${style}(?:\\?v=[^"]*)?"`, 'g');
+    html = html.replace(link, `href="./style/${style}?v=${revision}"`);
+  }
   html = html.replace(/\s*<!-- MODULE_VERSIONS_START -->[\s\S]*?<!-- MODULE_VERSIONS_END -->/g, '');
   const block = `    <!-- MODULE_VERSIONS_START -->\n    <script type="importmap">${JSON.stringify({imports})}</script>\n    <!-- MODULE_VERSIONS_END -->\n`;
   html = html.replace(/    <script type="module" src="\.\/js\/arena\.js(?:\?v=[^"]*)?"><\/script>/,
