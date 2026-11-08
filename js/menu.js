@@ -402,6 +402,40 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
   window.addEventListener("pointerup", endRailDrag);
   window.addEventListener("pointercancel", endRailDrag);
   window.addEventListener("blur", () => { railDrag = null; });
+  const detailPanel = document.querySelector(".detail-grid .rule-panel");
+  let detailDrag = null;
+  if (detailPanel) {
+    const endDetailDrag = (event) => {
+      if (!detailDrag || event.pointerId !== detailDrag.id) return;
+      if (detailPanel.hasPointerCapture(event.pointerId)) detailPanel.releasePointerCapture(event.pointerId);
+      detailDrag = null;
+    };
+    detailPanel.addEventListener("pointerdown", (event) => {
+      if (event.button !== 0) return;
+      detailDrag = {
+        id: event.pointerId,
+        x: event.clientX,
+        y: event.clientY,
+        top: detailPanel.scrollTop,
+        rotated: document.body.classList.contains("mobile-portrait"),
+      };
+    });
+    detailPanel.addEventListener("pointermove", (event) => {
+      if (!detailDrag || event.pointerId !== detailDrag.id) return;
+      const delta = detailDrag.rotated
+        ? detailDrag.x - event.clientX
+        : event.clientY - detailDrag.y;
+      if (Math.abs(delta) < 4) return;
+      detailPanel.setPointerCapture(event.pointerId);
+      detailPanel.scrollTop = detailDrag.top - delta;
+      event.preventDefault();
+    });
+    for (const type of ["pointerup", "pointercancel", "lostpointercapture"])
+      detailPanel.addEventListener(type, endDetailDrag);
+    window.addEventListener("pointerup", endDetailDrag);
+    window.addEventListener("pointercancel", endDetailDrag);
+    window.addEventListener("blur", () => { detailDrag = null; });
+  }
   for (const id of [
     "round-time",
     "wins-required",
