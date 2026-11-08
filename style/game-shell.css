@@ -268,7 +268,7 @@ body.mobile-device:not([data-screen="battle"]) .setup-screen .stage-panel { grid
 body.mobile-device:not([data-screen="battle"]) .stage-heading { display: flex; min-height: 32px; padding: 0 8px; }
 body.mobile-device:not([data-screen="battle"]) .stage-heading .eyebrow { font-size: 7px; letter-spacing: 1px; }
 body.mobile-device:not([data-screen="battle"]) .stage-heading .text-button { font-size: 10px; min-height: 32px; padding: 4px; }
-body.mobile-device:not([data-screen="battle"]) .setup-screen .map-list { padding: 6px; gap: 6px; }
+body.mobile-device:not([data-screen="battle"]) .setup-screen .map-list { padding: 6px; gap: 6px; touch-action: pan-y; overflow-y: auto; -webkit-overflow-scrolling: touch; }
 body.mobile-device:not([data-screen="battle"]) .setup-screen .map-list button { min-height: 86px; }
 body.mobile-device:not([data-screen="battle"]) .setup-screen .map-thumb { height: 56px; }
 body.mobile-device:not([data-screen="battle"]) .setup-screen .map-caption { padding: 6px 4px; }
@@ -314,9 +314,72 @@ body:not([data-screen="battle"]) .detail-grid .rule-panel { overflow: auto; padd
 body:not([data-screen="battle"]) #detail-moves dt { color: var(--ui-accent); }
 body:not([data-screen="battle"]) #detail-moves dd { color: #a2b6c6; }
 
+/* Dedicated post-match page. The battle canvas finishes its KO animation
+   first, then the menu transitions here for the next action. */
+body:not([data-screen="battle"]) .result-screen {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  width: calc(100% + clamp(48px, 8vw, 144px));
+  margin-left: calc(-1 * clamp(24px, 4vw, 72px));
+  margin-right: calc(-1 * clamp(24px, 4vw, 72px));
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background: #07101b;
+}
+body:not([data-screen="battle"]) .result-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background:
+    linear-gradient(90deg, #07101be8 0%, #102638aa 50%, #07101be8 100%),
+    var(--result-bg, url("../assets/arena/rooftop-sunset.png")) center / cover;
+  filter: saturate(1.15) contrast(1.08);
+  transform: scale(1.06);
+  animation: result-bg-in .8s ease both;
+}
+body:not([data-screen="battle"]) .result-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 4px, #dff5ff0a 4px 5px),
+    radial-gradient(ellipse at center, transparent 18%, #020811aa 100%);
+}
+.result-page-shell {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  min-height: 100%;
+  padding: clamp(28px, 7vh, 80px) 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  clip-path: none;
+  animation: result-side-in .65s cubic-bezier(.22,.8,.24,1) both;
+}
+.result-page-shell > .eyebrow { color: var(--ui-accent, #e9ff72); letter-spacing: 6px; text-shadow: 0 0 18px #e9ff7288; }
+.result-page-title { display: flex; justify-content: center; align-items: center; gap: 18px; }
+.result-page-title h1 { margin: 0; color: #f3f7ec; font-size: clamp(48px, 8vw, 112px); font-style: italic; letter-spacing: 7px; text-shadow: 4px 5px #07111b, 0 0 34px #e9ff7266; }
+.result-page-title p { margin: 14px 0 0; color: #e9ff72; font: 900 clamp(22px, 3.5vw, 42px) Consolas, monospace; letter-spacing: 7px; text-shadow: 0 0 16px #e9ff7266; }
+.result-page-divider { width: min(620px, 80vw); height: 2px; margin: 34px 0 20px; background: linear-gradient(90deg, transparent, #e9ff72, #fff4b5, #e9ff72, transparent); box-shadow: 0 0 18px #e9ff7277; }
+.result-page-note { margin: 0 0 30px; color: #c5d6dc; font-size: 14px; letter-spacing: 2px; }
+.result-screen .result-actions { display: flex; justify-content: center; gap: 16px; }
+.result-screen .result-actions button { min-width: 180px; min-height: 52px; font-size: 15px; }
+@keyframes result-bg-in { from { opacity: 0; transform: scale(1.12) translateX(50px); } to { opacity: 1; transform: scale(1.06) translateX(0); } }
+@keyframes result-side-in { from { opacity: 0; transform: translateX(-100px); } to { opacity: 1; transform: translateX(0); } }
+
 /* Logical landscape dimensions also cover portrait-rotated phone browsers. */
 body.mobile-device:not([data-screen="battle"]) { --shell-header: 0px; --shell-footer: 0px; }
-body.mobile-device:not([data-screen="battle"]) .app { --shell-height: var(--game-height); width: var(--game-width); height: var(--game-height); position: fixed; padding: 0 max(20px, calc(var(--game-width) * .025), env(safe-area-inset-left), env(safe-area-inset-right)); }
+body.mobile-device:not([data-screen="battle"]) .app { --shell-height: var(--game-height); width: var(--game-width); height: var(--game-height); position: fixed; padding: 0 max(20px, calc(var(--game-width) * .025), env(safe-area-inset-left), env(safe-area-inset-right)); overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
 body.mobile-device:not([data-screen="battle"]) .app-header { height: var(--shell-header); padding-right: 48px; }
 body.mobile-device:not([data-screen="battle"]) .brand { font-size: 17px; }
 body.mobile-device:not([data-screen="battle"]) .brand small { display: none; }
@@ -392,7 +455,15 @@ body.mobile-device:not([data-screen="battle"]) .options-grid .rule-panel p { fon
 body.mobile-device:not([data-screen="battle"]) .options-grid select { font-size: 11px; padding: 7px; }
 body.mobile-device:not([data-screen="battle"]) .archive-card h2 { margin: 6px 0 2px; font-size: 17px; letter-spacing: 3px; }
 body.mobile-device:not([data-screen="battle"]) .archive-card canvas { width: min(100%, 180px); max-height: 180px; }
-body.mobile-device:not([data-screen="battle"]) .detail-grid .rule-panel { padding: 12px 16px; }
+body.mobile-device:not([data-screen="battle"]) .detail-grid .rule-panel { padding: 12px 16px; min-height: 0; overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; -webkit-overflow-scrolling: touch; }
+body.mobile-device:not([data-screen="battle"]) .result-page-shell { width: 100%; padding: 24px 18px; }
+body.mobile-device:not([data-screen="battle"]) .result-screen { width: calc(100% + 40px); margin-left: -20px; margin-right: -20px; }
+body.mobile-device:not([data-screen="battle"]) .result-page-title { gap: 8px; }
+body.mobile-device:not([data-screen="battle"]) .result-page-title h1 { font-size: 32px; letter-spacing: 2px; }
+body.mobile-device:not([data-screen="battle"]) .result-page-title p { font-size: 16px; letter-spacing: 2px; }
+body.mobile-device:not([data-screen="battle"]) .result-page-note { font-size: 10px; margin-bottom: 18px; }
+body.mobile-device:not([data-screen="battle"]) .result-screen .result-actions { gap: 8px; }
+body.mobile-device:not([data-screen="battle"]) .result-screen .result-actions button { min-width: 124px; min-height: 42px; padding: 8px; }
 body.mobile-device:not([data-screen="battle"]) .detail-art p { font-size: 10px; }
 body.mobile-device:not([data-screen="battle"]) #detail-moves dt { font-size: 12px; margin-top: 16px; }
 body.mobile-device:not([data-screen="battle"]) #detail-moves dd { font-size: 10px; }

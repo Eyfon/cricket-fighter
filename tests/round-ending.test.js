@@ -71,7 +71,7 @@ test("every menu and results has music; battle leaves ownership to its map", () 
     assert.equal(musicForScreen(screen), "lobby");
   for (const screen of ["characters", "setup"])
     assert.equal(musicForScreen(screen), "selection");
-  assert.equal(musicForScreen("result"), "result");
+  assert.equal(musicForScreen("result"), null);
   assert.equal(musicForScreen("battle"), null);
 });
 

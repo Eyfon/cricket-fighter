@@ -128,7 +128,7 @@ body.mobile-device .map-list { margin: 12px 10px 0; gap: 5px; }
 body.mobile-device .map-list button { padding: 9px 4px; font-size: 10px; }
 body.mobile-device .rule-panel { padding: 16px; }
 body.mobile-device h2 { font-size: 20px; margin: 4px 0 14px; }
-body.mobile-device[data-screen="battle"] .app { padding: 0; overflow: hidden; }
+body.mobile-device[data-screen="battle"] .app { padding: 0; overflow: auto; }
 body.mobile-device[data-screen="battle"] .battle-screen { height: 100%; min-height: 0; padding: 0; }
 body.mobile-device[data-screen="battle"] .mobile-tools {
   top: max(132px, env(safe-area-inset-top));
@@ -137,6 +137,18 @@ body.mobile-device[data-screen="battle"] .mobile-tools {
 body.mobile-device .dialog { padding: 16px 24px; max-height: calc(var(--game-height) - 20px); overflow: auto; }
 body.mobile-device .dialog h2 { font-size: 24px; margin: 8px 0 12px; }
 body.mobile-device .dialog > button { margin: 8px 0; padding: 9px; }
+body.mobile-device .battle-result { margin-top: 10px; }
+body.mobile-device .battle-result .result-dialog {
+  width: 92%;
+  padding: 13px 16px;
+  gap: 12px;
+  transform: translateY(96px);
+  flex-direction: column;
+  text-align: center;
+}
+body.mobile-device .battle-result .result-copy h2 { font-size: 22px; }
+body.mobile-device .battle-result .result-actions { gap: 7px; }
+body.mobile-device .battle-result .result-actions button { padding: 8px 10px; }
 
 /* These overlays never take height away from the canvas. */
 body[data-screen="battle"] .touch {

@@ -465,6 +465,7 @@ Object.assign(blue.moves.super, {
   startup: 34,
   active: 10,
   recovery: 13,
+  damage: 40,
   effect: "projectile",
   range: 750,
   minRange: 180,
@@ -524,6 +525,7 @@ Object.assign(red.moves.super, {
   startup: 18,
   active: 20,
   recovery: 13,
+  damage: 35,
   effect: "grab",
   dashSpeed: 760,
   range: 235,
@@ -531,13 +533,13 @@ Object.assign(red.moves.super, {
   grab: {
     duration: 1.72,
     hits: [
-      { at: 0.14, damage: 2 },
-      { at: 0.34, damage: 2 },
-      { at: 0.54, damage: 2 },
-      { at: 0.74, damage: 2 },
-      { at: 0.94, damage: 2 },
-      { at: 1.14, damage: 2 },
-      { at: 1.5, damage: 9 },
+      { at: 0.14, damage: 4 },
+      { at: 0.34, damage: 4 },
+      { at: 0.54, damage: 4 },
+      { at: 0.74, damage: 4 },
+      { at: 0.94, damage: 4 },
+      { at: 1.14, damage: 4 },
+      { at: 1.5, damage: 11 },
     ],
   },
   ai: { role: "grapple", weight: 1 },
@@ -664,7 +666,7 @@ Object.assign(blue.moves.skill, {
 Object.assign(blue.moves.skill2, {
   name: "震空回响",
   description: "以自身为中心爆气，对周围造成伤害并击飞未防御目标，不造成倒地。",
-  damage: 12,
+  damage: 10,
   startup: 16,
   active: 8,
   recovery: 10,
@@ -699,9 +701,9 @@ delete red.moves.skill2.hits;
 delete blue.moves.skill2.projectile;
 delete blue.moves.skill2.minRange;
 Object.assign(roster[2].moves.skill, {
-  name: "回眸一击",
+  name: "隔空嘲笑",
   description: "消耗一点能量，嘲笑着指向敌人；蓄力 0.5 秒后无视距离造成伤害和硬直。",
-  startup: 30, active: 4, recovery: 8, damage: 10, range: 960,
+  startup: 30, active: 4, recovery: 8, damage: 15, range: 960,
   box: { x: -480, y: -180, w: 960, h: 150 }, stun: 30, knockback: 180, launch: 260, knockdown: true,
   cost: 1, gain: 0, groundOnly: true, effect: "global",
   ai: { role: "ranged", weight: 1 },
@@ -725,13 +727,13 @@ Object.assign(roster[2].moves.skill2, {
 Object.assign(roster[2].moves.super, {
   name: "奶蛋天降",
   description: "消耗三点能量，锁定一名敌人；短暂瞄准后从目标头顶落下尖端朝下的奶蛋，爆炸并击飞倒地。",
-  startup: 12, active: 6, recovery: 12, damage: 18, range: 960,
+  startup: 12, active: 6, recovery: 12, damage: 45, range: 960,
   box: { x: -480, y: -260, w: 960, h: 240 }, stun: 24, knockback: 220,
   cost: 3, gain: 0, groundOnly: true, effect: "projectile", invulnerableFrames: 18,
   launch: 300, knockdown: true, unblockable: true, voiceCue: true,
   projectile: {
     speed: 1080, radius: 42, life: 1.3, power: 1, targeted: true, lockDelay: 0.48,
-    shots: [{ delay: 0, damage: 18 }],
+    shots: [{ delay: 0, damage: 45 }],
   },
   ai: { role: "finisher", weight: 1 },
 });

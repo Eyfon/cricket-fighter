@@ -205,24 +205,6 @@
               ><button id="battle-return">返回选人</button>
             </div>
           </div>
-          <div
-            class="battle-overlay"
-            id="result-panel"
-            hidden
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="result-title"
-          >
-            <div class="dialog result-dialog">
-              <p class="eyebrow">MATCH COMPLETE</p>
-              <h2 id="result-title"></h2>
-              <p id="result-score"></p>
-              <div class="result-actions">
-                <button id="result-return">返回</button
-                ><button id="result-rematch" class="primary">重新开战 ↻</button>
-              </div>
-            </div>
-          </div>
         </div>
         <nav class="toolbar" aria-hidden="true" hidden>
           <span id="status" role="status"></span
@@ -267,6 +249,23 @@
             小技能消耗 1 点，大招消耗 3 点；蓄能条满获得 1 点，最多存 3 点。
           </p>
         </details>
+      </section>
+      <section data-screen="result" class="screen result-screen" hidden>
+        <div class="result-page-shell">
+          <p class="eyebrow">MATCH COMPLETE / FINAL RESULT</p>
+          <div class="result-page-title">
+            <div>
+              <h1 id="result-title"></h1>
+              <p id="result-score"></p>
+            </div>
+          </div>
+          <div class="result-page-divider"></div>
+          <p class="result-page-note">本场战斗已结束，选择下一步行动</p>
+          <div class="result-actions">
+            <button id="result-return">返回选人</button>
+            <button id="result-rematch" class="primary">重新开战 ↻</button>
+          </div>
+        </div>
       </section>
       <section data-screen="gallery" class="screen" hidden>
         <div class="page-heading">
@@ -362,8 +361,8 @@
       </section>
     </main>
     <!-- MODULE_VERSIONS_START -->
-    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=96bbaa9d24ae","./js/ai.js":"./js/ai.js?v=96bbaa9d24ae","./js/animation-data.js":"./js/animation-data.js?v=96bbaa9d24ae","./js/animation.js":"./js/animation.js?v=96bbaa9d24ae","./js/arena.js":"./js/arena.js?v=96bbaa9d24ae","./js/asset-url.js":"./js/asset-url.js?v=96bbaa9d24ae","./js/audio.js":"./js/audio.js?v=96bbaa9d24ae","./js/battle-frame.js":"./js/battle-frame.js?v=96bbaa9d24ae","./js/battle-viewport.js":"./js/battle-viewport.js?v=96bbaa9d24ae","./js/character-schema.js":"./js/character-schema.js?v=96bbaa9d24ae","./js/combat-world.js":"./js/combat-world.js?v=96bbaa9d24ae","./js/combat.js":"./js/combat.js?v=96bbaa9d24ae","./js/energy-effects.js":"./js/energy-effects.js?v=96bbaa9d24ae","./js/input.js":"./js/input.js?v=96bbaa9d24ae","./js/language.js":"./js/language.js?v=96bbaa9d24ae","./js/maps.js":"./js/maps.js?v=96bbaa9d24ae","./js/menu.js":"./js/menu.js?v=96bbaa9d24ae","./js/mobile-controls.js":"./js/mobile-controls.js?v=96bbaa9d24ae","./js/presentation.js":"./js/presentation.js?v=96bbaa9d24ae","./js/roster.js":"./js/roster.js?v=96bbaa9d24ae","./js/round-ending.js":"./js/round-ending.js?v=96bbaa9d24ae","./js/settings.js":"./js/settings.js?v=96bbaa9d24ae","./js/stages.js":"./js/stages.js?v=96bbaa9d24ae","./js/super-flash.js":"./js/super-flash.js?v=96bbaa9d24ae"}}</script>
+    <script type="importmap">{"imports":{"./js/ai-profiles.js":"./js/ai-profiles.js?v=a1a2ef966341","./js/ai.js":"./js/ai.js?v=a1a2ef966341","./js/animation-data.js":"./js/animation-data.js?v=a1a2ef966341","./js/animation.js":"./js/animation.js?v=a1a2ef966341","./js/arena.js":"./js/arena.js?v=a1a2ef966341","./js/asset-url.js":"./js/asset-url.js?v=a1a2ef966341","./js/audio.js":"./js/audio.js?v=a1a2ef966341","./js/battle-frame.js":"./js/battle-frame.js?v=a1a2ef966341","./js/battle-viewport.js":"./js/battle-viewport.js?v=a1a2ef966341","./js/character-schema.js":"./js/character-schema.js?v=a1a2ef966341","./js/combat-world.js":"./js/combat-world.js?v=a1a2ef966341","./js/combat.js":"./js/combat.js?v=a1a2ef966341","./js/energy-effects.js":"./js/energy-effects.js?v=a1a2ef966341","./js/input.js":"./js/input.js?v=a1a2ef966341","./js/language.js":"./js/language.js?v=a1a2ef966341","./js/maps.js":"./js/maps.js?v=a1a2ef966341","./js/menu.js":"./js/menu.js?v=a1a2ef966341","./js/mobile-controls.js":"./js/mobile-controls.js?v=a1a2ef966341","./js/presentation.js":"./js/presentation.js?v=a1a2ef966341","./js/roster.js":"./js/roster.js?v=a1a2ef966341","./js/round-ending.js":"./js/round-ending.js?v=a1a2ef966341","./js/settings.js":"./js/settings.js?v=a1a2ef966341","./js/stages.js":"./js/stages.js?v=a1a2ef966341","./js/super-flash.js":"./js/super-flash.js?v=a1a2ef966341"}}</script>
     <!-- MODULE_VERSIONS_END -->
-    <script type="module" src="./js/arena.js?v=96bbaa9d24ae"></script>
+    <script type="module" src="./js/arena.js?v=a1a2ef966341"></script>
   </body>
 </html>

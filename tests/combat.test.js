@@ -50,7 +50,7 @@ test("three points gate the super; it spends points and penetrates guard", () =>
   b.guard = true;
   active(a, "super");
   assert.equal(a.meter, 0);
-  assert.equal(new CombatWorld().step([a, b], 1 / 60)[0].damage, 19);
+  assert.equal(new CombatWorld().step([a, b], 1 / 60)[0].damage, 40);
 });
 test("confirmed punch can cancel into kick, interrupted attacks are cleared", () => {
   const [a, b] = pair();

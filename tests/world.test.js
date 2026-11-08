@@ -40,7 +40,7 @@ test('Chifeng super holds six punches and a final slam across its extended seque
   assert.equal(hitTimes.length,7);
   assert.ok(hitTimes.at(-1)-hitTimes[0]>1.3);
   assert.ok(capturedFrames>=100);
-  assert.equal(b.hp,79);
+  assert.equal(b.hp,65);
   assert.equal(a.energyPoints,0);
   assert.equal(b.capturedBy,null);
   assert.equal(a.grabbing,null);
@@ -152,7 +152,7 @@ test('blue burst damages both sides and launches without knockdown, including af
       hits += world.step([a, b], dt).length;
     }
     assert.equal(hits, 1);
-    assert.equal(b.hp, 88);
+    assert.equal(b.hp, 90);
     assert.ok(b.vy < 0);
     assert.equal(b.ground, false);
     assert.equal(Math.sign(b.pushVx), direction);

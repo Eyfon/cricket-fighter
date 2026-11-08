@@ -83,7 +83,7 @@ export const MUSIC = {
 };
 export function musicForScreen(screen) {
   if (screen === "battle") return null; // The selected map owns battle music.
-  if (screen === "result") return "result";
+  if (screen === "result") return null; // Keep the selected map theme through the result page.
   return ["characters", "setup"].includes(screen) ? "selection" : "lobby";
 }
 export const COMBAT_SOUNDS = [

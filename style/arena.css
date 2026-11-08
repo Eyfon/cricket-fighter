@@ -586,11 +586,48 @@ input[type="range"] {
   gap: 12px;
   justify-content: center;
 }
-.result-dialog p {
-  color: #d7b791;
+.battle-result {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+  display: grid;
+  place-items: center;
+  pointer-events: none;
+  background: transparent;
 }
-.result-dialog h2 {
+.battle-result .result-dialog {
+  width: min(78%, 650px);
+  padding: 16px 24px;
+  transform: translateY(112px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  background: linear-gradient(180deg, #0c121dcc, #0c121d99);
+  border-top: 1px solid #e9ff72aa;
+  border-bottom: 1px solid #e9ff7266;
+  box-shadow: 0 12px 34px #0005;
+  text-align: left;
+  pointer-events: auto;
+}
+.result-copy {
+  min-width: 0;
+}
+.result-copy .eyebrow {
+  margin-bottom: 6px;
+}
+.result-copy p {
+  color: #d7b791;
+  margin: 0;
+}
+.result-copy h2 {
   color: #ffdda5;
+  font-size: 30px;
+  margin: 0 0 4px;
+}
+.battle-result .result-actions {
+  flex: 0 0 auto;
+  justify-content: flex-end;
 }
 .battle-controls {
   font-size: 12px;

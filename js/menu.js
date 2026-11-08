@@ -311,7 +311,6 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       "battle",
     ].includes(next);
     $("pause-panel").hidden = true;
-    $("result-panel").hidden = true;
     if (next === "setup" || next === "characters") renderRules();
     if (next === "battle") $("arena").focus({ preventScroll: true });
     else {
@@ -567,12 +566,19 @@ export function createMenu({ roster, onStart, onLeave, onOptions, onScreen }) {
       if (value) $("resume").focus({ preventScroll: true });
       else $("arena").focus({ preventScroll: true });
     },
-    result({ name, score }) {
-      onScreen?.("result");
-      $("pause-panel").hidden = true;
+    result({ name, score, stage }) {
       $("result-title").textContent = name + " 获胜";
       $("result-score").textContent = score;
-      $("result-panel").hidden = false;
+      const map = maps.find((entry) => entry.id === stage);
+      const resultScreen = document.querySelector(".result-screen");
+      if (resultScreen)
+        resultScreen.style.setProperty(
+          "--result-bg",
+          map?.image
+            ? `url("${new URL(assetUrl(map.image), document.baseURI).href}")`
+            : "none",
+        );
+      show("result");
       $("result-rematch").focus({ preventScroll: true });
     },
   };

@@ -286,6 +286,7 @@ function tickFinale(dt) {
       menu.result({
         name: finale.winner.def.name,
         score: `${fighters[0].wins} : ${fighters[1].wins}`,
+        stage: activeConfig.stage,
       });
     } else {
       round++;
@@ -603,18 +604,16 @@ function render() {
   });
   ctx.restore();
   drawHUD(ctx, fighters, timer, round, activeConfig.wins, viewport.width);
-  if (finale && !matchOver) {
+  if (finale) {
     drawFinale();
-  } else if (paused || intro > 0 || matchOver) {
+  } else if (paused || intro > 0) {
     ctx.fillStyle = "#090f1b85";
     ctx.fillRect(0, viewport.height / 2 - 90, viewport.width, 180);
     const winner = fighters[0].hp > fighters[1].hp ? fighters[0] : fighters[1];
     text(
       paused
         ? "PAUSED"
-        : matchOver
-          ? "WINNER"
-          : intro > 1.4
+        : intro > 1.4
             ? "VS"
             : intro > 0.4
               ? `ROUND ${round}`
@@ -631,9 +630,7 @@ function render() {
     text(
       paused
         ? "点击继续或按 Esc"
-        : matchOver
-          ? `${winner.def.name} · 点击重新开局`
-          : intro > 0
+        : intro > 0
             ? `${fighters[0].def.name}  vs  ${fighters[1].def.name}`
             : `${fighters[0].hp === fighters[1].hp ? "平局" : winner.def.name + " 获胜"}`,
       viewport.width / 2,
