@@ -53,6 +53,7 @@ npm run dev
 - [设计总规范](docs/DESIGN-SPEC.md)：玩法目标、通用机制、数值边界、角色制作流程与验收标准；新增机制和角色以此为总约定。
 - [战斗规则与玩法总览](docs/BATTLE-RULES.md)：当前实际操作、招式数值、能量、状态、打断和角色技能。
 - [三级 AI 规范](docs/AI-SPEC.md) 与 [实测对比](docs/AI-COMPARISON.md)：已接入延迟感知、战术评分和有限记忆；观战双方可单独选择难度，人机只设置对手难度。复测运行 `npm run ai:benchmark -- --seeds 1000 --publish-report`。
+- [新增角色制作规范](docs/NEW-CHARACTER-SPEC.md)：新增角色所需的设计资料、动作贴图、技能、音频、测试和交付清单。
 - [角色设计与接入规范](docs/CHARACTER-SPEC.md)：角色槽位、输入约定、配置字段和角色专属技能要求。
 - [角色设计稿模板](docs/templates/CHARACTER-BRIEF.md) 与 [角色配置模板](docs/templates/character.template.json)：新角色从设计到数据接入的起点。
 - [地图设计与接入规范](docs/MAP-SPEC.md) 与 [地图设计稿模板](docs/templates/MAP-BRIEF.md)：新地图的主题、边界、资源、BGM、配置和验收标准。

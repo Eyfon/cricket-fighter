@@ -19,7 +19,7 @@
 | --- | --- | --- | --- |
 | 总体设计 | [DESIGN-SPEC](./DESIGN-SPEC.md) | 目标、流程、共通机制、数值边界、开发阶段和总验收 | 所有领域规范 |
 | 战斗玩法 | [BATTLE-RULES](./BATTLE-RULES.md) | 键位、回合、能量、伤害、状态、打断、角色现状 | `js/combat.js`、`js/combat-world.js` |
-| 角色 | [CHARACTER-SPEC](./CHARACTER-SPEC.md) | 角色槽位、技能字段、动作状态、抗性和接入要求 | [角色设计稿](./templates/CHARACTER-BRIEF.md)、[角色配置模板](./templates/character.template.json) |
+| 角色 | [NEW-CHARACTER-SPEC](./NEW-CHARACTER-SPEC.md) | 新角色从设计、素材制作、裁切、技能、音频到测试上线的完整交付规范 | [角色接入规范](./CHARACTER-SPEC.md)、[角色设计稿](./templates/CHARACTER-BRIEF.md)、[角色配置模板](./templates/character.template.json) |
 | 地图 | [MAP-SPEC](./MAP-SPEC.md) | 边界、视觉层、资源、BGM、manifest 和地图验收 | [地图设计稿](./templates/MAP-BRIEF.md)、`js/maps.js` |
 | AI | [AI-SPEC](./AI-SPEC.md) | 简单、正常、困难的决策差异和测试方法 | [AI 对比](./AI-COMPARISON.md)、`js/ai.js` |
 | 界面 | [INTERFACE](./INTERFACE.md) | 菜单流程、手机横屏、设置、选角和结算 | `index.html`、`style/` |
@@ -32,7 +32,7 @@
 
 ### 新角色
 
-1. 阅读 [CHARACTER-SPEC](./CHARACTER-SPEC.md)、[BATTLE-RULES](./BATTLE-RULES.md) 和 [角色设计稿](./templates/CHARACTER-BRIEF.md)。
+1. 阅读 [新增角色制作规范](./NEW-CHARACTER-SPEC.md)、[CHARACTER-SPEC](./CHARACTER-SPEC.md)、[BATTLE-RULES](./BATTLE-RULES.md) 和 [角色设计稿](./templates/CHARACTER-BRIEF.md)。
 2. 先写角色定位、基础动作、技能意图、命中效果和数值，再填写 JSON 配置。
 3. 为 `punch`、`kick`、`forwardPunch`、`forwardKick`、`specialPunch`、`specialKick`、`skill`、`skill2`、`super` 提供完整定义。
 4. 按 [SPRITE-DIRECTORY](./SPRITE-DIRECTORY.md) 建立角色目录，逐帧记录裁切矩形、脚底基准和动作状态。
