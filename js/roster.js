@@ -618,23 +618,27 @@ const naiwaSprites = {
 // instead of forcing a crop that would clip hair, shoes or water glow.
 const dafeiyuSources = {
   common: "./assets/characters/dafeiyu/common/atlas.png",
+  legacy: "./assets/characters/dafeiyu/common/legacy-atlas.png",
   skill1: "./assets/characters/dafeiyu/skill1/atlas.png",
   skill2: "./assets/characters/dafeiyu/skill2/atlas.png",
   super: "./assets/characters/dafeiyu/super/atlas.png",
 };
+const dafeiyuCommonRects = Array.from({ length: 16 }, (_, index) => {
+  const xs = [0, 312, 623, 935], xe = [312, 623, 935, 1246];
+  const ys = [0, 316, 632, 948], ye = [316, 632, 948, 1263];
+  const col = index % 4, rowIndex = Math.floor(index / 4);
+  return [xs[col], ys[rowIndex], xe[col] - xs[col], ye[rowIndex] - ys[rowIndex]];
+});
 const dafeiyuRects = Array.from({ length: 16 }, (_, index) => {
   const xs = [0, 281, 561, 842], xe = [281, 561, 842, 1122];
   const ys = [0, 351, 701, 1052], ye = [351, 701, 1052, 1402];
   const col = index % 4, rowIndex = Math.floor(index / 4);
   return [xs[col], ys[rowIndex], xe[col] - xs[col], ye[rowIndex] - ys[rowIndex]];
 });
-const dafeiyuPose = (src, index, scale = 0.56) => ({
-  src,
-  rect: dafeiyuRects[index],
-  scale,
-  anchorX: 0.5,
-  originY: dafeiyuRects[index][3] - 8,
-});
+const dafeiyuPose = (src, index, scale = 0.56) => {
+  const rect = (src === dafeiyuSources.common ? dafeiyuCommonRects : dafeiyuRects)[index];
+  return { src, rect, scale, anchorX: 0.5, originY: rect[3] - 8 };
+};
 const dafeiyuClip = (src, indices, phases, extras = {}) => ({
   src,
   clip: indices.map((index) => dafeiyuPose(src, index)),
@@ -646,19 +650,19 @@ const dafeiyuPhases = { startup: [0], active: [1, 2], recovery: [2, 3] };
 const dafeiyuSprites = {
   idle: dafeiyuPose(dafeiyuSources.common, 0),
   walk: dafeiyuClip(dafeiyuSources.common, [0, 1, 2, 3], null, { loop: true, fps: 9, stride: 105, walkMode: "time" }),
-  jump: dafeiyuClip(dafeiyuSources.common, [4, 5, 6, 7], null, { fps: 10 }),
-  guard: dafeiyuPose(dafeiyuSources.common, 7),
-  crouchGuard: dafeiyuClip(dafeiyuSources.common, [4, 5], null, { fps: 10 }),
-  hurt: dafeiyuClip(dafeiyuSources.common, [12, 13, 14], null, { fps: 12 }),
-  knockdown: dafeiyuClip(dafeiyuSources.common, [12, 13, 14, 15], null, { fps: 10 }),
-  ko: dafeiyuPose(dafeiyuSources.common, 15),
+  jump: dafeiyuClip(dafeiyuSources.common, [4, 5, 4, 5], null, { fps: 10 }),
+  guard: dafeiyuPose(dafeiyuSources.common, 6),
+  crouchGuard: dafeiyuClip(dafeiyuSources.common, [7, 7], null, { fps: 10 }),
+  hurt: dafeiyuClip(dafeiyuSources.legacy, [14, 14, 14], null, { fps: 12 }),
+  knockdown: dafeiyuClip(dafeiyuSources.legacy, [14, 14, 15, 15], null, { fps: 10 }),
+  ko: dafeiyuPose(dafeiyuSources.legacy, 15),
   dodge: dafeiyuClip(dafeiyuSources.common, [1, 2, 1], null, { fps: 12 }),
-  punch: dafeiyuClip(dafeiyuSources.common, [8, 8, 9, 10], dafeiyuPhases),
-  kick: dafeiyuClip(dafeiyuSources.common, [8, 9, 10, 11], dafeiyuPhases),
-  forwardPunch: dafeiyuClip(dafeiyuSources.common, [8, 9, 10, 8], dafeiyuPhases),
-  forwardKick: dafeiyuClip(dafeiyuSources.common, [9, 10, 11, 9], dafeiyuPhases),
-  specialPunch: dafeiyuClip(dafeiyuSources.common, [11, 10, 9, 8], dafeiyuPhases),
-  specialKick: dafeiyuClip(dafeiyuSources.common, [12, 12, 13, 12], dafeiyuPhases),
+  punch: dafeiyuClip(dafeiyuSources.common, [8, 9, 10, 11], dafeiyuPhases),
+  kick: dafeiyuClip(dafeiyuSources.common, [12, 13, 13, 15], dafeiyuPhases),
+  forwardPunch: dafeiyuClip(dafeiyuSources.common, [8, 9, 10, 11], dafeiyuPhases),
+  forwardKick: dafeiyuClip(dafeiyuSources.common, [12, 13, 14, 15], dafeiyuPhases),
+  specialPunch: dafeiyuClip(dafeiyuSources.common, [8, 10, 10, 11], dafeiyuPhases),
+  specialKick: dafeiyuClip(dafeiyuSources.common, [12, 14, 14, 15], dafeiyuPhases),
   skill: dafeiyuClip(dafeiyuSources.skill1, [0, 1, 4, 5, 8, 9, 12, 13], { startup: [0, 1, 2], active: [3, 4, 5], recovery: [6, 7] }, { fps: 14 }),
   skill2: dafeiyuClip(dafeiyuSources.skill2, [0, 1, 3, 4, 5, 7, 8, 9, 12, 13], { startup: [0, 1, 2], active: [3, 4, 5, 6], recovery: [7, 8, 9] }, { fps: 14 }),
   super: dafeiyuClip(dafeiyuSources.super, [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 13], { startup: [0, 1, 2, 3], active: [4, 5, 6, 7], recovery: [8, 9, 10, 11] }, { fps: 12 }),

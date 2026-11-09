@@ -378,6 +378,10 @@
       "sha256": "c4c281c971427dcdd589c59239c69ab4a6346190fa900d451774835f6fa03638"
     },
     "assets/characters/dafeiyu/common/atlas.png": {
+      "bytes": 2012571,
+      "sha256": "22ca5aa8d66458224ed5ec00eb03f17774986993c574a01872d7680bc98a3ad3"
+    },
+    "assets/characters/dafeiyu/common/legacy-atlas.png": {
       "bytes": 1979076,
       "sha256": "aa66b02514593bb8df053f0288290e5bbbc94f29efa7de0044dc45556d160a82"
     },

@@ -14,10 +14,18 @@ test("大肥鱼资源目录包含独立图集、鲸鱼特效和裁切清单", as
   const root = path.resolve("assets/characters/dafeiyu");
   const manifest = JSON.parse(await readFile(path.join(root, "manifest.json"), "utf8"));
   assert.equal(manifest.character, "dafeiyu");
-  for (const file of ["common/atlas.png", "skill1/atlas.png", "skill2/atlas.png", "super/atlas.png", "super/whale.png"])
+  for (const file of ["common/atlas.png", "common/legacy-atlas.png", "skill1/atlas.png", "skill2/atlas.png", "super/atlas.png", "super/whale.png"])
     assert.ok((await readFile(path.join(root, file))).length > 0, file);
   for (const action of ["idle", "walk", "jump", "guard", "crouch-guard", "hurt", "knockdown", "ko", "dodge", "punch", "kick", "forward-punch", "forward-kick", "down-punch", "down-kick", "skill1", "skill2", "super"])
     assert.ok(manifest.actions[action]?.frames?.length, action);
+});
+
+test("大肥鱼公共图集的拳脚动作使用分开的图集行", () => {
+  const sprites = dafeiyu.sprites;
+  assert.ok(sprites.punch.clip.every((frame) => frame.rect[1] < 948));
+  assert.ok(sprites.kick.clip.every((frame) => frame.rect[1] >= 948));
+  assert.ok(sprites.forwardPunch.clip.every((frame) => frame.rect[1] < 948));
+  assert.ok(sprites.forwardKick.clip.every((frame) => frame.rect[1] >= 948));
 });
 
 test("大肥鱼技能一从目标脚下命中并击飞", () => {
