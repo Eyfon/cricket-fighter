@@ -93,6 +93,8 @@ export class CombatWorld {
               ? lockedX
               : p.rain
               ? 80 + (shotIndex + 1) * ((WIDTH - 160) / ((p.shots || []).length + 1))
+              : p.whale
+              ? f.x + f.facing * (p.offsetX ?? -180)
               : f.x + f.facing * (p.offsetX ?? 64),
             y: p.targeted
               ? lockedY - 300
@@ -108,6 +110,8 @@ export class CombatWorld {
             damage: shot.damage,
             rain: !!p.rain,
             targeted: !!p.targeted,
+            whale: !!p.whale,
+            waterBurst: !!p.waterBurst,
           });
       }
       if (
@@ -162,7 +166,19 @@ export class CombatWorld {
             damage: a.move.damage,
             source: 'global',
           });
-          if (event) events.push(event);
+          if (event) {
+            if (a.move.waterPillar) {
+              f.burstVisual = {
+                age: 0,
+                duration: 0.55,
+                x: target.x,
+                y: target.y,
+                range: 92,
+                waterPillar: true,
+              };
+            }
+            events.push(event);
+          }
         }
       }
     }

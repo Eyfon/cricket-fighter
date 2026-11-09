@@ -613,6 +613,56 @@ const naiwaSprites = {
   ),
   super: naiwaSkillClip(naiwaSuper, [0, 1, 2, 3, 4, 5], { startup: [0, 1, 2], active: [3, 4], recovery: [5, 4] }),
 };
+// 大肥鱼 uses generated 4x4 atlases. The generator leaves transparent
+// gutters around each pose, so keep the measured non-square cell boundaries
+// instead of forcing a crop that would clip hair, shoes or water glow.
+const dafeiyuSources = {
+  common: "./assets/characters/dafeiyu/common/atlas.png",
+  skill1: "./assets/characters/dafeiyu/skill1/atlas.png",
+  skill2: "./assets/characters/dafeiyu/skill2/atlas.png",
+  super: "./assets/characters/dafeiyu/super/atlas.png",
+};
+const dafeiyuRects = Array.from({ length: 16 }, (_, index) => {
+  const xs = [0, 281, 561, 842], xe = [281, 561, 842, 1122];
+  const ys = [0, 351, 701, 1052], ye = [351, 701, 1052, 1402];
+  const col = index % 4, rowIndex = Math.floor(index / 4);
+  return [xs[col], ys[rowIndex], xe[col] - xs[col], ye[rowIndex] - ys[rowIndex]];
+});
+const dafeiyuPose = (src, index, scale = 0.56) => ({
+  src,
+  rect: dafeiyuRects[index],
+  scale,
+  anchorX: 0.5,
+  originY: dafeiyuRects[index][3] - 8,
+});
+const dafeiyuClip = (src, indices, phases, extras = {}) => ({
+  src,
+  clip: indices.map((index) => dafeiyuPose(src, index)),
+  fps: 12,
+  phases,
+  ...extras,
+});
+const dafeiyuPhases = { startup: [0], active: [1, 2], recovery: [2, 3] };
+const dafeiyuSprites = {
+  idle: dafeiyuPose(dafeiyuSources.common, 0),
+  walk: dafeiyuClip(dafeiyuSources.common, [0, 1, 2, 3], null, { loop: true, fps: 9, stride: 105, walkMode: "time" }),
+  jump: dafeiyuClip(dafeiyuSources.common, [4, 5, 6, 7], null, { fps: 10 }),
+  guard: dafeiyuPose(dafeiyuSources.common, 7),
+  crouchGuard: dafeiyuClip(dafeiyuSources.common, [4, 5], null, { fps: 10 }),
+  hurt: dafeiyuClip(dafeiyuSources.common, [12, 13, 14], null, { fps: 12 }),
+  knockdown: dafeiyuClip(dafeiyuSources.common, [12, 13, 14, 15], null, { fps: 10 }),
+  ko: dafeiyuPose(dafeiyuSources.common, 15),
+  dodge: dafeiyuClip(dafeiyuSources.common, [1, 2, 1], null, { fps: 12 }),
+  punch: dafeiyuClip(dafeiyuSources.common, [8, 8, 9, 10], dafeiyuPhases),
+  kick: dafeiyuClip(dafeiyuSources.common, [8, 9, 10, 11], dafeiyuPhases),
+  forwardPunch: dafeiyuClip(dafeiyuSources.common, [8, 9, 10, 8], dafeiyuPhases),
+  forwardKick: dafeiyuClip(dafeiyuSources.common, [9, 10, 11, 9], dafeiyuPhases),
+  specialPunch: dafeiyuClip(dafeiyuSources.common, [11, 10, 9, 8], dafeiyuPhases),
+  specialKick: dafeiyuClip(dafeiyuSources.common, [12, 12, 13, 12], dafeiyuPhases),
+  skill: dafeiyuClip(dafeiyuSources.skill1, [0, 1, 4, 5, 8, 9, 12, 13], { startup: [0, 1, 2], active: [3, 4, 5], recovery: [6, 7] }, { fps: 14 }),
+  skill2: dafeiyuClip(dafeiyuSources.skill2, [0, 1, 3, 4, 5, 7, 8, 9, 12, 13], { startup: [0, 1, 2], active: [3, 4, 5, 6], recovery: [7, 8, 9] }, { fps: 14 }),
+  super: dafeiyuClip(dafeiyuSources.super, [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 12, 13], { startup: [0, 1, 2, 3], active: [4, 5, 6, 7], recovery: [8, 9, 10, 11] }, { fps: 12 }),
+};
 const commonMoves = {
   punch: { name: "直拳", description: "快速近身直拳。", startup: 6, active: 4, recovery: 5, damage: 4, range: 105, box: { x: 18, y: -150, w: 95, h: 55 }, stun: 9, knockback: 220, cost: 0, gain: 12, groundOnly: false, launch: 0, ai: { role: "poke", weight: 1 }, cancel: ["kick", "forwardPunch", "forwardKick", "specialPunch", "specialKick", "skill", "skill2", "super"] },
   kick: { name: "中踢", description: "中距离踢击。", startup: 10, active: 5, recovery: 7, damage: 6.5, range: 145, box: { x: 16, y: -105, w: 130, h: 60 }, stun: 13, knockback: 310, cost: 0, gain: 14, groundOnly: false, launch: 0, ai: { role: "poke", weight: 1 } },
@@ -634,6 +684,21 @@ roster.push({
   height: 178,
   ai: { preferredRange: 190 },
   sprites: naiwaSprites,
+  moves: { skill: {}, skill2: {}, super: {} },
+});
+roster.push({
+  id: "dafeiyu",
+  name: "大肥鱼",
+  subtitle: "水柱 / 鲸潮突进",
+  description: "水系控场型：从敌人脚下喷出水柱，向前发射水爆，并召唤巨鲸横冲击倒前方目标。",
+  color: "#4c9dff",
+  accent: "#c8f4ff",
+  speed: 205,
+  jump: 570,
+  width: 72,
+  height: 182,
+  ai: { preferredRange: 230, retreatBelow: 105 },
+  sprites: dafeiyuSprites,
   moves: { skill: {}, skill2: {}, super: {} },
 });
 for (const character of roster) Object.assign(character.moves, structuredClone(commonMoves));
@@ -734,6 +799,41 @@ Object.assign(roster[2].moves.super, {
   projectile: {
     speed: 1080, radius: 42, life: 1.3, power: 1, targeted: true, lockDelay: 0.48,
     shots: [{ delay: 0, damage: 45 }],
+  },
+  ai: { role: "finisher", weight: 1 },
+});
+const dafeiyu = roster.find((character) => character.id === "dafeiyu");
+Object.assign(dafeiyu.moves.skill, {
+  name: "深海喷涌",
+  description: "消耗一点能量，从敌人正下方召唤水柱，造成 15 点伤害并击飞约 0.5 秒。",
+  startup: 20, active: 6, recovery: 10, damage: 15, range: 960,
+  box: { x: -480, y: -200, w: 960, h: 200 }, stun: 30, knockback: 190,
+  cost: 1, gain: 0, groundOnly: true, effect: "global", launch: 380,
+  waterPillar: true,
+  ai: { role: "ranged", weight: 1 },
+});
+Object.assign(dafeiyu.moves.skill2, {
+  name: "水爆冲击",
+  description: "消耗一点能量，向前发射水爆，击退前方目标并造成 10 点伤害。",
+  startup: 16, active: 12, recovery: 9, damage: 10, range: 620,
+  minRange: 95, box: { x: 20, y: -145, w: 130, h: 110 }, stun: 18, knockback: 430,
+  cost: 1, gain: 0, groundOnly: true, effect: "projectile", launch: 0,
+  projectile: {
+    speed: 650, radius: 28, life: 1.25, power: 1, offsetX: 96, offsetY: -125,
+    waterBurst: true, shots: [{ delay: 0, damage: 10 }],
+  },
+  ai: { role: "ranged", weight: 1 },
+});
+Object.assign(dafeiyu.moves.super, {
+  name: "蓝鲸冲阵",
+  description: "消耗三点能量，从身后召唤巨大的蓝鲸向前冲锋，击飞并击倒前方目标，造成 40 点伤害。",
+  startup: 22, active: 12, recovery: 14, damage: 40, range: 760,
+  box: { x: -120, y: -235, w: 760, h: 220 }, stun: 30, knockback: 520,
+  cost: 3, gain: 0, groundOnly: true, effect: "projectile", launch: 360,
+  knockdown: true, unblockable: true,
+  projectile: {
+    speed: 620, radius: 102, life: 1.45, power: 1, offsetX: -190, offsetY: -180,
+    whale: true, shots: [{ delay: 0, damage: 40 }],
   },
   ai: { role: "finisher", weight: 1 },
 });

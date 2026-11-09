@@ -377,6 +377,26 @@
       "bytes": 934511,
       "sha256": "c4c281c971427dcdd589c59239c69ab4a6346190fa900d451774835f6fa03638"
     },
+    "assets/characters/dafeiyu/common/atlas.png": {
+      "bytes": 1979076,
+      "sha256": "aa66b02514593bb8df053f0288290e5bbbc94f29efa7de0044dc45556d160a82"
+    },
+    "assets/characters/dafeiyu/skill1/atlas.png": {
+      "bytes": 2093490,
+      "sha256": "8255a86910553ef29b27074bd372b3bc1732a0cf19de13735d43af966d7cdd0e"
+    },
+    "assets/characters/dafeiyu/skill2/atlas.png": {
+      "bytes": 2130420,
+      "sha256": "d2c24bc1fa34520de8227f91617526be1de76e85dbd9c35b6c1663ebcac9ecba"
+    },
+    "assets/characters/dafeiyu/super/atlas.png": {
+      "bytes": 2454777,
+      "sha256": "3cd679abd3cfd0b54846b99d484958b8b1428ca1873672363e2a12fc2d0f23c1"
+    },
+    "assets/characters/dafeiyu/super/whale.png": {
+      "bytes": 1368334,
+      "sha256": "4d3e1096b1fea6646a31fc84475a0e22302303e125b8402f1574197dd0346d7a"
+    },
     "assets/characters/direction-attacks-v4.png": {
       "bytes": 1447254,
       "sha256": "036bccc412713b756c88f9c7ce10740b8463180413d1ce725b45a568084e5084"

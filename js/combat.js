@@ -211,7 +211,7 @@ export class Fighter {
     this.animTime += dt;
     if (this.burstVisual) {
       this.burstVisual.age += dt;
-      if (this.burstVisual.age >= 0.4) this.burstVisual = null;
+      if (this.burstVisual.age >= (this.burstVisual.duration ?? 0.4)) this.burstVisual = null;
     }
     if (this.eggImpact) {
       this.eggImpact.age += dt;

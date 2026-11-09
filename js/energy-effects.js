@@ -1,5 +1,7 @@
 const naiWaEggImage = new Image();
 naiWaEggImage.src = new URL("../assets/effects/naiwa-egg.png", import.meta.url).href;
+const dafeiyuWhaleImage = new Image();
+dafeiyuWhaleImage.src = new URL("../assets/characters/dafeiyu/super/whale.png", import.meta.url).href;
 export function drawProjectiles(ctx, world) {
   ctx.save();
   ctx.globalCompositeOperation = "lighter";
@@ -11,6 +13,27 @@ export function drawProjectiles(ctx, world) {
     ctx.save();
     ctx.translate(p.x, p.y);
     ctx.scale(p.direction, 1);
+    if (p.whale) {
+      ctx.globalCompositeOperation = "source-over";
+      ctx.shadowColor = "#35bfff";
+      ctx.shadowBlur = 24;
+      const width = p.radius * 3.7;
+      const height = width * 0.5;
+      if (dafeiyuWhaleImage.complete && dafeiyuWhaleImage.naturalWidth) {
+        ctx.drawImage(dafeiyuWhaleImage, -width * 0.5, -height * 0.62, width, height);
+      } else {
+        const glow = ctx.createRadialGradient(0, 0, 8, 0, 0, p.radius * 1.6);
+        glow.addColorStop(0, "#e3fbff");
+        glow.addColorStop(0.45, "#55cfff");
+        glow.addColorStop(1, "#1974e900");
+        ctx.fillStyle = glow;
+        ctx.beginPath();
+        ctx.ellipse(0, 0, p.radius * 1.55, p.radius * 0.66, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+      continue;
+    }
     if (p.targeted) {
       const r = p.radius;
       ctx.globalCompositeOperation = "source-over";
@@ -28,6 +51,30 @@ export function drawProjectiles(ctx, world) {
         ctx.beginPath();
         ctx.ellipse(0, 0, r * 0.9, r * 1.15, 0, 0, Math.PI * 2);
         ctx.fill();
+      }
+      ctx.restore();
+      continue;
+    }
+    if (p.waterBurst) {
+      const r = p.radius;
+      ctx.globalCompositeOperation = "lighter";
+      ctx.shadowColor = "#36cfff";
+      ctx.shadowBlur = 22;
+      const glow = ctx.createRadialGradient(0, 0, 1, 0, 0, r * 1.7);
+      glow.addColorStop(0, "#f0ffff");
+      glow.addColorStop(0.3, "#9deaff");
+      glow.addColorStop(0.75, "#2d9effaa");
+      glow.addColorStop(1, "#1a74ff00");
+      ctx.fillStyle = glow;
+      ctx.beginPath();
+      ctx.arc(0, 0, r * 1.35, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#d7fbff";
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 3; i++) {
+        ctx.beginPath();
+        ctx.arc(0, 0, r * (0.55 + i * 0.22), -1.2 + t * 4 + i, 1.2 + t * 4 + i);
+        ctx.stroke();
       }
       ctx.restore();
       continue;
@@ -113,11 +160,36 @@ export function drawProjectiles(ctx, world) {
 export function drawMoveAura(ctx, f) {
   // Caller already translates and mirrors into the fighter's local space.
   if (f.burstVisual) {
-    const v = f.burstVisual, t = v.age / 0.4;
+    const v = f.burstVisual, t = Math.min(1, v.age / (v.duration ?? 0.4));
     ctx.save();
     ctx.globalAlpha = 1 - t;
     const r = v.range * (0.25 + 0.75 * t);
-    if (v.soundwave) {
+    if (v.waterPillar) {
+      const x = (v.x - f.x) * f.facing;
+      const top = v.y - f.y - 205;
+      const bottom = v.y - f.y + 8;
+      const width = Math.max(24, r * (0.35 + t * 0.2));
+      const water = ctx.createLinearGradient(x, top, x, bottom);
+      water.addColorStop(0, "#bdf8ff00");
+      water.addColorStop(0.25, "#61d9ffcc");
+      water.addColorStop(0.7, "#1987ffdd");
+      water.addColorStop(1, "#bdf8ff22");
+      ctx.fillStyle = water;
+      ctx.shadowColor = "#37c9ff";
+      ctx.shadowBlur = 22;
+      ctx.beginPath();
+      ctx.ellipse(x, (top + bottom) / 2, width, (bottom - top) / 2, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = "#d7fbff";
+      ctx.lineWidth = 3;
+      for (let i = 0; i < 4; i++) {
+        const waveX = x + (i - 1.5) * width * 0.45;
+        ctx.beginPath();
+        ctx.moveTo(waveX, bottom - 10);
+        ctx.bezierCurveTo(waveX - 12, bottom - 52, waveX + 18, top + 54, waveX, top + 10);
+        ctx.stroke();
+      }
+    } else if (v.soundwave) {
       ctx.strokeStyle = "#f4f0c2";
       ctx.lineWidth = 4 * (1 - t) + 1;
       for (let i = 0; i < 3; i++) {
