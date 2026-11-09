@@ -94,11 +94,13 @@ export class CombatWorld {
               : p.rain
               ? 80 + (shotIndex + 1) * ((WIDTH - 160) / ((p.shots || []).length + 1))
               : p.whale
-              ? f.x + f.facing * (p.offsetX ?? -180)
+              ? p.edgeSpawn
+                ? f.facing === 1 ? -p.radius * 0.8 : WIDTH + p.radius * 0.8
+                : f.x + f.facing * (p.offsetX ?? -180)
               : f.x + f.facing * (p.offsetX ?? 64),
             y: p.targeted
               ? lockedY - 300
-              : p.rain ? -80 - shotIndex * 28 : f.y + (p.offsetY ?? -95),
+              : p.rain ? -80 - shotIndex * 28 : f.y + (p.offsetY ?? (p.whale ? -90 : -95)),
             direction: f.facing,
             radius: p.radius,
             speed: p.targeted || p.rain ? 0 : p.speed * Math.cos(shot.angle ?? 0),
@@ -111,6 +113,7 @@ export class CombatWorld {
             rain: !!p.rain,
             targeted: !!p.targeted,
             whale: !!p.whale,
+            edgeSpawn: !!p.edgeSpawn,
             waterBurst: !!p.waterBurst,
           });
       }
@@ -124,18 +127,19 @@ export class CombatWorld {
         if (a.impactFrame == null)
           a.impactFrame = a.move.hits ? a.move.startup + a.move.active : a.frame;
         f.vx = 0;
+        const burstX = f.x + f.facing * (a.move.burstOffsetX ?? 0);
         if (!a.move.hits || !a.hitIndices.size)
-          f.burstVisual = { age: 0, x: f.x, y: f.y, range: a.move.burstRange, ground: !!a.move.riseVelocity, soundwave: !!a.move.soundwave };
+          f.burstVisual = { age: 0, x: burstX, y: f.y, range: a.move.burstRange, ground: !!a.move.riseVelocity, soundwave: !!a.move.soundwave, waterWave: !!a.move.waterWave };
         const elapsed = a.frame - a.move.startup;
         const hit = a.move.hits?.find((entry, index) => elapsed >= entry.at && !a.hitIndices.has(index));
         if (hit) {
           const hitIndex = a.move.hits.indexOf(hit);
           a.hitIndices.add(hitIndex);
           const target = fighters.find((other) => other !== f);
-          if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+          if (target && Math.abs(target.x - burstX) <= (a.move.burstRange ?? a.move.range)) {
             const event = applyDamage(f, target, a.move, {
               key: a.key,
-              direction: target.x >= f.x ? 1 : -1,
+              direction: target.x >= burstX ? 1 : -1,
               damage: hit.damage,
               final: hitIndex === a.move.hits.length - 1,
               source: 'burst',
@@ -145,10 +149,10 @@ export class CombatWorld {
         } else if (!a.move.hits && !a.burstHit) {
           a.burstHit = true;
           const target = fighters.find((other) => other !== f);
-          if (target && Math.abs(target.x - f.x) <= (a.move.burstRange ?? a.move.range)) {
+          if (target && Math.abs(target.x - burstX) <= (a.move.burstRange ?? a.move.range)) {
             const event = applyDamage(f, target, a.move, {
               key: a.key,
-              direction: target.x >= f.x ? 1 : -1,
+              direction: target.x >= burstX ? 1 : -1,
               damage: a.move.damage,
               source: 'burst',
             });

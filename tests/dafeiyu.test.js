@@ -36,7 +36,7 @@ test("大肥鱼技能一从目标脚下命中并击飞", () => {
   assert.ok(b.vy < 0 || b.stun > 0);
 });
 
-test("大肥鱼技能二生成水爆并击退前方目标", () => {
+test("大肥鱼技能二在前方定点水波震爆并击飞倒地", () => {
   const a = new Fighter(dafeiyu, 400, 1), b = new Fighter(target, 520, -1);
   a.energyPoints = 1;
   assert.equal(a.tryMove("skill2"), true);
@@ -47,11 +47,12 @@ test("大肥鱼技能二生成水爆并击退前方目标", () => {
     b.step({}, a, dt);
     const events = world.step([a, b], dt);
     event ||= events.find((entry) => entry.key === "skill2");
-    if (i === 16) assert.ok(world.projectiles.some((projectile) => projectile.waterBurst));
+    if (i === 16) assert.equal(world.projectiles.length, 0);
   }
   assert.ok(event);
   assert.equal(event.damage, 10);
   assert.ok(b.hp <= 90);
+  assert.ok(b.knockdownTimer > 0 || b.state === "ko");
 });
 
 test("大肥鱼大招从身后生成蓝鲸并击飞倒地", () => {

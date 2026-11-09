@@ -189,6 +189,22 @@ export function drawMoveAura(ctx, f) {
         ctx.bezierCurveTo(waveX - 12, bottom - 52, waveX + 18, top + 54, waveX, top + 10);
         ctx.stroke();
       }
+    } else if (v.waterWave) {
+      const x = (v.x - f.x) * f.facing;
+      ctx.strokeStyle = "#8beaff";
+      ctx.shadowColor = "#2bbcff";
+      ctx.shadowBlur = 18;
+      ctx.lineWidth = 5 * (1 - t) + 1;
+      for (let i = 0; i < 4; i++) {
+        const radius = r * (0.35 + i * 0.16);
+        ctx.beginPath();
+        ctx.arc(x, -92, radius, -Math.PI * 0.72, Math.PI * 0.72);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "#bff8ff88";
+      ctx.beginPath();
+      ctx.ellipse(x, -92, r * 0.32, r * 0.9, 0, -Math.PI * 0.5, Math.PI * 0.5);
+      ctx.fill();
     } else if (v.soundwave) {
       ctx.strokeStyle = "#f4f0c2";
       ctx.lineWidth = 4 * (1 - t) + 1;

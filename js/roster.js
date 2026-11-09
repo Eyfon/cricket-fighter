@@ -808,21 +808,18 @@ Object.assign(dafeiyu.moves.skill, {
   description: "消耗一点能量，从敌人正下方召唤水柱，造成 15 点伤害并击飞约 0.5 秒。",
   startup: 20, active: 6, recovery: 10, damage: 15, range: 960,
   box: { x: -480, y: -200, w: 960, h: 200 }, stun: 30, knockback: 190,
-  cost: 1, gain: 0, groundOnly: true, effect: "global", launch: 380,
+  cost: 1, gain: 0, groundOnly: true, effect: "global", launch: 380, knockdown: true,
   waterPillar: true,
   ai: { role: "ranged", weight: 1 },
 });
 Object.assign(dafeiyu.moves.skill2, {
   name: "水爆冲击",
-  description: "消耗一点能量，向前发射水爆，击退前方目标并造成 10 点伤害。",
-  startup: 16, active: 12, recovery: 9, damage: 10, range: 620,
-  minRange: 95, box: { x: 20, y: -145, w: 130, h: 110 }, stun: 18, knockback: 430,
-  cost: 1, gain: 0, groundOnly: true, effect: "projectile", launch: 0,
-  projectile: {
-    speed: 650, radius: 28, life: 1.25, power: 1, offsetX: 96, offsetY: -125,
-    waterBurst: true, shots: [{ delay: 0, damage: 10 }],
-  },
-  ai: { role: "ranged", weight: 1 },
+  description: "消耗一点能量，在前方一段距离制造水波震爆，击飞并击倒范围内目标，造成 10 点伤害。",
+  startup: 16, active: 8, recovery: 9, damage: 10, range: 430,
+  minRange: 115, box: { x: 20, y: -145, w: 130, h: 110 }, stun: 20, knockback: 360,
+  cost: 1, gain: 0, groundOnly: true, effect: "burst", burstOffsetX: 230,
+  burstRange: 170, waterWave: true, launch: 300, knockdown: true,
+  ai: { role: "poke", weight: 1 },
 });
 Object.assign(dafeiyu.moves.super, {
   name: "蓝鲸冲阵",
@@ -832,8 +829,8 @@ Object.assign(dafeiyu.moves.super, {
   cost: 3, gain: 0, groundOnly: true, effect: "projectile", launch: 360,
   knockdown: true, unblockable: true,
   projectile: {
-    speed: 620, radius: 102, life: 1.45, power: 1, offsetX: -190, offsetY: -180,
-    whale: true, shots: [{ delay: 0, damage: 40 }],
+    speed: 620, radius: 102, life: 1.8, power: 1, offsetY: -90,
+    whale: true, edgeSpawn: true, shots: [{ delay: 0, damage: 40 }],
   },
   ai: { role: "finisher", weight: 1 },
 });
