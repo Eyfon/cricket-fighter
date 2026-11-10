@@ -444,9 +444,25 @@ function drawFighter(f) {
     drawMoveAura(ctx, f);
   } else {
     const bob = f.state === "idle" ? Math.sin(f.animTime * 6) * 2 : 0,
-      reach = f.attack
-        ? Math.min(1, f.attack.frame / f.attack.move.startup)
-        : 0;
+      attack = f.attack?.move,
+      attackFrame = f.attack?.frame ?? 0,
+      activeStart = attack?.startup ?? 0,
+      activeEnd = activeStart + (attack?.active ?? 0),
+      recoveryEnd = activeEnd + (attack?.recovery ?? 1),
+      reach = attack ? Math.min(1, attackFrame / Math.max(1, activeStart)) : 0,
+      kickState = ["kick", "forwardKick", "specialKick", "downKick"].includes(f.state),
+      punchState = ["punch", "forwardPunch", "specialPunch", "downPunch"].includes(f.state),
+      kickPhase = !attack || attackFrame < activeStart
+        ? "startup"
+        : attackFrame < activeEnd
+          ? "active"
+          : "recovery",
+      kickReach = kickPhase === "active"
+        ? 1
+        : kickPhase === "recovery"
+          ? Math.max(0, 1 - (attackFrame - activeEnd) / Math.max(1, recoveryEnd - activeEnd))
+          : Math.min(1, attackFrame / Math.max(1, activeStart)),
+      lowKick = f.state === "downKick";
     ctx.translate(0, bob);
     ctx.strokeStyle = f.stun > 0 ? "#fff" : f.def.color;
     ctx.fillStyle = f.stun > 0 ? "#fff" : f.def.color;
@@ -458,10 +474,26 @@ function drawFighter(f) {
     }
     const walk = f.state === "walk" ? Math.sin(f.animTime * 17) * 14 : 0;
     ctx.beginPath();
-    ctx.moveTo(-10, -48);
-    ctx.lineTo(-22 - walk, -7);
-    ctx.moveTo(9, -48);
-    ctx.lineTo(24 + walk, -7);
+    if (kickState) {
+      // Keep one leg planted while the other travels through a clear
+      // chamber -> extension -> retraction arc. The fallback pose is shown
+      // while an atlas is loading, so every kick state must remain readable.
+      ctx.moveTo(-10, -48);
+      ctx.lineTo(-20, -8);
+      ctx.moveTo(9, -48);
+      if (lowKick) {
+        ctx.lineTo(17 + 16 * kickReach, -28);
+        ctx.lineTo(35 + 72 * kickReach, -12);
+      } else {
+        ctx.lineTo(16 + 14 * kickReach, -31 - 13 * kickReach);
+        ctx.lineTo(30 + 74 * kickReach, -28 - 18 * kickReach);
+      }
+    } else {
+      ctx.moveTo(-10, -48);
+      ctx.lineTo(-22 - walk, -7);
+      ctx.moveTo(9, -48);
+      ctx.lineTo(24 + walk, -7);
+    }
     ctx.stroke();
     ctx.fillRect(-23, -104, 46, 62);
     ctx.fillStyle = f.def.accent;
@@ -481,16 +513,10 @@ function drawFighter(f) {
     else if (f.state === "guard") ctx.lineTo(32, -129);
     else
       ctx.lineTo(
-        33 + (f.state === "punch" || f.state === "super" ? 55 * reach : 0),
+        33 + (punchState || f.state === "super" ? 55 * reach : 0),
         -90,
       );
     ctx.stroke();
-    if (f.state === "kick") {
-      ctx.beginPath();
-      ctx.moveTo(6, -45);
-      ctx.lineTo(35 + 75 * reach, -50);
-      ctx.stroke();
-    }
     if (f.state === "super") {
       ctx.strokeStyle = "#e6f789";
       ctx.lineWidth = 3;
